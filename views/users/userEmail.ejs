@@ -1,0 +1,36 @@
+<%- include('../layouts/header.ejs') %>
+<header class="header_area">
+  <div class="main_menu">
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container">
+        <a class="navbar-brand logo_h" href="index.html"
+          ><img src="img/logo.png" alt=""
+        /></a>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="d-flex justify-content-center align-items-center container mt-5">
+  <div class="card py-5 px-3">
+    <h5 class="m-0">OTP verification</h5>
+    <span class="mobile-text mt-3"
+      >Enter the code we have send on your <b class="text-primary">Email Address</b></span
+      >
+    <% if(typeof message!=='undefined'){ %>
+    <p class="text-danger"><%=message %></p>
+    <% } %>
+    <div class="d-flex flex-row mt-5 form-group">
+      <form action="/emailVerification" method="post">
+        
+        <input type="text" name="userVerificationId" 
+          value="<%= otp%>" hidden />
+         
+          
+          
+        <input class="form-control" type="text" name="otp" />
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer.ejs') %>
