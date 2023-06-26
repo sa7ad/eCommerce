@@ -286,11 +286,6 @@
       <section class="content-main">
         <div class="content-header">
           <h2 class="content-title">Users list</h2>
-          <div>
-            <a href="#" class="btn btn-primary"
-              ><i class="material-icons md-plus"></i> Create new</a
-            >
-          </div>
         </div>
         <div class="card mb-4">
           <header class="card-header">
@@ -352,28 +347,30 @@
                         </div>
                       </a>
                     </td>
-                    <td>
-                        <%= value[i].email %>
-                    </td>
+                    <td><%= value[i].email %></td>
                     <td>
                       <span class="badge rounded-pill alert-success"
-                        ><%= value[i].verified %></span>
-                    </td>
-                    <td>
-                      <span class="badge rounded-pill alert-success"
-                        ><%= value[i].blocked %></span>
+                        ><%= value[i].verified %></span
+                      >
                     </td>
                     <td><%= value[i].phone_number %></td>
-                    <td class="text-end">
+                    <%if(value[i].blocked===false){%>
+                    <td>
+                      <a
+                        href="/admin/usersBlocked?id=<%= value[i]._id %>"
+                        class="btn btn-sm btn-danger rounded font-sm mt-15"
+                        >Block</a
+                      >
+                    </td>
+                    <%}else{%>
+                    <td>
                       <a
                         href="/admin/usersBlocked?id=<%= value[i]._id %>"
                         class="btn btn-sm btn-brand rounded font-sm mt-15"
-                        >Edit</a>
-                      <a
-                        href="/admin/usersUnblock?id=<%= value[i]._id %>"
-                        class="btn btn-sm btn-brand rounded font-sm mt-15"
-                        >Delete</a>
+                        >Unblock</a
+                      >
                     </td>
+                    <% }%>
                   </tr>
                   <% } } else { %>
                   <tr>

@@ -11,7 +11,13 @@ const express = require("express");
 const app = express();
 app.use(logger("dev"));
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.set("view engine", "ejs");
+app.set('views','views/users')
+
+
 
 app.use(express.static(__dirname + "/public/userAssets"));
 app.use(express.static(__dirname + "/public/adminAssets"));

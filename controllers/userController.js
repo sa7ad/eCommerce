@@ -6,7 +6,9 @@ const nodemailer = require("nodemailer");
 
 const loadLogin = async (req, res) => {
   try {
-    res.render("userLogin");
+    let { message } = req.session;
+    req.session.message = "";
+    res.render("userLogin",{message});
   } catch (error) {
     console.log(error.message);
   }
@@ -17,15 +19,21 @@ const loginSuccess = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const usersData = await User.findOne({ email: email });
-    if (usersData) {
-      const passwordMatch = await bcrypt.compare(password, usersData.password);
-      if (passwordMatch) {
-        req.session.userId = usersData._id.toString();
-        res.redirect("/");
+    if(usersData.blocked === false){
+      if (usersData) {
+        const passwordMatch = await bcrypt.compare(password, usersData.password);
+        if (passwordMatch) {
+          req.session.userId = usersData._id.toString();
+          res.redirect("/");
+        } else {
+          req.session.message = "Incorrect Password";
+          res.redirect("/login");
+        }
       } else {
         res.redirect("/login");
       }
-    } else {
+    }else{
+      req.session.message = "Admin has blocked";
       res.redirect("/login");
     }
   } catch (error) {
@@ -65,7 +73,7 @@ const insertUser = async (req, res) => {
           password: hashPassword,
           confirm_password: hashConfirmPassword,
           verified: false,
-          blocked:false,
+          blocked: false,
         });
         const userData = await user.save();
         if (userData) {
@@ -149,7 +157,7 @@ const emailVerification = async (req, res) => {
             req.session.userId =
               UserOTPVerificationRecords[0].userId.toString();
             await User.updateOne(
-              { _id: UserOTPVerificationRecords.userId },
+              { _id: UserOTPVerificationRecords[0].userId },
               { $set: { verified: true } }
             );
             await userOTPVerification.deleteMany({ _id: userId });
