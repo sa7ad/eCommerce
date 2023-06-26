@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Nest Dashboard</title>
+        <title>Aroma</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,7 +11,7 @@
         <meta property="og:url" content="" />
         <meta property="og:image" content="" />
         <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg" />
+        <link rel="icon" href="/img/Fevicon.png" type="image/png" />
         <!-- Template CSS -->
         <link href="/assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
     </head>
@@ -19,10 +19,10 @@
     <body>
         <div class="screen-overlay"></div>
         <aside class="navbar-aside" id="offcanvas_aside">
-            <div class="aside-top">
-                <a href="index.html" class="brand-wrap">
-                    <img src="/assets/imgs/theme/logo.svg" class="logo" alt="Nest Dashboard" />
-                </a>
+            <div class="aside-top ms-3">
+                <a class="navbar-brand logo_h" href="/admin/dashboard"
+          ><img src="/img/logo.png" alt=""
+        /></a>
                 <div>
                     <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i></button>
                 </div>
@@ -30,7 +30,7 @@
             <nav>
                 <ul class="menu-aside">
                     <li class="menu-item">
-                        <a class="menu-link" href="index.html">
+                        <a class="menu-link" href="/admin/dashboard">
                             <i class="icon material-icons md-home"></i>
                             <span class="text">Dashboard</span>
                         </a>
@@ -42,9 +42,7 @@
                         </a>
                         <div class="submenu">
                             <a href="/admin/productList">Product List</a>
-                            <a href="page-products-grid.html">Product grid</a>
-                            <a href="page-products-grid-2.html">Product grid 2</a>
-                            <a href="page-categories.html" class="active">Categories</a>
+                            <a href="/admin/categories" class="active">Categories</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
@@ -59,14 +57,12 @@
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
-                        <a class="menu-link" href="page-sellers-cards.html">
-                            <i class="icon material-icons md-store"></i>
-                            <span class="text">Sellers</span>
+                        <a class="menu-link" href="/admin/usersList">
+                            <i class="icon material-icons md-person"></i>
+                            <span class="text">Users</span>
                         </a>
                         <div class="submenu">
-                            <a href="page-sellers-cards.html">Sellers cards</a>
-                            <a href="page-sellers-list.html">Sellers list</a>
-                            <a href="page-seller-detail.html">Seller profile</a>
+                            <a href="/admin/usersList">Users List</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
@@ -75,10 +71,7 @@
                             <span class="text">Add product</span>
                         </a>
                         <div class="submenu">
-                            <a href="/admin/productAddPage">Add product 1</a>
-                            <a href="page-form-product-2.html">Add product 2</a>
-                            <a href="page-form-product-3.html">Add product 3</a>
-                            <a href="page-form-product-4.html">Add product 4</a>
+                            <a href="/admin/productAddPage">Add product</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">

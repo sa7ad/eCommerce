@@ -50,7 +50,7 @@ const loadLogout = async (req, res) => {
 const usersList = async (req, res) => {
   try {
     const usersList = await User.find({ verified: true });
-    res.render("usersList", { value: usersList });
+    res.render("usersList", { users: usersList });
   } catch (error) {
     console.log(error.message);
   }
@@ -58,7 +58,7 @@ const usersList = async (req, res) => {
 
 const usersBlocked = async (req, res) => {
   try {
-    const {id} = req.query;
+    const { id } = req.query;
     const usersBlocked = await User.findById({ _id: id });
     if (usersBlocked.blocked === false) {
       await User.findByIdAndUpdate({ _id: id }, { $set: { blocked: true } });
@@ -73,10 +73,10 @@ const usersBlocked = async (req, res) => {
 };
 const categories = async (req, res) => {
   try {
-    let {message} = req.session
-    req.session.message=''
-    const categoryDetails = await Category.find({})
-    res.render("categories",{message,category:categoryDetails});
+    let { message } = req.session;
+    req.session.message = "";
+    const categoryDetails = await Category.find({});
+    res.render("categories", { message, category: categoryDetails });
   } catch (error) {
     console.log(error.message);
   }
@@ -84,54 +84,56 @@ const categories = async (req, res) => {
 const addCategory = async (req, res) => {
   try {
     const { category_name, category_description } = req.body;
-    const existingCategory = await Category.findOne({name:category_name})
-    if(!existingCategory ){
+    const existingCategory = await Category.findOne({ name: category_name });
+    if (!existingCategory) {
       const category = new Category({
         name: category_name,
         description: category_description,
       });
       await category.save();
-      res.redirect('/admin/categories')
-    }else{
-      req.session.message='This category is already defined'
-      res.redirect('/admin/categories')
+      res.redirect("/admin/categories");
+    } else {
+      req.session.message = "This category is already defined";
+      res.redirect("/admin/categories");
     }
-    
   } catch (error) {
     console.log(error.message);
   }
 };
-const editCategory = async (req,res)=>{
-  try{
-    const id = req.query.id
-    res.render('editCategory',{id:id})
-  }catch{
+const editCategory = async (req, res) => {
+  try {
+    const id = req.query.id;
+    res.render("editCategory", { id: id });
+  } catch {
     console.log(error.message);
   }
-}
-const updatedCategory = async(req,res) =>{
+};
+const updatedCategory = async (req, res) => {
   try {
-    const {id,category_name,category_description} =req.body
-    const updatedCategory = await Category.findByIdAndUpdate({_id:id},{$set:{name:category_name,description:category_description}})
-    await updatedCategory.save()
-    res.redirect('/admin/categories')
+    const { id, category_name, category_description } = req.body;
+    const updatedCategory = await Category.findByIdAndUpdate(
+      { _id: id },
+      { $set: { name: category_name, description: category_description } }
+    );
+    await updatedCategory.save();
+    res.redirect("/admin/categories");
   } catch (error) {
     console.log(error.message);
   }
-}
-const deleteCategory = async (req,res) =>{
+};
+const deleteCategory = async (req, res) => {
   try {
-    const {id} = req.query
-    await Category.deleteOne({_id:id})
-    res.redirect('/admin/categories')
+    const { id } = req.query;
+    await Category.deleteOne({ _id: id });
+    res.redirect("/admin/categories");
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 const productAddPage = async (req, res) => {
   try {
-    const category = await Category.find()
-    res.render("productAddPage",{categories : category});
+    const category = await Category.find();
+    res.render("productAddPage", { categories: category });
   } catch (error) {
     console.log(error.message);
   }
@@ -152,22 +154,56 @@ const productAdd = async (req, res) => {
       product_price,
       product_category,
     } = req.body;
-    console.log(product_category,product_description,product_name,'this is id');
+    const{filename} = req.files
     const product = new Product({
       name: product_name,
       description: product_description,
       price: product_price,
       category: product_category,
+      image:filename,
       stock: true,
     });
-    const savedProduct=await product.save();
-    console.log(savedProduct,'this is saved product');
-    res.redirect('/admin/productList')
+    await product.save();
+    res.redirect("/admin/productList");
   } catch (error) {
     console.log(error.message);
   }
 };
-
+const productDelete = async (req,res) =>{
+  try {
+    const {id} =req.query
+    await Product.deleteOne({_id:id})
+    res.redirect('/admin/productList')
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+const productEditPage = async(req,res) => {
+  try {
+    const {id} = req.query
+    const category = await Category.find()
+    res.render('productEditPage',{product_id:id,categories:category})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+const productUpdated = async (req,res) =>{
+  try {
+    const {product_id,product_name,product_price,product_category,product_img} =req.body
+    const {filename}=req.files
+    if(req.files ){
+      console.log('hii');
+      await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,price:product_price,category:product_category,image:product_img}})
+    res.redirect('/admin/productList')
+    }else{
+      console.log('bbbbbbbbbii');
+    await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,price:product_price,category:product_category}})
+    res.redirect('/admin/productList')
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 module.exports = {
   loadLogin,
   loadDashboard,
@@ -182,5 +218,8 @@ module.exports = {
   deleteCategory,
   productList,
   productAdd,
+  productDelete,
   productAddPage,
+  productEditPage,
+  productUpdated,
 };

@@ -11,11 +11,8 @@
     <meta property="og:url" content="" />
     <meta property="og:image" content="" />
     <!-- Favicon -->
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="/assets/imgs/theme/favicon.svg"
-    />
+    <link rel="icon" href="/img/Fevicon.png" type="image/png" />
+
     <!-- Template CSS -->
     <link href="/assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
   </head>
@@ -23,14 +20,10 @@
   <body>
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
-      <div class="aside-top">
-        <a href="index.html" class="brand-wrap">
-          <img
-            src="/assets/imgs/theme/logo.svg"
-            class="logo"
-            alt="Nest Dashboard"
-          />
-        </a>
+      <div class="aside-top ms-3">
+        <a class="navbar-brand logo_h" href="/admin/dashboard"
+  ><img src="/img/logo.png" alt=""
+/></a>
         <div>
           <button class="btn btn-icon btn-aside-minimize">
             <i class="text-muted material-icons md-menu_open"></i>
@@ -40,21 +33,19 @@
       <nav>
         <ul class="menu-aside">
           <li class="menu-item">
-            <a class="menu-link" href="index.html">
+            <a class="menu-link" href="/admin/dashboard">
               <i class="icon material-icons md-home"></i>
               <span class="text">Dashboard</span>
             </a>
           </li>
           <li class="menu-item has-submenu">
-            <a class="menu-link" href="page-products-list.html">
+            <a class="menu-link" href="/admin/productList">
               <i class="icon material-icons md-shopping_bag"></i>
               <span class="text">Products</span>
             </a>
             <div class="submenu">
-              <a href="page-products-list.html">Product List</a>
-              <a href="page-products-grid.html">Product grid</a>
-              <a href="page-products-grid-2.html">Product grid 2</a>
-              <a href="page-categories.html">Categories</a>
+              <a href="/admin/productList">Product List</a>
+              <a href="/admin/categories">Categories</a>
             </div>
           </li>
           <li class="menu-item has-submenu">
@@ -69,26 +60,22 @@
             </div>
           </li>
           <li class="menu-item has-submenu Verified">
-            <a class="menu-link" href="page-sellers-cards.html">
-              <i class="icon material-icons md-store"></i>
-              <span class="text">Sellers</span>
+            <a class="menu-link" href="/admin/usersList">
+              <i class="icon material-icons md-person"></i>
+              <span class="text">Users</span>
             </a>
             <div class="submenu">
-              <a href="page-sellers-cards.html">Sellers cards</a>
-              <a href="page-sellers-list.html" class="Verified">Sellers list</a>
-              <a href="page-seller-detail.html">Seller profile</a>
+              <a href="/admin/usersList" class="Verified">Users List</a>
+              <a href="page-seller-detail.html">Users profile</a>
             </div>
           </li>
           <li class="menu-item has-submenu">
-            <a class="menu-link" href="page-form-product-1.html">
+            <a class="menu-link" href="/admin/productAddPage">
               <i class="icon material-icons md-add_box"></i>
               <span class="text">Add product</span>
             </a>
             <div class="submenu">
-              <a href="page-form-product-1.html">Add product 1</a>
-              <a href="page-form-product-2.html">Add product 2</a>
-              <a href="page-form-product-3.html">Add product 3</a>
-              <a href="page-form-product-4.html">Add product 4</a>
+              <a href="/admin/productAddPage">Add product</a>
             </div>
           </li>
           <li class="menu-item has-submenu">
@@ -170,10 +157,10 @@
               </button>
             </div>
             <datalist id="search_terms">
-              <option value="Products"></option>
-              <option value="New orders"></option>
-              <option value="Apple iphone"></option>
-              <option value="Ahmed Hassan"></option>
+              <option users="Products"></option>
+              <option users="New orders"></option>
+              <option users="Apple iphone"></option>
+              <option users="Ahmed Hassan"></option>
             </datalist>
           </form>
         </div>
@@ -328,8 +315,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% if (value && value.length > 0) { for (let i = 0; i <
-                  value.length; i++) { %>
+                  <% if (users && users.length > 0) { for (let i = 0; i <
+                  users.length; i++) { %>
                   <tr>
                     <td width="25%">
                       <a href="#" class="itemside">
@@ -342,22 +329,22 @@
                         </div>
                         <div class="info pl-3">
                           <h6 class="mb-0 title">
-                            <%= value[i].first_name %> <%= value[i].last_name %>
+                            <%= users[i].first_name %> <%= users[i].last_name %>
                           </h6>
                         </div>
                       </a>
                     </td>
-                    <td><%= value[i].email %></td>
+                    <td><%= users[i].email %></td>
                     <td>
                       <span class="badge rounded-pill alert-success"
-                        ><%= value[i].verified %></span
+                        ><%= users[i].verified %></span
                       >
                     </td>
-                    <td><%= value[i].phone_number %></td>
-                    <%if(value[i].blocked===false){%>
+                    <td><%= users[i].phone_number %></td>
+                    <%if(users[i].blocked===false){%>
                     <td>
                       <a
-                        href="/admin/usersBlocked?id=<%= value[i]._id %>"
+                        href="/admin/usersBlocked?id=<%= users[i]._id %>"
                         class="btn btn-sm btn-danger rounded font-sm mt-15"
                         >Block</a
                       >
@@ -365,7 +352,7 @@
                     <%}else{%>
                     <td>
                       <a
-                        href="/admin/usersBlocked?id=<%= value[i]._id %>"
+                        href="/admin/usersBlocked?id=<%= users[i]._id %>"
                         class="btn btn-sm btn-brand rounded font-sm mt-15"
                         >Unblock</a
                       >
@@ -379,11 +366,8 @@
                   <% } %>
                 </tbody>
               </table>
-
-              <!-- table-responsive.// -->
             </div>
           </div>
-          <!-- card-body end// -->
         </div>
         <!-- card end// -->
         <div class="pagination-area mt-15 mb-50">

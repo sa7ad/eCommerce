@@ -21,7 +21,6 @@
   "homepage": "https://github.com/sa7ad/eCommerce#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
@@ -31,7 +30,6 @@
     "multer": "^1.4.5-lts.1",
     "nocache": "^4.0.0",
     "nodemailer": "^6.9.3",
-    "uninstall": "^0.0.0",
     "uuid": "^9.0.0"
   }
 }

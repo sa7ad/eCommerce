@@ -1,5 +1,6 @@
 const adminController = require("../controllers/adminController");
 const {isAdminLogin} = require("../middleware/adminSession");
+const upload = require('../middleware/upload-middleware')
 
 const express = require("express");
 const adminRoute = express();
@@ -18,7 +19,10 @@ adminRoute.get('/editCategory',adminController.editCategory)
 adminRoute.post('/editCategory',adminController.updatedCategory)
 adminRoute.get('/deleteCategory',adminController.deleteCategory)
 adminRoute.get('/productList',adminController.productList)
+adminRoute.get('/productEditPage',adminController.productEditPage)
+adminRoute.post('/productEditPage',upload.array('product_img',2),adminController.productUpdated)
 adminRoute.get('/productAddPage',adminController.productAddPage)
-adminRoute.post('/productAddPage',adminController.productAdd)
+adminRoute.get('/productDelete',adminController.productDelete)
+adminRoute.post('/productAddPage',upload.array('product_img',2),adminController.productAdd)
 
 module.exports = adminRoute;

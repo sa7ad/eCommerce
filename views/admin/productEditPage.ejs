@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Nest Dashboard</title>
+        <title>Aroma</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,40 +11,38 @@
         <meta property="og:url" content="" />
         <meta property="og:image" content="" />
         <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg" />
+        <link rel="icon" href="/img/Fevicon.png" type="image/png" />
         <!-- Template CSS -->
-        <link href="assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+        <link href="/assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
     </head>
 
     <body>
         <div class="screen-overlay"></div>
         <aside class="navbar-aside" id="offcanvas_aside">
-            <div class="aside-top">
-                <a href="index.html" class="brand-wrap">
-                    <img src="assets/imgs/theme/logo.svg" class="logo" alt="Nest Dashboard" />
-                </a>
+            <div class="aside-top ms-3">
+                <a class="navbar-brand logo_h" href="/admin/dashboard"
+          ><img src="/img/logo.png" alt=""
+        /></a>
                 <div>
                     <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i></button>
                 </div>
             </div>
             <nav>
                 <ul class="menu-aside">
-                    <li class="menu-item active">
-                        <a class="menu-link" href="index.html">
+                    <li class="menu-item">
+                        <a class="menu-link" href="/admin/dashboard">
                             <i class="icon material-icons md-home"></i>
                             <span class="text">Dashboard</span>
                         </a>
                     </li>
                     <li class="menu-item has-submenu">
-                        <a class="menu-link" href="page-products-list.html">
+                        <a class="menu-link" href="/admin/productList">
                             <i class="icon material-icons md-shopping_bag"></i>
                             <span class="text">Products</span>
                         </a>
                         <div class="submenu">
-                            <a href="page-products-list.html">Product List</a>
-                            <a href="page-products-grid.html">Product grid</a>
-                            <a href="page-products-grid-2.html">Product grid 2</a>
-                            <a href="page-categories.html">Categories</a>
+                            <a href="/admin/productList">Product List</a>
+                            <a href="/admin/categories">Categories</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
@@ -55,30 +53,26 @@
                         <div class="submenu">
                             <a href="page-orders-1.html">Order list 1</a>
                             <a href="page-orders-2.html">Order list 2</a>
-                            <a href="page-orders-detail.html">Order detail</a>
+                            <a href="page-orders-detail.html">Order details</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
-                        <a class="menu-link" href="page-sellers-cards.html">
-                            <i class="icon material-icons md-store"></i>
-                            <span class="text">Sellers</span>
+                        <a class="menu-link" href="/admin/usersList">
+                            <i class="icon material-icons md-person"></i>
+                            <span class="text">Users</span>
                         </a>
                         <div class="submenu">
-                            <a href="page-sellers-cards.html">Sellers cards</a>
-                            <a href="page-sellers-list.html">Sellers list</a>
-                            <a href="page-seller-detail.html">Seller profile</a>
+                            <a href="page-sellers-list.html">Users List</a>
+                            <a href="page-seller-detail.html">Users Profile</a>
                         </div>
                     </li>
-                    <li class="menu-item has-submenu">
-                        <a class="menu-link" href="page-form-product-1.html">
+                    <li class="menu-item has-submenu active">
+                        <a class="menu-link" href="/admin/productAddPage">
                             <i class="icon material-icons md-add_box"></i>
-                            <span class="text">Add product</span>
+                            <span class="text">Add Product</span>
                         </a>
                         <div class="submenu">
-                            <a href="page-form-product-1.html">Add product 1</a>
-                            <a href="page-form-product-2.html">Add product 2</a>
-                            <a href="page-form-product-3.html">Add product 3</a>
-                            <a href="page-form-product-4.html">Add product 4</a>
+                            <a href="/admin/productAddPage" class="active">Add Product</a>
                         </div>
                     </li>
                     <li class="menu-item has-submenu">
@@ -144,13 +138,13 @@
         <main class="main-wrap">
             <header class="main-header navbar">
                 <div class="col-search">
-                    <form class="searchform">
+                    <form class="searchform" action="/admin/productEditPage" method="post">
                         <div class="input-group">
                             <input list="search_terms" type="text" class="form-control" placeholder="Search term" />
                             <button class="btn btn-light bg" type="button"><i class="material-icons md-search"></i></button>
                         </div>
                         <datalist id="search_terms">
-                            <option value="Products"></option>
+                            <option value="categories"></option>
                             <option value="New orders"></option>
                             <option value="Apple iphone"></option>
                             <option value="Ahmed Hassan"></option>
@@ -175,14 +169,14 @@
                         <li class="dropdown nav-item">
                             <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
-                                <a class="dropdown-item text-brand" href="#"><img src="assets/imgs/theme/flag-us.png" alt="English" />English</a>
-                                <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-fr.png" alt="Français" />Français</a>
-                                <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-jp.png" alt="Français" />日本語</a>
-                                <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-cn.png" alt="Français" />中国人</a>
+                                <a class="dropdown-item text-brand" href="#"><img src="/assets/imgs/theme/flag-us.png" alt="English" />English</a>
+                                <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-fr.png" alt="Français" />Français</a>
+                                <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-jp.png" alt="Français" />日本語</a>
+                                <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-cn.png" alt="Français" />中国人</a>
                             </div>
                         </li>
                         <li class="dropdown nav-item">
-                            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar-2.png" alt="User" /></a>
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="/assets/imgs/people/avatar-2.png" alt="User" /></a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                                 <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
                                 <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
@@ -197,36 +191,87 @@
                 </div>
             </header>
             <section class="content-main">
-                <div class="content-header">
-                    <h2 class="content-title">Blank page</h2>
-                    <div>
-                        <a href="#" class="btn btn-primary">Create new</a>
-                    </div>
-                </div>
-                <div class="card mb-4">
-                    <header class="card-header">
-                        <h4>Card header</h4>
-                    </header>
-                    <div class="card-body">
-                        <h5 class="card-title">Card content</h5>
-                        <div class="mt-4">
-                            <div class="text-muted font-size-14">
-                                <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam enim ad minima veniam quis</p>
-                                <p class="mb-4">Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt</p>
-                                <p>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Sed ut perspiciatis unde omnis iste natus error sit</p>
-                            </div>
+                <div class="row">
+                    <div class="col-9">
+                        <div class="content-header">
+                            <h2 class="content-title">Edit Product</h2>
                         </div>
                     </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Basic</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="/admin/productEditPage" enctype="multipart/form-data" method="post">
+                                    <div class="mb-4">
+                                        <input type="hidden" placeholder="product_id" class="form-control" name="product_id" value="<%=product_id%>"/>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Product Name</label>
+                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Product Description</label>
+                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Product Price</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="Price" type="text" class="form-control" name="product_price"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="row gx-2">
+                                                <div class="col-sm-6 mb-3">
+                                                    <label class="form-label">Product Category</label>
+                                                    <select class="form-select" name="product_category">
+                                                    <% for( let category of categories) { %>
+                                                       
+                                                            <option value="<%=category._id %>"> <%= category.name %></option>
+                                                        
+                                                       <% } %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div> 
+                                    <div class="col-lg-12">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Product Image</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-upload">
+                                                    <input name="product_img" class="form-control" type="file" multiple/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-md rounded font-sm hover-up">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                    </div>
                 </div>
-                <!-- card end// -->
             </section>
+            <!-- content-main end// -->
             <footer class="main-footer font-xs">
                 <div class="row pb-30 pt-15">
                     <div class="col-sm-6">
                         <script>
                             document.write(new Date().getFullYear());
                         </script>
-                        &copy; Nest - HTML Ecommerce Template .
+                        &copy; Aroma
                     </div>
                     <div class="col-sm-6">
                         <div class="text-sm-end">All rights reserved</div>
@@ -234,12 +279,12 @@
                 </div>
             </footer>
         </main>
-        <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-        <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-        <script src="assets/js/vendors/select2.min.js"></script>
-        <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-        <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+        <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+        <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/vendors/select2.min.js"></script>
+        <script src="/assets/js/vendors/perfect-scrollbar.js"></script>
+        <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
-        <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="/assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>
 </html>
