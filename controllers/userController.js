@@ -1,4 +1,6 @@
 const User = require("../models/userModel");
+const Product = require("../models/productModel");
+const Category = require("../models/categoryModel");
 const userOTPVerification = require("../models/userOTPVerification");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
@@ -8,7 +10,7 @@ const loadLogin = async (req, res) => {
   try {
     let { message } = req.session;
     req.session.message = "";
-    res.render("userLogin",{message});
+    res.render("userLogin", { message });
   } catch (error) {
     console.log(error.message);
   }
@@ -19,21 +21,27 @@ const loginSuccess = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const usersData = await User.findOne({ email: email });
-    if(usersData.blocked === false){
-      if (usersData) {
-        const passwordMatch = await bcrypt.compare(password, usersData.password);
-        if (passwordMatch) {
-          req.session.userId = usersData._id.toString();
-          res.redirect("/");
+    if (usersData) {
+      const passwordMatch = await bcrypt.compare(password, usersData.password);
+      if (usersData.verified) {
+        if (usersData.blocked === false) {
+          if (passwordMatch) {
+            req.session.userId = usersData._id.toString();
+            res.redirect("/");
+          } else {
+            req.session.message = "Incorrect Password";
+            res.redirect("/login");
+          }
         } else {
-          req.session.message = "Incorrect Password";
+          req.session.message = "Admin has blocked";
           res.redirect("/login");
         }
       } else {
-        res.redirect("/login");
+        req.session.message = "User has not been registered";
+        res.redirect("/register");
       }
-    }else{
-      req.session.message = "Admin has blocked";
+    } else {
+      req.session.message = "Invalid Email or Password";
       res.redirect("/login");
     }
   } catch (error) {
@@ -80,9 +88,11 @@ const insertUser = async (req, res) => {
           let otpVerification = await sendOTPVerificationMail(userData);
           res.render("userEmail", { otp: otpVerification });
         } else {
+          req.session.message = "Invalid Verification";
           res.render("userRegister");
         }
       } else {
+        req.session.message = "Passwords does not match";
         res.render("userRegister");
       }
     }
@@ -104,6 +114,7 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       },
     });
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    console.log(otp,'this is otp');
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
@@ -144,6 +155,7 @@ const emailVerification = async (req, res) => {
         if (expiresAt < Date.now()) {
           await User.deleteMany({ _id: UserOTPVerificationRecords[0].userId });
           await userOTPVerification.deleteMany({ _id: userId });
+          req.session.message = "OTP has been expired,Please register again";
           res.redirect("/register");
         } else {
           const validOTP = await bcrypt.compare(otp, hashedOTP);
@@ -152,6 +164,7 @@ const emailVerification = async (req, res) => {
               _id: UserOTPVerificationRecords[0].userId,
             });
             await userOTPVerification.deleteMany({ _id: userId });
+            req.session.message = "Invalid OTP,Please register again";
             res.redirect("/register");
           } else {
             req.session.userId =
@@ -174,7 +187,18 @@ const emailVerification = async (req, res) => {
 const loadHome = async (req, res) => {
   try {
     res.locals.session = req.session.userId;
-    res.render("userHome");
+    const products = await Product.find().populate("category");
+    res.render("userHome", { products });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const singleProduct = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const products = await Product.find({ _id: id }).populate("category");
+    res.render("singleProduct", { products });
   } catch (error) {
     console.log(error.message);
   }
@@ -196,5 +220,6 @@ module.exports = {
   loginSuccess,
   emailVerification,
   loadHome,
+  singleProduct,
   loadLogout,
 };

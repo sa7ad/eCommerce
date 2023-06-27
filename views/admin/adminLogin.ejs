@@ -19,6 +19,9 @@
       <div class="col-lg-4">
         <div class="login_form_inner">
           <h3>Welcome Admin</h3>
+          <% if(typeof message!=='undefined'){ %>
+            <h6 class="text-danger"><%=message %></h6>
+            <% } %>
           <form
             class="row login_form"
             action="/admin"
@@ -56,7 +59,7 @@
               >
                 Log In
               </button>
-              <a href="#">Forgot Password?</a>
+              <!-- <a href="#">Forgot Password?</a> -->
             </div>
           </form>
         </div>

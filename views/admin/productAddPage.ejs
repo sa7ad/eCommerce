@@ -184,7 +184,7 @@
                                 <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
                                 <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                                <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -206,18 +206,30 @@
                                 <form action="/admin/productAddPage" enctype="multipart/form-data" method="post">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
-                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" />
+                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" required/>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
-                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description"></textarea>
+                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description" required></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Price" type="text" class="form-control" name="product_price"/>
+                                                    <input placeholder="Price" type="text" class="form-control" name="product_price" required/>
+                                        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Quantity</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="Quantity" type="number" class="form-control" name="product_quantity" required/>
+                                        
                                                 </div>
                                             </div>
                                         </div>
@@ -227,7 +239,7 @@
                                             <div class="row gx-2">
                                                 <div class="col-sm-6 mb-3">
                                                     <label class="form-label">Category</label>
-                                                    <select class="form-select" name="product_category">
+                                                    <select class="form-select" name="product_category" required>
                                                     <% for( let category of categories) { %>
                                                        
                                                             <option value="<%=category._id %>"> <%= category.name %></option>

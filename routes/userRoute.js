@@ -1,23 +1,31 @@
-const User = require("../models/userModel");
-const {isLogout,isLogin} = require("../middleware/userSession");
-const userController = require("../controllers/userController");
+const { isLogout, isLogin } = require("../middleware/userSession");
+const {
+  loadHome,
+  singleProduct,
+  loadLogin,
+  loginSuccess,
+  loadRegister,
+  insertUser,
+  emailVerification,
+  loadLogout,
+} = require("../controllers/userController");
 
 const express = require("express");
 const userRoute = express();
 
-userRoute.set('views','views/users')
+userRoute.set("views", "views/users");
 
+userRoute.get("/", loadHome);
+userRoute.get("/singleProduct", isLogin, singleProduct);
 
-userRoute.get("/", userController.loadHome);
+userRoute.get("/login", isLogout, loadLogin);
+userRoute.post("/login", isLogout, loginSuccess);
 
-userRoute.get("/login", isLogout, userController.loadLogin);
-userRoute.post("/login", isLogout, userController.loginSuccess);
+userRoute.get("/register", loadRegister);
+userRoute.post("/register", insertUser);
 
-userRoute.get("/register", userController.loadRegister);
-userRoute.post("/register", userController.insertUser);
+userRoute.post("/emailVerification", emailVerification);
 
-userRoute.post("/emailVerification", userController.emailVerification);
-
-userRoute.get("/logout", isLogin, userController.loadLogout);
+userRoute.get("/logout", isLogin, loadLogout);
 
 module.exports = userRoute;

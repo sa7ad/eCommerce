@@ -9,11 +9,13 @@ const credentials = {
 };
 const loadLogin = async (req, res) => {
   try {
+    let{message} =req.session
     if (req.session.adminSession) {
       res.locals.session = req.session.adminSession;
       res.redirect("/admin/dashboard");
     } else {
-      res.render("adminLogin");
+      req.session.message=""
+      res.render("adminLogin",{message});
     }
   } catch (error) {
     console.log(error.message);
@@ -26,6 +28,7 @@ const loadDashboard = async (req, res) => {
       req.session.adminSession = credentials.email;
       res.redirect("/admin/dashboard");
     } else {
+      req.session.message="Invalid Admin Details"
       res.redirect("/admin");
     }
   } catch (error) {
@@ -59,6 +62,7 @@ const usersList = async (req, res) => {
 const usersBlocked = async (req, res) => {
   try {
     const { id } = req.query;
+    console.log(id,'this  is query');
     const usersBlocked = await User.findById({ _id: id });
     if (usersBlocked.blocked === false) {
       await User.findByIdAndUpdate({ _id: id }, { $set: { blocked: true } });
@@ -140,8 +144,8 @@ const productAddPage = async (req, res) => {
 };
 const productList = async (req, res) => {
   try {
-    const product = await Product.find({});
-    res.render("productList", { product: product });
+    const product = await Product.find();
+    res.render("productList", {product});
   } catch (error) {
     console.log(error.message);
   }
@@ -152,13 +156,15 @@ const productAdd = async (req, res) => {
       product_name,
       product_description,
       product_price,
+      product_quantity,
       product_category,
     } = req.body;
-    const{filename} = req.files
+    const {filename} = req.file
     const product = new Product({
       name: product_name,
       description: product_description,
       price: product_price,
+      quantity:product_quantity,
       category: product_category,
       image:filename,
       stock: true,
@@ -189,15 +195,13 @@ const productEditPage = async(req,res) => {
 }
 const productUpdated = async (req,res) =>{
   try {
-    const {product_id,product_name,product_price,product_category,product_img} =req.body
-    const {filename}=req.files
-    if(req.files ){
-      console.log('hii');
-      await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,price:product_price,category:product_category,image:product_img}})
+    const {product_id,product_name,product_quantity,product_price,product_category,product_description} =req.body
+    const {filename}=req.file
+    if(filename ){
+      await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,price:product_price,quantity:product_quantity,category:product_category,description:product_description,image:filename}})
     res.redirect('/admin/productList')
     }else{
-      console.log('bbbbbbbbbii');
-    await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,price:product_price,category:product_category}})
+    await Product.findByIdAndUpdate({_id:product_id},{$set:{name:product_name,quantity:product_quantity,price:product_price,description:product_description,category:product_category}})
     res.redirect('/admin/productList')
     }
   } catch (error) {
