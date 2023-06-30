@@ -209,18 +209,18 @@
                                     </div>
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
-                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" />
+                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" value="<%=product.name  %>"/>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Product Description</label>
-                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description"></textarea>
+                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description"><%=product.description  %></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Product Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Price" type="text" class="form-control" name="product_price"/>
+                                                    <input placeholder="Price" type="text" class="form-control" name="product_price" value="<%=product.price  %>"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -230,7 +230,7 @@
                                             <div class="mb-4">
                                                 <label class="form-label">Product Quantity</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Quantity" type="text" class="form-control" name="product_quantity"/>
+                                                    <input placeholder="Quantity" type="text" class="form-control" name="product_quantity" value="<%=product.quantity  %>"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -259,7 +259,8 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="input-upload">
-                                                    <input name="product_img" class="form-control" type="file" multiple/>
+                                                    <img id="product_img" src="/images/<%=product.image%>" alt="">
+                                                    <input name="product_img" class="form-control" type="file" multiple onchange="viewImage(event)"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -289,6 +290,11 @@
                 </div>
             </footer>
         </main>
+        <script>
+            function viewImage(event){
+                document.getElementById('product_img').src=URL.createObjectURL(event.target.files[0])
+            }
+        </script>
         <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="/assets/js/vendors/select2.min.js"></script>

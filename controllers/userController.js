@@ -5,6 +5,7 @@ const userOTPVerification = require("../models/userOTPVerification");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const Cart = require("../models/cartModel");
 
 const loadLogin = async (req, res) => {
   try {
@@ -114,7 +115,6 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       },
     });
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    console.log(otp,'this is otp');
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
@@ -197,8 +197,9 @@ const loadHome = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const { id } = req.query;
+    const {userId} = req.session
     const products = await Product.find({ _id: id }).populate("category");
-    res.render("singleProduct", { products });
+    res.render("singleProduct", { products,userId });
   } catch (error) {
     console.log(error.message);
   }

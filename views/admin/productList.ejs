@@ -220,6 +220,7 @@
                             <th>Product</th>
                             <th>Price</th>
                             <th>Quantity</th>
+                            <th>Category</th>
                             <th>Description</th>
                             <th>Stock</th>
                             <th>Actions</th>
@@ -252,8 +253,13 @@
                             </td>
                             <td>
                               <span
+                                ><%= product[i].category.name %></span>
+                            </td>
+                            <td>
+                              <span
                                 ><%= product[i].description %></span>
                             </td>
+                            
                             <td>
                               <span class="badge rounded-pill alert-success"
                                 ><%= product[i].stock %></span></td>
