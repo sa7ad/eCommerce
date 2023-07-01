@@ -197,9 +197,9 @@ const loadHome = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const { id } = req.query;
-    const {userId} = req.session
-    const products = await Product.find({ _id: id }).populate("category");
-    res.render("singleProduct", { products,userId });
+    const { userId } = req.session;
+    const products = await Product.findById({ _id: id }).populate("category");
+    res.render("singleProduct", { products: products, userId });
   } catch (error) {
     console.log(error.message);
   }
