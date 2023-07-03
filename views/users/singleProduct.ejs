@@ -79,7 +79,7 @@
                       >
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="cart.html">Shopping Cart</a>
+                      <a class="nav-link" href="/cart">Shopping Cart</a>
                     </li>
                   </ul>
                 </li>
@@ -191,15 +191,8 @@
               </p>
               <div class="product_count">
                 <label for="qty">Quantity:</label>
-                <a class="button primary-btn" onclick="addToCart('<%=products._id%>')" >Add to Cart</a>
-                <button
-                  onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                  class="increase items-count"
-                  type="button"
-                >
-                  <i class="ti-angle-up"></i>
-                </button>
-                <input
+                
+                <input class="text-center" min="1"
                   type="number"
                   name="product_quantity"
                   id="sst"
@@ -209,9 +202,7 @@
                   title="Quantity:"
                   class="input-text qty"
                 />
-                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if (!isNaN(sst) && sst > 0) result.value--;return false;" class="reduced items-count" type="button">
-  <i class="ti-angle-down"></i>
-</button>
+                <a class="button primary-btn" href="/cart?id=<%= userId %>" onclick="addToCart('<%=products._id%>')" >Add to Cart</a>
 
 </form>
 

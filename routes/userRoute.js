@@ -1,5 +1,10 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
-const { loadCart,addToCart } = require("../controllers/cartController");
+const {
+  loadCart,
+  addToCart,
+  deleteFromCart,
+  cartCount,
+} = require("../controllers/cartController");
 const {
   loadHome,
   singleProduct,
@@ -27,8 +32,11 @@ userRoute.post("/register", insertUser);
 
 userRoute.post("/emailVerification", emailVerification);
 
-userRoute.get('/cart',isLogin,loadCart)
-userRoute.post('/cart',addToCart)
+userRoute.get("/cart", isLogin, loadCart);
+userRoute.post("/cart", addToCart);
+
+userRoute.put("/cart", deleteFromCart);
+userRoute.post("/cartCount", cartCount);
 
 userRoute.get("/logout", isLogin, loadLogout);
 

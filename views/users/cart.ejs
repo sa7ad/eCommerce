@@ -111,8 +111,7 @@
             </li>
             <li class="nav-item">
               <button>
-                <i class="ti-shopping-cart"></i
-                ><span class="nav-shop__circle">3</span>
+                <i class="ti-shopping-cart"></i>
               </button>
             </li>
             <li class="nav-item">
@@ -140,29 +139,63 @@
             </tr>
           </thead>
           <tbody>
-            <%for(let product of products.items){%>
-            <tr>
+            <% if ( products ) {%> <%for (let product of products.items){ %>
+            <tr id="<%=product.product_Id._id %>">
               <td>
                 <div class="media">
                   <div class="d-flex">
-                    <img src="/images/<%=product.product_Id.image%>" alt="" />
+                    <img src="/images/<%= product.product_Id.image %>" alt="" />
                   </div>
                   <div class="media-body">
-                    <p><%=product.product_Id.description%></p>
+                    <p><%= product.product_Id.description %></p>
                   </div>
                 </div>
               </td>
               <td>
-                <h5><%=product.product_Id.price%></h5>
+                <h5><%= product.product_Id.price %></h5>
+              </td>
+
+              <td>
+                <button
+                  id="decrement"
+                  onclick="count('<%= product.product_Id._id %>','<%= userId %>',-1)"
+                >
+                  -
+                </button>
+                <input
+                  class="text-center"
+                  style="width: 60px"
+                  id="inputCount<%=product.product_Id._id %>"
+                  type="text"
+                  min="1"
+                  value="<%= product.quantity %>"
+                  readonly
+                />
+                <button
+                  id="increment"
+                  onclick="count('<%= product.product_Id._id %>','<%= userId %>',1)"
+                >
+                  +
+                </button>
               </td>
               <td>
-                <h5><%=product.quantity%></h5>
+                <h5><%= product.product_Id.price * product.quantity %></h5>
               </td>
               <td>
-                <h5><%=product.product_Id.price*product.quantity%></h5>
+                <button
+                  class="btn-sm btn btn-danger"
+                  onclick="deleteFromCart('<%= product.product_Id._id %>')"
+                >
+                  Remove
+                </button>
               </td>
             </tr>
-            <%}%>
+            <% }%> <%} else { %>
+
+            <h5 class="text-center">Empty Cart List</h5>
+
+            <% } %>
+
             <tr class="bottom_button">
               <td>
                 <a class="button" href="#">Update Cart</a>
@@ -182,11 +215,6 @@
               <td></td>
               <td>
                 <h5>Subtotal</h5>
-              </td>
-              <td>
-                <% const totalPrice=products.items.reduce((acc,curr) => {
-                acc+=(curr.quantity * curr.product_Id.price) return acc },0)%>
-                <h5><%= totalPrice %></h5>
               </td>
             </tr>
             <tr class="shipping_area">
@@ -326,20 +354,50 @@
     <div class="container">
       <div class="row d-flex">
         <p class="col-lg-12 footer-text text-center">
-          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
           Copyright &copy;
           <script>
             document.write(new Date().getFullYear());
           </script>
-          All rights reserved | This template is made with
-          <i class="fa fa-heart" aria-hidden="true"></i> by
-          <a href="https://colorlib.com" target="_blank">Colorlib</a>
-          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          All rights reserved
         </p>
       </div>
     </div>
   </div>
 </footer>
-<!--================ End footer Area  =================-->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const deleteFromCart = async (product_Id) => {
+    let deletedItem = await axios.put("/cart", { product_Id });
+    if (deletedItem) {
+      document.getElementById(product_Id).style.display = "none";
+    }
+    return deletedItem;
+  };
+  const count = async (product_Id, userId, count) => {
+    let input = document.getElementById(`inputCount${product_Id}`).value;
+    if (input > 1 && count === -1) {
+      let updatedCount = await axios.post("/cartCount", {
+        product_Id,
+        userId,
+        count,
+      });
+      if (updatedCount.data.message)
+        document.getElementById(`inputCount${product_Id}`).value = --input;
+    } else if (input >= 1 && count === 1) {
+      let updatedCount = await axios.post("/cartCount", {
+        product_Id,
+        userId,
+        count,
+      });
+      if (updatedCount.data.message)
+        console.log(
+          updatedCount.data.item.items.total,
+          "this backend response"
+        );
+      document.getElementById(`inputCount${product_Id}`).value = ++input;
+    }
 
+    return;
+  };
+</script>
 <%- include('../layouts/footer.ejs') %>
