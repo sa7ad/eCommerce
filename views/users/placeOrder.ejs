@@ -1,0 +1,114 @@
+<%- include('../layouts/header.ejs') %>
+<section class="checkout_area section-margin--small">
+  <div class="container">
+    <div class="billing_details">
+      <div class="row">
+        <div class="col-lg-8">
+          <h3>Select Address</h3>
+          <a href="/addAddress"
+            ><button class="btn btn-primary btn-sm">Add Address</button></a
+          >
+          <br />
+          <h6>or</h6>
+          <form
+            class="row contact_form mt-3"
+            action="#"
+            method="post"
+            novalidate="novalidate"
+          >
+            <div class="col-md-12 form-group mb-0">
+              <div class="address-cards">
+                <% address.address.forEach((address) => { %>
+                <div class="address-card">
+                  <input type="radio" id="address1" name="address" />
+                  <label for="address1"
+                    ><%= address.name %> <%= address.housename %> <%=
+                    address.city %> <%= address.state %> <%= address.phone %>
+                    <%= address.pincode %></label
+                  >
+                </div>
+                <% }) %>
+              </div>
+              <textarea
+                class="form-control"
+                name="message"
+                id="message"
+                rows="1"
+                placeholder="Order Notes"
+              ></textarea>
+            </div>
+
+            <!-- End new address section -->
+          </form>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="order_box">
+            <h2>Your Order</h2>
+            <ul class="list">
+              <li>
+                <a href="#"
+                  ><h4>Product <span>Total</span></h4></a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  >Fresh Blackberry <span class="middle">x 02</span
+                  ><span class="last">$720.00</span></a
+                >
+              </li>
+              <!-- Add other product items here -->
+            </ul>
+            <ul class="list list_2">
+              <li>
+                <a href="#">Subtotal <span>$2160.00</span></a>
+              </li>
+              <li>
+                <a href="#">Total <span>$2210.00</span></a>
+              </li>
+            </ul>
+            <div class="payment_options">
+              <div class="payment_item">
+                <div class="radion_btn">
+                  <input type="radio" id="f-option5" name="selector" />
+                  <label for="f-option5">Check payments</label>
+                  <div class="check"></div>
+                </div>
+                <p>
+                  Please send a check to Store Name, Store Street, Store Town,
+                  Store State / County, Store Postcode.
+                </p>
+              </div>
+              <div class="payment_item">
+                <div class="radion_btn">
+                  <input type="radio" id="f-option6" name="selector" />
+                  <label for="f-option6">Paypal</label>
+                  <img src="img/product/card.jpg" alt="" />
+                  <div class="check"></div>
+                </div>
+                <p>
+                  Pay via PayPal; you can pay with your credit card if you don’t
+                  have a PayPal account.
+                </p>
+              </div>
+              <div class="payment_item">
+                <div class="radion_btn">
+                  <input type="radio" id="f-option7" name="selector" />
+                  <label for="f-option7">Cash on Delivery</label>
+                  <div class="check"></div>
+                </div>
+                <p>
+                  Pay with cash when the product is delivered to your doorstep.
+                </p>
+              </div>
+            </div>
+            <div class="text-center">
+              <a class="button button-paypal" href="/orderPlaced">Proceed to Payment</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>

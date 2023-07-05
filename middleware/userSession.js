@@ -1,6 +1,10 @@
+const User = require("../models/userModel");
+
 const isLogin = async (req, res, next) => {
   try {
-    if (req.session.userId) {
+    const { userId } = req.session;
+    const user = await User.findOne({ _id: userId });
+    if (req.session.userId && user.blocked === false) {
       res.locals.session = req.session.userId;
       next();
     } else {
@@ -12,7 +16,9 @@ const isLogin = async (req, res, next) => {
 };
 const isLogout = async (req, res, next) => {
   try {
-    if (req.session.userId) {
+    const { userId } = req.session;
+    const user = await User.findOne({ _id: userId });
+    if (req.session.userId && user.blocked === false) {
       res.locals.session = req.session.userId;
       res.redirect("/");
     } else {
@@ -22,6 +28,7 @@ const isLogout = async (req, res, next) => {
     console.log(error.message);
   }
 };
+
 module.exports = {
   isLogin,
   isLogout,

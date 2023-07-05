@@ -1,15 +1,5 @@
 <%- include('../layouts/header.ejs') %>
-<header class="header_area">
-  <div class="main_menu">
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <div class="container">
-        <a class="navbar-brand logo_h" href="index.html"
-          ><img src="img/logo.png" alt=""
-        /></a>
-      </div>
-    </nav>
-  </div>
-</header>
+
 <section class="login_box_area section-margin">
   <div class="container">
     <div class="row">
@@ -29,8 +19,8 @@
         <div class="login_form_inner register_form_inner">
           <h3>Create an account</h3>
           <% if(typeof message!=='undefined'){ %>
-            <h6 class="text-danger"><%=message %></h6>
-            <% } %>
+          <h6 class="text-danger"><%=message %></h6>
+          <% } %>
           <form
             class="row login_form"
             action="/register"
@@ -135,10 +125,11 @@
     } else if (last_name == null || last_name == "") {
       document.getElementById("errorContainer2").innerHTML =
         "Last Name must be filled out";
-		return false
+      return false;
     } else if (isNaN(phone_number)) {
-      document.getElementById("errorContainer3").innerHTML = "Phone number should be a number";
-	  return false
+      document.getElementById("errorContainer3").innerHTML =
+        "Phone number should be a number";
+      return false;
     } else if (password.length < 6) {
       document.getElementById("errorContainer4").innerHTML =
         "Password Must Contain 6 characters";

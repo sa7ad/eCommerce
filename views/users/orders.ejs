@@ -1,0 +1,49 @@
+<%- include('../layouts/header.ejs') %>
+
+<section style="background-color: #eee">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Orders</h5>
+            <hr />
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Address</th>
+                    <th>Payment Method</th>
+                    <th>Action</th>
+                    <th>Order Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (let order of orders) { %>
+                  <tr>
+                    <td><%= order._id %></td>
+                    <td><%= order.user.name%></td>
+                    <td><%= order.user.address %></td>
+                    <td><%= order.paymentMethod %></td>
+                    <td><%= order.orderStatus %></td>
+                    <td>
+                      <button
+                        class="btn btn-danger"
+                        onclick="cancelOrder('<%= order._id %>')"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>

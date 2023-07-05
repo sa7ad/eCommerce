@@ -3,12 +3,11 @@ const isAdminLogin = async (req, res, next) => {
     if (req.session.adminSession) {
       next();
     } else {
-      res.redirect("/admin")
+      res.redirect("/admin");
     }
   } catch (error) {
     console.log(error.message);
   }
 };
 
-module.exports =isAdminLogin
-
+module.exports = isAdminLogin;

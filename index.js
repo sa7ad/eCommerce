@@ -13,7 +13,6 @@ app.use(logger("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + "/public"));
@@ -34,6 +33,10 @@ const PORT = 3000;
 app.use("/", userRoute);
 //Admin Routes
 app.use("/admin", adminRoute);
+//Error Route
+app.use((req, res) => {
+  res.status(404).render("error404");
+});
 
 app.listen(PORT, () => {
   console.log("Server is running on PORT http://localhost:3000");

@@ -6,10 +6,10 @@ const categorySchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  description:{
-    type:String,
-    required:true
-  }
+  description: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Category", categorySchema);

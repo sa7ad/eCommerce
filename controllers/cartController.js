@@ -1,5 +1,7 @@
-const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const Order = require("../models/orderModel");
+const User = require("../models/userModel");
+const Cart = require("../models/cartModel");
 const mongoose = require("mongoose");
 
 const loadCart = async (req, res) => {
@@ -85,7 +87,7 @@ const cartCount = async (req, res) => {
     const { product_Id, userId, count } = req.body;
     const productPrice = await Product.findOne({ _id: product_Id });
     if (count === 1) {
-      const item = await Cart.findOneAndUpdate(
+      await Cart.findOneAndUpdate(
         {
           userId: userId,
           "items.product_Id": new mongoose.Types.ObjectId(product_Id),
@@ -100,7 +102,7 @@ const cartCount = async (req, res) => {
       );
       res.json({ message: "success" });
     } else {
-      const item = await Cart.findOneAndUpdate(
+      await Cart.findOneAndUpdate(
         {
           userId: userId,
           "items.product_Id": new mongoose.Types.ObjectId(product_Id),
@@ -119,9 +121,50 @@ const cartCount = async (req, res) => {
     console.log(error.message);
   }
 };
+const placeOrder = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const address = await User.findOne({ _id: userId });
+    res.render("placeOrder", { address: address });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const orderPlaced = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { productId, productQuantity, productPrice } = req.body;
+    const insertOrder = new Order({
+      user: new mongoose.Types.ObjectId(userId),
+      products: [
+        {
+          product: new mongoose.Types.ObjectId(productId),
+          quantity: productQuantity,
+          price: productPrice,
+        },
+      ],
+      orderStatus: "Active",
+      paymentMethod: "COD",
+    });
+    await insertOrder.save();
+    res.render("orderPlaced");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const error404 = async (req, res) => {
+  try {
+    res.render("error404");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
-  loadCart,
-  addToCart,
   deleteFromCart,
+  orderPlaced,
+  placeOrder,
+  addToCart,
   cartCount,
+  loadCart,
+  error404,
 };

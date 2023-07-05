@@ -1,12 +1,14 @@
-const Product = require("../models/productModel");
-const User = require("../models/userModel");
 const Category = require("../models/categoryModel");
+const Product = require("../models/productModel");
+const Order = require("../models/orderModel");
+const User = require("../models/userModel");
 require("dotenv").config();
 
 const credentials = {
   adminemail: process.env.ADMIN_EMAIL,
   adminpassword: process.env.ADMIN_PASSWORD,
 };
+
 const loadLogin = async (req, res) => {
   try {
     let { message } = req.session;
@@ -59,11 +61,9 @@ const usersList = async (req, res) => {
     console.log(error.message);
   }
 };
-
 const usersBlocked = async (req, res) => {
   try {
     const { id } = req.query;
-    console.log(id, "this  is query");
     const usersBlocked = await User.findById({ _id: id });
     if (usersBlocked.blocked === false) {
       await User.findByIdAndUpdate({ _id: id }, { $set: { blocked: true } });
@@ -88,8 +88,8 @@ const categories = async (req, res) => {
 };
 const addCategory = async (req, res) => {
   try {
-    const { category_name,category_description } = req.body;
-    const categ_name = category_name.toLowerCase()
+    const { category_name, category_description } = req.body;
+    const categ_name = category_name.toLowerCase();
     const existingCategory = await Category.findOne({ name: categ_name });
     if (!existingCategory) {
       const categ = new Category({
@@ -109,8 +109,8 @@ const addCategory = async (req, res) => {
 const editCategory = async (req, res) => {
   try {
     const id = req.query.id;
-    const category = await Category.findById({_id:id})
-    res.render("editCategory", { category,});
+    const category = await Category.findById({ _id: id });
+    res.render("editCategory", { category });
   } catch {
     console.log(error.message);
   }
@@ -162,14 +162,19 @@ const productAdd = async (req, res) => {
       product_quantity,
       product_category,
     } = req.body;
-    const { filename } = req.file;
+    const imageArr = [];
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        imageArr.push(req.files[i].filename);
+      }
+    }
     const product = new Product({
       name: product_name,
       description: product_description,
       price: product_price,
       quantity: product_quantity,
       category: product_category,
-      image: filename,
+      image: imageArr,
       stock: true,
     });
     await product.save();
@@ -190,9 +195,13 @@ const productDelete = async (req, res) => {
 const productEditPage = async (req, res) => {
   try {
     const { id } = req.query;
-    const product = await Product.findById({_id:id})
+    const product = await Product.findById({ _id: id });
     const category = await Category.find();
-    res.render("productEditPage", { product_id: id, categories: category ,product});
+    res.render("productEditPage", {
+      product_id: id,
+      categories: category,
+      product,
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -207,8 +216,13 @@ const productUpdated = async (req, res) => {
       product_category,
       product_description,
     } = req.body;
-    const { filename } = req.file;
-    if (filename) {
+    const imageArr = [];
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        imageArr.push(req.files[i].filename);
+      }
+    }
+    if (req.files) {
       await Product.findByIdAndUpdate(
         { _id: product_id },
         {
@@ -218,7 +232,7 @@ const productUpdated = async (req, res) => {
             quantity: product_quantity,
             category: product_category,
             description: product_description,
-            image: filename,
+            image: imageArr,
           },
         }
       );
@@ -242,22 +256,31 @@ const productUpdated = async (req, res) => {
     console.log(error.message);
   }
 };
+const orders = async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    res.render(ordersList);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
-  loadLogin,
-  loadDashboard,
-  dashboard,
-  loadLogout,
-  usersList,
-  usersBlocked,
-  categories,
-  addCategory,
-  editCategory,
-  updatedCategory,
-  deleteCategory,
-  productList,
-  productAdd,
-  productDelete,
-  productAddPage,
   productEditPage,
+  updatedCategory,
+  productAddPage,
   productUpdated,
+  deleteCategory,
+  loadDashboard,
+  productDelete,
+  editCategory,
+  usersBlocked,
+  productList,
+  addCategory,
+  loadLogout,
+  productAdd,
+  categories,
+  loadLogin,
+  dashboard,
+  usersList,
+  orders,
 };

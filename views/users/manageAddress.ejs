@@ -1,0 +1,91 @@
+<%- include('../layouts/header.ejs') %>
+
+<section style="background-color: #f8f8f8; padding: 50px 0">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title text-primary">Manage Address</h5>
+            <ul class="list-group list-group-flush">
+              <% if(userAddresses) { for(let userAddress of
+              userAddresses.address) { %>
+              <li id="deleteLi" class="list-group-item">
+                <div class="row align-items-center">
+                  <div class="col-sm-9">
+                    <p class="mb-1">
+                      <strong class="text-dark">Name:</strong> <%=
+                      userAddress.name %>
+                    </p>
+                    <p class="mb-1">
+                      <strong class="text-dark">House Name:</strong> <%=
+                      userAddress.housename %>
+                    </p>
+                    <p class="mb-1">
+                      <strong class="text-dark">City:</strong> <%=
+                      userAddress.city %>
+                    </p>
+                    <p class="mb-1">
+                      <strong class="text-dark">State:</strong> <%=
+                      userAddress.state %>
+                    </p>
+                    <p class="mb-1">
+                      <strong class="text-dark">Phone:</strong> <%=
+                      userAddress.phone %>
+                    </p>
+                    <p class="mb-1">
+                      <strong class="text-dark">PIN Code:</strong> <%=
+                      userAddress.pincode %>
+                    </p>
+                  </div>
+                  <div class="col-sm-3 text-right">
+                    <div class="btn-group">
+                      <a
+                        href="/editAddress?id=<%= userAddress.id %>"
+                        class="btn btn-sm btn-primary btn-icon"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <a
+                        href=""
+                        onclick="deleteAddress('<%= userAddress._id %>')"
+                        class="btn btn-sm btn-danger btn-icon"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <% } } else { %>
+              <li class="list-group-item text-muted">No addresses found.</li>
+              <% } %>
+            </ul>
+
+            <div class="text-center mt-4">
+              <a href="/addAddress" class="btn btn-primary btn-sm"
+                >Add Address</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const deleteAddress = async (addId) => {
+    try {
+      let addressId = await axios.put("/deleteAddress", { addId });
+      if (addressId) {
+        alert('Address has been removed')
+        document.getElementById("deleteLi").style.display = "none";
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+    return true;
+  };
+</script>
+<%- include('../layouts/footer.ejs') %>

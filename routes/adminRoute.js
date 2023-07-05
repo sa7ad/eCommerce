@@ -1,27 +1,27 @@
 const isAdminLogin = require("../middleware/adminSession");
 const {
-  loadLogin,
-  loadDashboard,
-  loadLogout,
-  usersList,
-  usersBlocked,
-  categories,
-  addCategory,
-  editCategory,
-  updatedCategory,
-  deleteCategory,
-  productList,
   productEditPage,
-  dashboard,
+  updatedCategory,
   productUpdated,
-  productAdd,
+  deleteCategory,
   productAddPage,
+  loadDashboard,
   productDelete,
+  editCategory,
+  usersBlocked,
+  addCategory,
+  productList,
+  productAdd,
+  categories,
+  loadLogout,
+  loadLogin,
+  usersList,
+  dashboard,
+  orders,
 } = require("../controllers/adminController");
-const upload = require("../middleware/upload-middleware");
+const upload = require("../middleware/uploadImage");
 const express = require("express");
 const adminRoute = express();
-
 adminRoute.set("views", "views/admin");
 
 adminRoute.get("/", loadLogin);
@@ -40,7 +40,7 @@ adminRoute.get("/productEditPage", isAdminLogin, productEditPage);
 adminRoute.post(
   "/productEditPage",
   isAdminLogin,
-  upload.single("product_img"),
+  upload.array("product_img", 4),
   productUpdated
 );
 adminRoute.get("/productAddPage", isAdminLogin, productAddPage);
@@ -48,8 +48,9 @@ adminRoute.get("/productDelete", isAdminLogin, productDelete);
 adminRoute.post(
   "/productAddPage",
   isAdminLogin,
-  upload.single("product_img"),
+  upload.array("product_img", 4),
   productAdd
 );
+adminRoute.get("/orders", isAdminLogin, orders);
 
 module.exports = adminRoute;
