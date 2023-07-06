@@ -9,6 +9,8 @@ const session = require("express-session");
 const logger = require("morgan");
 const express = require("express");
 const app = express();
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 app.use(logger("dev"));
 
 app.use(express.json());
@@ -29,10 +31,33 @@ app.use(
 
 const PORT = 3000;
 
+const options = {
+  definition: {
+    openapi: "3.0.3",
+    info:{
+      title:"E-Commerce API",
+      version:"0.1.0",
+      description:"This is an api based on an ecommerce website",
+      contact:{
+        name:"Ecommerce",
+      }
+    },
+    servers: [
+      {
+        url: "http://localhost:3000/",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+const swag = swaggerJsDoc(options);
+
 //User Routes
 app.use("/", userRoute);
 //Admin Routes
 app.use("/admin", adminRoute);
+//Open API Route
+app.use("/apiDocs", swaggerUi.serve, swaggerUi.setup(swag));
 //Error Route
 app.use((req, res) => {
   res.status(404).render("error404");
