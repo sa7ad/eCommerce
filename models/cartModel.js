@@ -20,11 +20,11 @@ const cartSchema = new mongoose.Schema({
       total: {
         type: Number,
       },
-      grandTotal: {
-        type: Number,
-      },
     },
   ],
+  grandTotal: {
+    type: Number,
+  },
   count: {
     type: Number,
     default: 1,

@@ -34,13 +34,13 @@ const PORT = 3000;
 const options = {
   definition: {
     openapi: "3.0.3",
-    info:{
-      title:"E-Commerce API",
-      version:"0.1.0",
-      description:"This is an api based on an ecommerce website",
-      contact:{
-        name:"Ecommerce",
-      }
+    info: {
+      title: "E-Commerce API",
+      version: "0.1.0",
+      description: "This is an api based on an ecommerce website",
+      contact: {
+        name: "Ecommerce",
+      },
     },
     servers: [
       {
@@ -63,6 +63,6 @@ app.use((req, res) => {
   res.status(404).render("error404");
 });
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log("Server is running on PORT http://localhost:3000");
 });

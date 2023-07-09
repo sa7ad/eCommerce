@@ -206,18 +206,18 @@
                                 <form action="/admin/productAddPage" enctype="multipart/form-data" method="post">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
-                                        <input type="text" placeholder="Product Name" class="form-control" name="product_name" required/>
+                                        <input type="text" placeholder="Product Name" class="form-control" id="product_name" name="product_name" required/>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
-                                        <textarea placeholder="Description" class="form-control" rows="4" name="product_description" required></textarea>
+                                        <textarea placeholder="Description" class="form-control" rows="4" id="product_description" name="product_description" required></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Price" type="text" class="form-control" name="product_price" required/>
+                                                    <input placeholder="Price" type="text" class="form-control" id="product_price" name="product_price" required/>
                                         
                                                 </div>
                                             </div>
@@ -228,7 +228,7 @@
                                             <div class="mb-4">
                                                 <label class="form-label">Quantity</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Quantity" type="number" class="form-control" name="product_quantity" required/>
+                                                    <input placeholder="Quantity" type="number" id="product_quantity" class="form-control" name="product_quantity" required/>
                                         
                                                 </div>
                                             </div>
@@ -258,7 +258,7 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="input-upload">
-                                                    <input name="product_img" class="form-control" type="file" multiple/>
+                                                    <input name="product_img" class="form-control" type="file" multiple />
                                                 </div>
                                             </div>
                                         </div>
@@ -301,3 +301,34 @@
         <script src="/assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>
 </html>
+<script>
+     let product_name = document.getElementById("product_name");
+     let product_price = document.getElementById("product_price");
+     let product_quantity = document.getElementById("product_quantity");
+     product_name.addEventListener("input", () => {
+      if (product_name.value.trim() == "") {
+        product_name.setCustomValidity("Field must be filled out");
+      } else {
+        product_name.setCustomValidity("");
+      }
+    });
+    product_price.addEventListener("input", () => {
+      if (product_price.value.trim() == "") {
+        product_price.setCustomValidity("Field must be filled out");
+      }else if(isNaN(product_price.value)){
+        product_price.setCustomValidity("Field must be containing only digits");
+      } else {
+        product_price.setCustomValidity("");
+      }
+    });
+    product_quantity.addEventListener("input", () => {
+      if (product_quantity.value.trim() == "") {
+        product_quantity.setCustomValidity("Field must be filled out");
+      }else if(isNaN(product_quantity.value)){
+        product_quantity.setCustomValidity("Field must be containing only digits");
+      }
+       else {
+        product_quantity.setCustomValidity("");
+      }
+    });
+</script>

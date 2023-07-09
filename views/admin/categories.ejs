@@ -195,9 +195,9 @@
                         <h2 class="content-title card-title">Categories</h2>
                         <p>Add, edit or delete a category</p>
                     </div>
-                    <div>
+                    <!-- <div>
                         <input type="text" placeholder="Search Categories" class="form-control bg-white" />
-                    </div>
+                    </div> -->
                 </div>
                 <%if(typeof message!==undefined){%>
                     <div><p class="text-center text-danger"><%= message %></p></div>
@@ -209,7 +209,7 @@
                                 <form action="/admin/categories" method="post">
                                     <div class="mb-4">
                                         <label for="category_name" class="form-label">Name</label>
-                                        <input type="text" placeholder="Name" class="form-control" name="category_name" required/>
+                                        <input type="text" placeholder="Name" class="form-control" id="category_name" name="category_name" required/>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
@@ -222,7 +222,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="table-responsive">
-                                    <table class="table table-hover text-center">
+                                    <table id="myTable" class="table table-hover text-center">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
@@ -242,12 +242,22 @@
                                                           class="btn btn-sm btn-success rounded font-sm text-white mt-15"
                                                           >Edit</a
                                                         >
-                                                        <a
-                                                          href="/admin/deleteCategory?id=<%= category[i]._id %>"
+                                                        <%if(category[i].list === true){%>
+                                                            <a
+                                                          href="/admin/listCategory?id=<%= category[i]._id %>"
                                                           class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
-                                                          >Delete</a
+                                                          >Unlist</a
                                                         >
-                                                      </td>
+                                                        <%}else{%>
+
+                                                            <a
+                                                              href="/admin/listCategory?id=<%= category[i]._id %>"
+                                                              class="btn btn-sm btn-success text-white rounded font-sm mt-15 ms-2"
+                                                              >List</a
+                                                            >
+                                                        
+                                                            <%}%>
+                                                        </td>
                                                 </tr>
                                             <%}}else{%>
                                                 <h5>Categories not found</h5>
@@ -289,3 +299,23 @@
         <script src="/assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>
 </html>
+<script>
+    let category_name = document.getElementById("category_name");
+    category_name.addEventListener("input", () => {
+      if (category_name.value.trim() == "") {
+        category_name.setCustomValidity("Field must be filled out");
+      } else {
+        category_name.setCustomValidity("");
+      }
+    });
+  </script>
+  <link
+  rel="stylesheet"
+  href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css"
+/>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+<script>
+  $(document).ready(function () {
+    $("#myTable").DataTable();
+  });
+</script>

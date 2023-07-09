@@ -1,4 +1,5 @@
 const userOTPVerification = require("../models/userOTPVerification");
+const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
@@ -13,13 +14,13 @@ const loadLogin = async (req, res) => {
     req.session.message = "";
     res.render("userLogin", { message });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const loginSuccess = async (req, res) => {
   try {
-    const email = req.body.email;
-    const password = req.body.password;
+    const { email } = req.body;
+    const { password } = req.body;
     const usersData = await User.findOne({ email: email });
     if (usersData) {
       const passwordMatch = await bcrypt.compare(password, usersData.password);
@@ -45,7 +46,7 @@ const loginSuccess = async (req, res) => {
       res.redirect("/login");
     }
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const loadRegister = async (req, res) => {
@@ -54,7 +55,7 @@ const loadRegister = async (req, res) => {
     req.session.message = "";
     res.render("userRegister", { message });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const insertUser = async (req, res) => {
@@ -66,8 +67,8 @@ const insertUser = async (req, res) => {
       req.session.message = "User already registered";
       res.redirect("/register");
     } else {
-      const password = req.body.password;
-      const confirm_password = req.body.confirm_password;
+      const { password } = req.body;
+      const { confirm_password } = req.body;
       if (password === confirm_password) {
         const hashPassword = await bcrypt.hash(password, 10);
         const hashConfirmPassword = await bcrypt.hash(confirm_password, 10);
@@ -84,18 +85,19 @@ const insertUser = async (req, res) => {
         const userData = await user.save();
         if (userData) {
           let otpVerification = await sendOTPVerificationMail(userData);
-          res.render("userEmail", { otp: otpVerification });
+          req.session.otpVerification = otpVerification;
+          res.redirect("/emailVerification");
         } else {
           req.session.message = "Invalid Verification";
-          res.render("userRegister");
+          res.redirect("/register");
         }
       } else {
         req.session.message = "Passwords does not match";
-        res.render("userRegister");
+        res.redirect("/register");
       }
     }
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const sendOTPVerificationMail = async ({ _id, email }) => {
@@ -128,7 +130,17 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
     await transporter.sendMail(mailOptions);
     return verified._id;
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
+  }
+};
+const emailVerificationPage = async (req, res) => {
+  try {
+    const { message, otpVerification } = req.session;
+    req.session.otpVerification = null;
+    req.session.message = "";
+    res.render("userEmail", { message, otp: otpVerification });
+  } catch (error) {
+    res.redirect("/error500");
   }
 };
 const emailVerification = async (req, res) => {
@@ -141,17 +153,19 @@ const emailVerification = async (req, res) => {
     if (!userId || !otp) {
       await User.deleteMany({ _id: UserOTPVerificationRecords[0].userId });
       await userOTPVerification.deleteMany({ _id: userId });
-      res.redirect("/register");
+      req.session.message = "Invalid OTP details,please try again";
+      res.redirect("/emailVerification");
     } else {
       if (UserOTPVerificationRecords.length <= 0) {
-        res.redirect("/register");
+        req.session.message = "Invalid OTP,Please register again";
+        res.redirect("/emailVerification");
       } else {
         const { expiresAt } = UserOTPVerificationRecords[0];
         const hashedOTP = UserOTPVerificationRecords[0].otp;
         if (expiresAt < Date.now()) {
           await User.deleteMany({ _id: UserOTPVerificationRecords[0].userId });
           await userOTPVerification.deleteMany({ _id: userId });
-          req.session.message = "OTP has been expired,Please register again";
+          req.session.message = "Invalid OTP,Please register again";
           res.redirect("/register");
         } else {
           const validOTP = await bcrypt.compare(otp, hashedOTP);
@@ -159,9 +173,9 @@ const emailVerification = async (req, res) => {
             await User.deleteMany({
               _id: UserOTPVerificationRecords[0].userId,
             });
-            await userOTPVerification.deleteMany({ _id: userId });
+            req.session.otpVerification = userVerificationId;
             req.session.message = "Invalid OTP,Please register again";
-            res.redirect("/register");
+            res.redirect("/emailVerification");
           } else {
             req.session.userId =
               UserOTPVerificationRecords[0].userId.toString();
@@ -176,17 +190,20 @@ const emailVerification = async (req, res) => {
       }
     }
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const loadHome = async (req, res) => {
   try {
-    res.locals.session = req.session.userId;
-    const products = await Product.find().populate("category");
-    const cart = await Cart.findOne({ userId: req.session.userId });
-    res.render("userHome", { products, cart });
+    const { userId } = req.session;
+    res.locals.session = userId;
+    const products = await Product.find({ list: true }).populate("category");
+    if (products) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      res.render("userHome", { products, cart });
+    }
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const singleProduct = async (req, res) => {
@@ -196,24 +213,26 @@ const singleProduct = async (req, res) => {
     const products = await Product.findById({ _id: id }).populate("category");
     res.render("singleProduct", { products: products, userId });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const loadLogout = async (req, res) => {
   try {
-    req.session.destroy();
+    req.session.userId = null;
     res.redirect("/");
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const userProfile = async (req, res) => {
   try {
+    let { message } = req.session;
     const { userId } = req.session;
+    req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
-    res.render("userProfile", { userProfile });
+    res.render("userProfile", { userProfile, message });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const editProfile = async (req, res) => {
@@ -222,7 +241,7 @@ const editProfile = async (req, res) => {
     const userProfile = await User.findById({ _id: userId });
     res.render("editProfile", { userProfile });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const updatedProfile = async (req, res) => {
@@ -242,7 +261,7 @@ const updatedProfile = async (req, res) => {
     );
     res.redirect("/userProfile");
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const manageAddress = async (req, res) => {
@@ -251,14 +270,14 @@ const manageAddress = async (req, res) => {
     const userAddresses = await User.findOne({ _id: userId });
     res.render("manageAddress", { userAddresses });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const addAddressPage = async (req, res) => {
   try {
     res.render("addAddress");
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const addAddress = async (req, res) => {
@@ -282,7 +301,7 @@ const addAddress = async (req, res) => {
     );
     res.redirect("/manageAddress");
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const editAddress = async (req, res) => {
@@ -295,14 +314,14 @@ const editAddress = async (req, res) => {
     );
     res.render("editAddress", { userAddress: userAddress });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const updatedAddress = async (req, res) => {
   try {
     const { userId } = req.session;
     const { id, name, housename, city, state, pincode, phone } = req.body;
-    const updatedAddress = await User.updateOne(
+    await User.updateOne(
       { _id: userId, "address._id": id },
       {
         $set: {
@@ -315,10 +334,9 @@ const updatedAddress = async (req, res) => {
         },
       }
     );
-    console.log(updatedAddress, "this is updated address");
     res.redirect("/manageAddress");
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const deleteAddress = async (req, res) => {
@@ -331,7 +349,7 @@ const deleteAddress = async (req, res) => {
     );
     res.status(201).json({ message: "success deleted" });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
 const orders = async (req, res) => {
@@ -340,22 +358,71 @@ const orders = async (req, res) => {
     console.log(orders, "this is order");
     res.render("orders", { orders });
   } catch (error) {
-    res.redirect("/error404");
+    res.redirect("/error500");
   }
 };
-const error404 = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
-    res.render("error404");
+    let { message } = req.session;
+    req.session.message = "";
+    res.render("changePassword", { message });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const updatedPassword = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    const user = await User.findOne({ _id: userId });
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+    if (passwordMatch) {
+      if (newPassword === confirmNewPassword) {
+        console.log("hi this matched confirm and new password");
+        const hashPassword = await bcrypt.hash(newPassword, 10);
+        const confirmHashPassword = await bcrypt.hash(confirmNewPassword, 10);
+        await User.updateOne(
+          { _id: userId },
+          {
+            $set: {
+              password: hashPassword,
+              confirm_password: confirmHashPassword,
+            },
+          }
+        );
+        req.session.message = "Password has been updated successfully";
+        res.redirect("/userProfile");
+      } else {
+        req.session.message =
+          "Your new password does not match with confirm password";
+        res.redirect("/changePassword");
+      }
+    } else {
+      req.session.message = "Your current password does not match";
+      res.redirect("/changePassword");
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const error500 = async (req, res) => {
+  try {
+    res.render("error500");
   } catch (error) {
     console.log(error.message);
   }
 };
 
 module.exports = {
+  emailVerificationPage,
   emailVerification,
+  updatedPassword,
   addAddressPage,
   updatedProfile,
   updatedAddress,
+  changePassword,
   singleProduct,
   manageAddress,
   deleteAddress,
@@ -368,7 +435,7 @@ module.exports = {
   addAddress,
   insertUser,
   loadLogin,
+  error500,
   loadHome,
-  error404,
   orders,
 };

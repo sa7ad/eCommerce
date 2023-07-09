@@ -2,6 +2,7 @@ const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 const credentials = {
@@ -20,7 +21,7 @@ const loadLogin = async (req, res) => {
       res.render("adminLogin", { message });
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const loadDashboard = async (req, res) => {
@@ -35,22 +36,22 @@ const loadDashboard = async (req, res) => {
       res.redirect("/admin");
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const dashboard = async (req, res) => {
   try {
     res.render("adminDashboard");
   } catch {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const loadLogout = async (req, res) => {
   try {
-    req.session.destroy();
+    req.session.adminSession = null;
     res.redirect("/admin");
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const usersList = async (req, res) => {
@@ -58,7 +59,7 @@ const usersList = async (req, res) => {
     const usersList = await User.find({ verified: true });
     res.render("usersList", { users: usersList });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const usersBlocked = async (req, res) => {
@@ -73,7 +74,7 @@ const usersBlocked = async (req, res) => {
       res.redirect("/admin/usersList");
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const categories = async (req, res) => {
@@ -83,7 +84,7 @@ const categories = async (req, res) => {
     const categoryDetails = await Category.find();
     res.render("categories", { message, category: categoryDetails });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const addCategory = async (req, res) => {
@@ -103,16 +104,16 @@ const addCategory = async (req, res) => {
       res.redirect("/admin/categories");
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const editCategory = async (req, res) => {
   try {
-    const id = req.query.id;
+    const { id } = req.query;
     const category = await Category.findById({ _id: id });
     res.render("editCategory", { category });
   } catch {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const updatedCategory = async (req, res) => {
@@ -125,16 +126,22 @@ const updatedCategory = async (req, res) => {
     await updatedCategory.save();
     res.redirect("/admin/categories");
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
-const deleteCategory = async (req, res) => {
+const listCategory = async (req, res) => {
   try {
     const { id } = req.query;
-    await Category.deleteOne({ _id: id });
-    res.redirect("/admin/categories");
+    const category = await Category.findById({ _id: id });
+    if (category.list === true) {
+      await Category.updateOne({ _id: id }, { $set: { list: false } });
+      res.redirect("/admin/categories");
+    } else {
+      await Category.updateOne({ _id: id }, { $set: { list: true } });
+      res.redirect("/admin/categories");
+    }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const productAddPage = async (req, res) => {
@@ -142,7 +149,7 @@ const productAddPage = async (req, res) => {
     const categories = await Category.find();
     res.render("productAddPage", { categories });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const productList = async (req, res) => {
@@ -150,7 +157,7 @@ const productList = async (req, res) => {
     const product = await Product.find().populate("category");
     res.render("productList", { product });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const productAdd = async (req, res) => {
@@ -180,16 +187,22 @@ const productAdd = async (req, res) => {
     await product.save();
     res.redirect("/admin/productList");
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
-const productDelete = async (req, res) => {
+const listProduct = async (req, res) => {
   try {
     const { id } = req.query;
-    await Product.deleteOne({ _id: id });
-    res.redirect("/admin/productList");
+    const product = await Product.findById({ _id: id });
+    if (product.list === true) {
+      await Product.updateOne({ _id: id }, { $set: { list: false } });
+      res.redirect("/admin/productList");
+    } else {
+      await Product.updateOne({ _id: id }, { $set: { list: true } });
+      res.redirect("/admin/productList");
+    }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const productEditPage = async (req, res) => {
@@ -203,7 +216,7 @@ const productEditPage = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const productUpdated = async (req, res) => {
@@ -253,13 +266,21 @@ const productUpdated = async (req, res) => {
       res.redirect("/admin/productList");
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 const orders = async (req, res) => {
   try {
-    const orders = await Order.find({});
-    res.render(ordersList);
+    const orders = await Order.find().populate("user");
+    console.log(orders, "this is orders in cart");
+    res.render("ordersList", { orders: orders });
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const error500 = async (req, res) => {
+  try {
+    res.render("error500");
   } catch (error) {
     console.log(error.message);
   }
@@ -269,18 +290,19 @@ module.exports = {
   updatedCategory,
   productAddPage,
   productUpdated,
-  deleteCategory,
   loadDashboard,
-  productDelete,
   editCategory,
+  listCategory,
   usersBlocked,
   productList,
   addCategory,
+  listProduct,
   loadLogout,
   productAdd,
   categories,
   loadLogin,
   dashboard,
   usersList,
+  error500,
   orders,
 };

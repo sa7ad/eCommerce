@@ -23,6 +23,7 @@
           <% } %>
           <form
             class="row login_form"
+            id="register_form"
             action="/register"
             name="register_form"
             method="post"
@@ -95,6 +96,7 @@
             <div id="errorContainer5" class="text-danger"></div>
             <div class="col-md-12 form-group">
               <button
+                id="submitbutton"
                 type="submit"
                 value="submit"
                 class="button button-register w-100"
@@ -110,13 +112,18 @@
 </section>
 <script>
   function validateform() {
-    var first_name = document.forms["register_form"]["first_name"].value.trim();
-    var last_name = document.forms["register_form"]["last_name"].value.trim();
-    var phone_number =
+    document
+      .getElementById("register_form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+      });
+    let first_name = document.forms["register_form"]["first_name"].value.trim();
+    let last_name = document.forms["register_form"]["last_name"].value.trim();
+    let phone_number =
       document.forms["register_form"]["phone_number"].value.trim();
-    var email = document.forms["register_form"]["email"].value.trim();
-    var password = document.forms["register_form"]["password"].value.trim();
-    var confirm_password =
+    let email = document.forms["register_form"]["email"].value.trim();
+    let password = document.forms["register_form"]["password"].value.trim();
+    let confirm_password =
       document.forms["register_form"]["confirm_password"].value.trim();
     if (first_name == null || first_name == "") {
       document.getElementById("errorContainer1").innerHTML =
@@ -129,6 +136,10 @@
     } else if (isNaN(phone_number)) {
       document.getElementById("errorContainer3").innerHTML =
         "Phone number should be a number";
+      return false;
+    } else if (phone_number.length > 10 || phone_number.length < 10) {
+      document.getElementById("errorContainer3").innerHTML =
+        "Phone number should contain 10 digits";
       return false;
     } else if (password.length < 6) {
       document.getElementById("errorContainer4").innerHTML =

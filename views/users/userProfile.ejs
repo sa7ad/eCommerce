@@ -2,6 +2,9 @@
 
 <section style="background-color: #eee">
   <div class="container py-5">
+    <% if(typeof message!=='undefined'){ %>
+    <h6 class="text-success"><%=message %></h6>
+    <% } %>
     <div class="row">
       <div class="col-lg-4">
         <div class="card mb-4">

@@ -8,10 +8,13 @@ const {
   loadCart,
 } = require("../controllers/cartController");
 const {
+  emailVerificationPage,
   emailVerification,
+  updatedPassword,
   addAddressPage,
   updatedProfile,
   updatedAddress,
+  changePassword,
   manageAddress,
   deleteAddress,
   singleProduct,
@@ -24,7 +27,7 @@ const {
   loadLogout,
   addAddress,
   loadLogin,
-  error404,
+  error500,
   loadHome,
   orders,
 } = require("../controllers/userController");
@@ -92,7 +95,7 @@ userRoute.post("/login", isLogout, loginSuccess);
  *       200:
  *         description:successful operation
  */
-userRoute.get("/register", loadRegister);
+userRoute.get("/register",isLogout, loadRegister);
 /**
  * @swagger
  * /register:
@@ -105,6 +108,18 @@ userRoute.get("/register", loadRegister);
  *         description:successful operation
  */
 userRoute.post("/register", insertUser);
+/**
+ * @swagger
+ * /emailVerification:
+ *  get:
+ *     tags:
+ *     - Register
+ *     description: displays the page of email verification
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.get("/emailVerification",isLogout, emailVerificationPage);
 /**
  * @swagger
  * /emailVerification:
@@ -140,7 +155,7 @@ userRoute.get("/cart", isLogin, loadCart);
  *       200:
  *         description:successful operation
  */
-userRoute.post("/cart", addToCart);
+userRoute.post("/cart",isLogin, addToCart);
 /**
  * @swagger
  * /cart:
@@ -152,7 +167,7 @@ userRoute.post("/cart", addToCart);
  *       200:
  *         description:successful operation
  */
-userRoute.put("/cart", deleteFromCart);
+userRoute.put("/cart",isLogin, deleteFromCart);
 /**
  * @swagger
  * /cartCount:
@@ -287,6 +302,30 @@ userRoute.put("/deleteAddress", isLogin, deleteAddress);
 userRoute.post("/editProfile", isLogin, updatedProfile);
 /**
  * @swagger
+ * /changePassword:
+ *  get:
+ *     tags:
+ *     - User
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.get("/changePassword", isLogin, changePassword);
+/**
+ * @swagger
+ * /changePassword:
+ *  post:
+ *     tags:
+ *     - User
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/changePassword", isLogin, updatedPassword);
+/**
+ * @swagger
  * /placeOrder:
  *  get:
  *     tags:
@@ -323,15 +362,15 @@ userRoute.get("/orderPlaced", isLogin, orderPlaced);
 userRoute.get("/logout", isLogin, loadLogout);
 /**
  * @swagger
- * /error404:
+ * /error500:
  *  get:
  *     tags:
- *     - 404
+ *     - Error
  *     description: displays the page of login
  *     responses:
- *       200:
+ *       500:
  *        description:successful operation
  */
-userRoute.get("/error404", error404);
+userRoute.get("/error500", error500);
 
 module.exports = userRoute;

@@ -61,6 +61,8 @@
       </div>
       <div class="row">
         <%for(let product of products){%>
+         <%if(product.category.list === true){%>
+
           <div class="col-md-6 col-lg-4 col-xl-3">
             <div class="card text-center card-product">
               <div class="card-product__img">
@@ -86,7 +88,9 @@
               </div>
             </div>
           </div>
-        <%}%>
+          
+          <%}%>
+          <%}%>
   
   
           </div>
@@ -126,34 +130,43 @@
         <h2>Best<span class="section-intro__style">Sellers</span></h2>
       </div>
       <div class="row">
-        <%for(let product of products){%>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <a href="/singleProduct?id=<%=product._id%>"><img class="card-img" src="/images/<%=product.image%>" alt="" /></a>
-                <ul class="card-product__imgOverlay">
-                  <li>
-                    <button><a href="/singleProduct"><i class="ti-search"></i></a></button>
-                  </li>
-                  <li>
-                    <button><i class="ti-shopping-cart"></i></button>
-                  </li>
-                  <li>
-                    <button><i class="ti-heart"></i></button>
-                  </li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p><%=product.category.name%></p>
-                <h4 class="card-product__title">
-                  <a href="/singleProduct"><%=product.name%></a>
-                </h4>
-                <p class="card-product__price">₹<%=product.price%></p>
+       
+          <%for(let product of products){%>
+            <%if(product.category.list === true){%>
+
+            
+            <div class="col-md-6 col-lg-4 col-xl-3">
+              <div class="card text-center card-product">
+                <div class="card-product__img">
+                  <a href="/singleProduct?id=<%=product._id%>"><img class="card-img" src="/images/<%=product.image%>" alt="" /></a>
+                  <ul class="card-product__imgOverlay">
+                    <li>
+                      <button><a href="/singleProduct"><i class="ti-search"></i></a></button>
+                    </li>
+                    <li>
+                      <button><i class="ti-shopping-cart"></i></button>
+                    </li>
+                    <li>
+                      <button><i class="ti-heart"></i></button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <p><%=product.category.name%></p>
+                  <h4 class="card-product__title">
+                    <a href="/singleProduct"><%=product.name%></a>
+                  </h4>
+                  <p class="card-product__price">₹<%=product.price%></p>
+                </div>
               </div>
             </div>
-          </div>
-        <%}%>
-  
+            <%}%>
+
+            <%}%>
+          
+    
+       
+        
   
           </div>
         </div>

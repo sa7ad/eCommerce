@@ -10,6 +10,11 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  list: {
+    type: Boolean,
+    default: true,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Category", categorySchema);

@@ -11,12 +11,10 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="address-list">
-                  <!-- Display the list of saved addresses -->
                   <div class="address-item mb-2">
                     <p class="mb-0"><strong>Fill out this field</strong></p>
                   </div>
                 </div>
-                <!-- Add form for adding a new address -->
                 <form id="addAddressForm" action="/addAddress" method="POST">
                   <div class="form-group">
                     <label for="label">Name:</label>
@@ -90,5 +88,55 @@
     </div>
   </div>
 </section>
+<script>
+  let name = document.getElementById("name");
+  let housename = document.getElementById("housename");
+  let state = document.getElementById("state");
+  let phone = document.getElementById("phone");
+  let pincode = document.getElementById("pincode");
+  name.addEventListener("input", () => {
+    if (name.value.trim() == "") {
+      name.setCustomValidity("Name should not contain white spaces");
+    } else {
+      name.setCustomValidity("");
+    }
+  });
+  housename.addEventListener("input", () => {
+    if (housename.value.trim() == "") {
+      housename.setCustomValidity("House Name should not contain white spaces");
+    } else {
+      housename.setCustomValidity("");
+    }
+  });
+  state.addEventListener("input", () => {
+    if (state.value.trim() == "") {
+      state.setCustomValidity("State should not contain white spaces");
+    } else {
+      state.setCustomValidity("");
+    }
+  });
+  phone.addEventListener("input", () => {
+    if (phone.value.trim() == "") {
+      phone.setCustomValidity("Phone should not contain white spaces");
+    } else if (isNaN(phone.value)) {
+      phone.setCustomValidity("Phone should contain only digits from 0-9");
+    } else if (phone.value.length < 10 || phone.value.length > 10) {
+      phone.setCustomValidity("Phone should contain 10 digits only");
+    } else {
+      phone.setCustomValidity("");
+    }
+  });
+  pincode.addEventListener("input", () => {
+    if (pincode.value.trim() == "") {
+      pincode.setCustomValidity("PinCode should not contain white spaces");
+    } else if (isNaN(pincode.value)) {
+      pincode.setCustomValidity("pincode should contain only digits from 1-9");
+    } else if (pincode.value.length < 6 || pincode.value.length > 6) {
+      pincode.setCustomValidity("PinCode should contain 6 digits only");
+    } else {
+      pincode.setCustomValidity("");
+    }
+  });
+</script>
 
 <%- include('../layouts/footer.ejs') %>

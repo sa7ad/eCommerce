@@ -297,6 +297,7 @@
                       placeholder="product_id"
                       class="form-control"
                       name="product_id"
+                      id="product_id"
                       value="<%=product_id%>"
                     />
                   </div>
@@ -308,8 +309,10 @@
                       type="text"
                       placeholder="Product Name"
                       class="form-control"
+                      id="product_name"
                       name="product_name"
                       value="<%=product.name  %>"
+                      required
                     />
                   </div>
                   <div class="mb-4">
@@ -318,7 +321,9 @@
                       placeholder="Description"
                       class="form-control"
                       rows="4"
+                      id="product_description"
                       name="product_description"
+                      required
                     >
 <%=product.description  %></textarea
                     >
@@ -332,8 +337,10 @@
                             placeholder="Price"
                             type="text"
                             class="form-control"
+                            id="product_price"
                             name="product_price"
-                            value="<%=product.price  %>"
+                            value="<%=product.price  %> "
+                            required
                           />
                         </div>
                       </div>
@@ -346,10 +353,12 @@
                         <div class="row gx-2">
                           <input
                             placeholder="Quantity"
+                            id="product_quantity"
                             type="text"
                             class="form-control"
                             name="product_quantity"
                             value="<%=product.quantity  %>"
+                            required
                           />
                         </div>
                       </div>
@@ -360,7 +369,7 @@
                       <div class="row gx-2">
                         <div class="col-sm-6 mb-3">
                           <label class="form-label">Product Category</label>
-                          <select class="form-select" name="product_category">
+                          <select class="form-select" name="product_category" id="product_category" required>
                             <% for( let category of categories) { %>
 
                             <option value="<%=category._id %>">
@@ -393,6 +402,7 @@
                             class="form-control"
                             type="file"
                             multiple
+                            
                             onchange="viewImage(event)"
                           />
                         </div>
@@ -442,3 +452,34 @@
     <script src="/assets/js/main.js?v=1.1" type="text/javascript"></script>
   </body>
 </html>
+<script>
+  let product_name = document.getElementById("product_name");
+  let product_price = document.getElementById("product_price");
+  let product_quantity = document.getElementById("product_quantity");
+  product_name.addEventListener("input", () => {
+   if (product_name.value.trim() == "") {
+     product_name.setCustomValidity("Field must be filled out");
+   } else {
+     product_name.setCustomValidity("");
+   }
+ });
+ product_price.addEventListener("input", () => {
+   if (product_price.value.trim() == "") {
+     product_price.setCustomValidity("Field must be filled out");
+   }else if(isNaN(product_price.value)){
+     product_price.setCustomValidity("Field must be containing only digits");
+   } else {
+     product_price.setCustomValidity("");
+   }
+ });
+ product_quantity.addEventListener("input", () => {
+   if (product_quantity.value.trim() == "") {
+     product_quantity.setCustomValidity("Field must be filled out");
+   }else if(isNaN(product_quantity.value)){
+     product_quantity.setCustomValidity("Field must be containing only digits");
+   }
+    else {
+     product_quantity.setCustomValidity("");
+   }
+ });
+</script>

@@ -61,16 +61,16 @@
   let password = document.getElementById("password");
   email.addEventListener("input", () => {
     if (email.value.trim() == "") {
-      email.setCustomValidity("email cannot be null");
+      email.setCustomValidity("Email cannot contain white spaces");
     } else {
       email.setCustomValidity("");
     }
   });
   password.addEventListener("input", () => {
     if (password.value.trim() == "") {
-      password.setCustomValidity("password  number cannot be null");
+      password.setCustomValidity("Password cannot contain white spaces");
     } else if (password.value.length < 6) {
-      password.setCustomValidity("password  must contain 6 characters");
+      password.setCustomValidity("Password  must contain 6 characters");
     } else {
       password.setCustomValidity("");
     }
