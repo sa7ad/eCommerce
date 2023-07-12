@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
+const e = require("express");
 require("dotenv").config();
 
 const credentials = {
@@ -272,8 +273,36 @@ const productUpdated = async (req, res) => {
 const orders = async (req, res) => {
   try {
     const orders = await Order.find().populate("user");
-    console.log(orders, "this is orders in cart");
     res.render("ordersList", { orders: orders });
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const changeStatus = async (req,res) =>{
+  try {
+    const {status,orderId} = req.body
+    await Order.updateOne({_id:orderId},{$set:{orderStatus:status}})
+    res.status(201).json({success:true})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+const cancelOrder = async (req, res) => {
+  try {
+    const {orderId,status} = req.body
+    const order = await Order.updateOne({_id:orderId},{$set:{orderStatus:status}})
+    if(order){
+      const orders = await Order.findById({ _id: orderId });
+      for (let order of orders.items) {
+        await Product.updateOne(
+          { _id: order.product },
+          { $inc: { quantity: order.quantity } }
+        );
+      }
+      res.status(201).json({message:"Succefull and modified"})
+    }else{
+      res.status(400).json({message:"Seems like there is an error"})
+    }
   } catch (error) {
     res.redirect("/error500");
   }
@@ -293,9 +322,11 @@ module.exports = {
   loadDashboard,
   editCategory,
   listCategory,
+  changeStatus,
   usersBlocked,
   productList,
   addCategory,
+  cancelOrder,
   listProduct,
   loadLogout,
   productAdd,

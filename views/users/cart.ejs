@@ -1,6 +1,16 @@
 <%- include('../layouts/header.ejs') %>
 <section class="cart_area">
   <div class="container">
+    <%if(!products || !products?.items?.length>0){%>
+    <div class="text-center">
+      <img
+        src="/images/empty.jpg"
+        class="img-fluid"
+        style="height: 30rem"
+        alt="empty"
+      />
+    </div>
+    <%}else {%>
     <div class="cart_inner">
       <div class="table-responsive">
         <table class="table">
@@ -72,14 +82,15 @@
 
             <h5 class="text-center">Empty Cart List</h5>
 
-            <% } %>
-            <% if (products && products.items.length > 0) { %>
-              <tr>
-                <td colspan="3"></td>
-                <td><h5>Grand Total:</h5></td>
-                <td><h5 id="productTotal"><%= products.grandTotal %></h5></td>
-              </tr>
-            <% } %>
+            <% } %> <% if (products && products.items.length > 0) { %>
+            <%if(products.items && products.grandTotal>0){ %>
+            <tr>
+              <td colspan="3"></td>
+              <td><h5>Grand Total:</h5></td>
+              <td><h5 id="productTotal"><%= products.grandTotal %></h5></td>
+            </tr>
+            <%} %>
+
             <tr class="out_button_area">
               <td class="d-none-l"></td>
               <td></td>
@@ -94,20 +105,70 @@
                 </div>
               </td>
             </tr>
+            <% } %>
           </tbody>
         </table>
       </div>
     </div>
+    <%}%>
   </div>
 </section>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   const deleteFromCart = async (product_Id) => {
-    let deletedItem = await axios.put("/cart", { product_Id });
-    if (deletedItem) {
-      alert('Product has been removed from the cart')
-      document.getElementById(product_Id).style.display = "none";
-    }
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success",
+        cancelButton: "btn btn-danger",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          var deletedItem = axios.put("/cart", { product_Id }).then((res) => {
+            console.log(res.data.total, "the total");
+            document.getElementById("productTotal").innerHTML =
+              res?.data?.total;
+          });
+          if (deletedItem) {
+            document.getElementById(product_Id).style.display = "none";
+            document.getElementById("productTotal").textContent = updatedTotal;
+          }
+          console.log(deletedItem, "the itm that ");
+          swalWithBootstrapButtons.fire(
+            "Deleted!",
+            "Your file has been deleted.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Cancelled",
+            "Your imaginary file is safe :)",
+            "error"
+          );
+        }
+      });
+
+    let updatedTotal = deletedItem.data.total;
+    // swal("Removed from cart", "", "success");``
+
     return deletedItem;
   };
   const count = async (product_Id, userId, count) => {
@@ -124,6 +185,8 @@
         document.getElementById(`productPrice${product_Id}`).innerHTML =
           +price - priceDec;
         document.getElementById(`inputCount${product_Id}`).value = --input;
+        document.getElementById("productTotal").textContent =
+          updatedCount.data.total;
       }
     } else if (input >= 1 && count === 1) {
       let updatedCount = await axios.post("/cartCount", {
@@ -135,6 +198,8 @@
         document.getElementById(`productPrice${product_Id}`).innerHTML =
           +price / input + +price;
         document.getElementById(`inputCount${product_Id}`).value = ++input;
+        document.getElementById("productTotal").textContent =
+          updatedCount.data.total;
       }
     }
     return true;

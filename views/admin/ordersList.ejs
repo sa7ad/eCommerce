@@ -331,39 +331,38 @@
                     <th>Order ID</th>
                     <!-- <th scope="col">Name</th> -->
                     <!-- <th scope="col">Email</th> -->
-                    <th scope="col">Total</th>
-                    <th scope="col">Status</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Payment Method</th>
                     <th scope="col" class="text-end">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% for(let order of orders){ %>
-                  <tr>
+                  <tr id="orderId">
                     <td><%= order._id%></td>
                     <!-- <td><b></b></td> -->
 
                     <td><%= order.date %></td>
                     <td>
-                      <span class="badge rounded-pill alert-warning"
-                        ><%= order.orderStatus %></span
-                      >
+                      <select onchange="orderStatus(this.value, '<%= order._id %>')" class="statusSelector" name="statusSelector" id="statusSelector<%= order._id %>">
+                        <option value="Canceled" <% if(order.orderStatus === 'Canceled'){ %>selected<% } %>>Canceled</option>
+                        <option value="Pending" <% if(order.orderStatus === 'Pending'){ %>selected<% } %>>Pending</option>
+                        <option value="Delivered" <% if(order.orderStatus === 'Delivered'){ %>selected<% } %>>Delivered</option>
+                      </select>
                     </td>
                     <td><%= order.paymentMethod %></td>
-                    <td class="text-end">
-                      <a href="#" class="btn btn-md rounded font-sm">Cancel</a>
-                      <!-- <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div> -->
-                      <!-- dropdown //end -->
-                    </td>
-                  </tr>
-                  <%}%>
+                      
+                      <td id="btnhide<%= order._id%>" class="text-end">
+                        <button
+                          onclick="cancelOrder('<%= order._id %>')"
+                          type="submit"
+                          class="btn btn-md rounded font-sm"
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                  <%}%> 
                 </tbody>
               </table>
             </div>
@@ -386,21 +385,30 @@
               <li class="page-item"><a class="page-link" href="#">16</a></li>
               <li class="page-item">
                 <a class="page-link" href="#"
-                  ><i class="material-icons md-chevron_right"></i
-                ></a>
-              </li>
-            </ul>
-          </nav>
-        </div> -->
+                ><i class="material-icons md-chevron_right"></i
+                  ></a>
+                </li>
+              </ul>
+            </nav>
+          </div> -->
       </section>
       <!-- content-main end// -->
+      <!-- <div class="dropdown">
+                                  <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                  <div class="dropdown-menu">
+                                      <a class="dropdown-item" href="#">View detail</a>
+                                      <a class="dropdown-item" href="#">Edit info</a>
+                                      <a class="dropdown-item text-danger" href="#">Delete</a>
+                                  </div>
+                              </div> -->
+      <!-- dropdown //end -->
       <footer class="main-footer font-xs">
         <div class="row pb-30 pt-15">
           <div class="col-sm-6">
             <script>
               document.write(new Date().getFullYear());
             </script>
-            &copy; Nest - HTML Ecommerce Template .
+            &copy;
           </div>
           <div class="col-sm-6">
             <div class="text-sm-end">All rights reserved</div>
@@ -420,6 +428,34 @@
       href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css"
     />
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const orderStatus = async(status,orderId) => {
+        try {
+          const updatedStatus = await axios.patch('/admin/changeStatus',{status,orderId})
+          if(updatedStatus.data.success){
+            document.getElementById(`statusSelector${orderId}`).value = status;
+            if(status === 'Canceled'){
+              document.getElementById(`btnhide${orderId}`).style.display='none'
+            }else{
+              document.getElementById(`btnhide${orderId}`).addEventListener('click',updatedStatus)
+            }
+          }
+        } catch (error) {
+          console.error('Seem like there is an erro in the orders list')
+        }
+      }
+      const cancelOrder = async (orderId) => {
+        let status = "Canceled";
+        const cancelItem = await axios.patch("/admin/orders", {
+          orderId,
+          status,
+        });
+        if (cancelItem.data.message) {
+          document.getElementById("orderDenied").textContent = status;
+        }
+      };
+    </script>
     <script>
       $(document).ready(function () {
         $("#myTable").DataTable();

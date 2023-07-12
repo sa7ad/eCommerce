@@ -9,7 +9,9 @@ const {
   editCategory,
   usersBlocked,
   listCategory,
+  changeStatus,
   addCategory,
+  cancelOrder,
   productList,
   productAdd,
   categories,
@@ -251,6 +253,30 @@ adminRoute.post(
  *         description:successful operation
  */
 adminRoute.get("/orders", isAdminLogin, orders);
+/**
+ * @swagger
+ * /admin/orders:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.patch("/orders", isAdminLogin, cancelOrder);
+/**
+ * @swagger
+ * /admin/orders:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.patch("/changeStatus", isAdminLogin, changeStatus);
 /**
  * @swagger
  * /admin/error500:

@@ -16,13 +16,14 @@
               <div class="carousel-inner">
                 <form action="/addToCart" method="post">
                   <% for(let i=0; i<products.image.length; i++){ %>
-                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                      <div class="single-prd-item">
-                        <input type="hidden" name="product_Id" value="<%=products._id%>">
-                        <img class="d-block w-100" src="/images/<%=products.image[i]%>" alt="">
-                      </div>
+                  <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                    <div class="single-prd-item">
+                      <input type="hidden" name="product_Id" value="<%=products._id%>">
+                      <img class="d-block w-100 product-image" src="/images/<%=products.image[i]%>" alt="">
                     </div>
+                  </div>
                   <% } %>
+                </form>
               </div>
               <a class="carousel-control-prev" href="#product-carousel" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -36,20 +37,19 @@
           </div>
           <div class="col-lg-6">
             <div class="product-details">
-              <h3 class="product-name"><%=products.name%></h3>
+              <h3 class="product-name my-4"><%=products.name%></h3>
               <h2 class="product-price">₹<%=products.price%></h2>
               <ul class="list-unstyled product-info">
                 <li><strong>Category:</strong> <%=products.category.name%></li>
                 <li><strong>Availability:</strong> <%=products.stock%></li>
               </ul>
               <p class="product-description"><%=products.description%></p>
-              <div class="product-quantity">
+              <div class="product-quantity mb-4">
                 <label for="qty">Quantity:</label>
-                <input class="form-control" min="1" type="number" name="product_quantity" id="sst" size="2" maxlength="12" value="1" title="Quantity:">
+                <input class="form-control" min="1" type="number" name="product_quantity" id="sst" size="1" maxlength="4" value="1" title="Quantity:">
               </div>
               <div class="product-actions">
-                <a class="btn btn-primary" href="/cart?id=<%= userId %>" onclick="addToCart('<%=products._id%>')">Add to Cart</a>
-                <a class="btn btn-outline-primary" href="#"><i class="lnr lnr-diamond"></i></a>
+                <a class="btn btn-primary mr-2" href="/cart?id=<%= userId %>" onclick="addToCart('<%=products._id%>')">Add to Cart</a>
                 <a class="btn btn-outline-primary" href="#"><i class="lnr lnr-heart"></i></a>
               </div>
             </div>
@@ -57,6 +57,7 @@
         </div>
       </div>
     </div>
+    
     <!--================End Single Product Area =================-->
 
     <!--================Product Description Area =================-->
@@ -719,11 +720,12 @@
     <script src="vendors/mail-script.js"></script>
     <script src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
      addToCart = async (product_Id)=>{   
       try {
-        alert('Added to cart successfully')
         event.preventDefault()
+        swal("Added To Cart", "", "success");
         let product_quantity = document.getElementById('sst').value
         const quantityData = await axios.post('/cart',{product_quantity,product_Id})
         return quantityData

@@ -1,5 +1,6 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
 const {
+  orderPlacedSuccess,
   deleteFromCart,
   orderPlaced,
   placeOrder,
@@ -22,6 +23,7 @@ const {
   loadRegister,
   editProfile,
   editAddress,
+  cancelOrder,
   userProfile,
   insertUser,
   loadLogout,
@@ -95,7 +97,7 @@ userRoute.post("/login", isLogout, loginSuccess);
  *       200:
  *         description:successful operation
  */
-userRoute.get("/register",isLogout, loadRegister);
+userRoute.get("/register", isLogout, loadRegister);
 /**
  * @swagger
  * /register:
@@ -119,7 +121,7 @@ userRoute.post("/register", insertUser);
  *       200:
  *         description:successful operation
  */
-userRoute.get("/emailVerification",isLogout, emailVerificationPage);
+userRoute.get("/emailVerification", isLogout, emailVerificationPage);
 /**
  * @swagger
  * /emailVerification:
@@ -155,7 +157,7 @@ userRoute.get("/cart", isLogin, loadCart);
  *       200:
  *         description:successful operation
  */
-userRoute.post("/cart",isLogin, addToCart);
+userRoute.post("/cart", isLogin, addToCart);
 /**
  * @swagger
  * /cart:
@@ -167,7 +169,7 @@ userRoute.post("/cart",isLogin, addToCart);
  *       200:
  *         description:successful operation
  */
-userRoute.put("/cart",isLogin, deleteFromCart);
+userRoute.put("/cart", isLogin, deleteFromCart);
 /**
  * @swagger
  * /cartCount:
@@ -204,6 +206,18 @@ userRoute.get("/userProfile", isLogin, userProfile);
  *         description:successful operation
  */
 userRoute.get("/orders", isLogin, orders);
+/**
+ * @swagger
+ * /orders:
+ *  put:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.patch("/orders", isLogin, cancelOrder);
 /**
  * @swagger
  * /editProfile:
@@ -347,7 +361,20 @@ userRoute.get("/placeOrder", isLogin, placeOrder);
  *       200:
  *         description:successful operation
  */
-userRoute.get("/orderPlaced", isLogin, orderPlaced);
+userRoute.get("/orderPlaced", isLogin, orderPlacedSuccess);
+/**
+ * @swagger
+ * /placeOrder:
+ *  post:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/placeOrder", isLogin, orderPlaced);
+
 /**
  * @swagger
  * /logout:

@@ -354,10 +354,13 @@ const deleteAddress = async (req, res) => {
 };
 const orders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate("products").populate("user");
-    console.log(orders, "this is order");
+    const { userId } = req.session;
+    const orders = await Order.find({ user: userId })
+      .populate("items")
+      .populate("user");
     res.render("orders", { orders });
   } catch (error) {
+    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -407,6 +410,32 @@ const updatedPassword = async (req, res) => {
     res.redirect("/error500");
   }
 };
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    let status1 = "Cancelled"
+    const cancelOrder = await Order.updateOne(
+      { _id: orderId },
+      { $set: { orderStatus: status1 } }
+    );
+    if (cancelOrder) {
+      const orders = await Order.findById({ _id: orderId });
+      for (let order of orders.items) {
+        await Product.updateOne(
+          { _id: order.product },
+          { $inc: { quantity: order.quantity } }
+        );
+      }
+
+      res.status(201).json({ message: "Succefully updated and modified",status:status1});
+    } else {
+      res.status(400).json({ message: "Seems like an error" });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
 const error500 = async (req, res) => {
   try {
     res.render("error500");
@@ -430,6 +459,7 @@ module.exports = {
   loadRegister,
   editProfile,
   userProfile,
+  cancelOrder,
   editAddress,
   loadLogout,
   addAddress,

@@ -9,11 +9,15 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    cart: [
+    address: {
+      type: String,
+      required:true
+    },
+    items: [
       {
-        cart: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Cart",
+          ref: "Product",
         },
         quantity: {
           type: Number,
@@ -23,9 +27,12 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    grandTotal: {
+      type: Number,
+    },
     orderStatus: {
       type: String,
-      default:'Pending',
+      default: "Pending",
       required: true,
     },
     paymentMethod: {

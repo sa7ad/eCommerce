@@ -219,10 +219,9 @@
                           <tr>
                             <th>Product</th>
                             <th>Price</th>
-                            <th>Quantity</th>
                             <th>Category</th>
                             <th>Description</th>
-                            <th>Stock</th>
+                            <th>Quantity/Stock</th>
                             <th>Actions</th>
                           </tr>
                         </thead>
@@ -246,11 +245,6 @@
                               <span
                                 >₹<%= product[i].price %></span>
                             </td>
-                            
-                                <td>
-                              <span
-                                ><%= product[i].quantity %></span>
-                            </td>
                             <td>
                               <span
                                 ><%= product[i].category.name %></span>
@@ -262,7 +256,7 @@
                             
                             <td>
                               <span class="badge rounded-pill alert-success"
-                                ><%= product[i].stock %></span></td>
+                                ><%= product[i].quantity %></span></td>
                             <td>
                               <a
                                 href="/admin/productEditPage?id=<%= product[i]._id %>"

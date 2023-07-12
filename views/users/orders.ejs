@@ -15,28 +15,36 @@
                     <th>Order ID</th>
                     <th>Address</th>
                     <th>Payment Method</th>
-                    <th>Action</th>
                     <th>Order Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% for (let order of orders) { %>
-                  <tr>
+                  <%if(orders){%> <% for (let order of orders) { %>
+                  <tr id="ordertable-<%= order._id %>">
                     <td><%= order._id %></td>
-                    <td><%= order.user.name%></td>
-                    <td><%= order.user.address %></td>
+                    <td><%= order.address %></td>
                     <td><%= order.paymentMethod %></td>
-                    <td><%= order.orderStatus %></td>
-                    <td>
+                    <td id="status"><%= order.orderStatus %></td>
+
+                    <td class="cancel">
+                      <% if(order.orderStatus !== "Cancelled" ){ %>
                       <button
                         class="btn btn-danger"
                         onclick="cancelOrder('<%= order._id %>')"
                       >
                         Cancel
                       </button>
+
+                      <% }%>
+                      <span id="delete" style="display: none"
+                        >order has been removed</span
+                      >
                     </td>
                   </tr>
-                  <% } %>
+                  <% }}else{ %>
+                  <h6>There is no order in the list</h6>
+                  <%}%>
                 </tbody>
               </table>
             </div>
@@ -46,4 +54,18 @@
     </div>
   </div>
 </section>
+
 <%- include('../layouts/footer.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const cancelOrder = async (orderId) => {
+    const cancelItem = await axios.patch("/orders", { orderId });
+    if (cancelItem.data.message) {
+      document.getElementById("status").textContent = cancelItem.data.status;
+      const remove = document
+        .getElementById(`ordertable-${orderId}`)
+        .querySelector(".cancel");
+      remove.parentNode.removeChild(remove);
+    }
+  };
+</script>
