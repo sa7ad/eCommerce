@@ -141,7 +141,6 @@
     }).then(async (willDelete) => {
       if (willDelete) {
         const deletedItem = await axios.put("/cart", { product_Id });
-        console.log(deletedItem.data.total, "the total");
         document.getElementById("productTotal").innerHTML =
           deletedItem?.data?.total;
 

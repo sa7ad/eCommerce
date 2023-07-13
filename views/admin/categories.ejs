@@ -53,18 +53,14 @@
                                                           >Edit</a
                                                         >
                                                         <%if(category[i].list === true){%>
-                                                            <a
-                                                          href="/admin/listCategory?id=<%= category[i]._id %>"
+                                                            <button onclick="categoryList('<%= category[i]._id %>')"
                                                           class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
-                                                          >Unlist</a
-                                                        >
+                                                          >Unlist</button>
                                                         <%}else{%>
 
-                                                            <a
-                                                              href="/admin/listCategory?id=<%= category[i]._id %>"
-                                                              class="btn btn-sm btn-success text-white rounded font-sm mt-15 ms-2"
-                                                              >List</a
-                                                            >
+                                                            <button onclick="categoryList('<%= category[i]._id %>')"
+                                                                class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
+                                                                >List</button>
                                                         
                                                             <%}%>
                                                         </td>
@@ -99,6 +95,16 @@
     });
   </script>
 <script>
+    const categoryList = async (categoryId) => {
+        try {
+            const categoryList = await axios.patch('/admin/listCategory',{categoryId})
+            if (categoryList) {
+                
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
   $(document).ready(function () {
     $("#myTable").DataTable();
   });

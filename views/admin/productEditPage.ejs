@@ -123,12 +123,12 @@
                     <% product.image.forEach((image) => {%>
                     <img id="product_img" src="/images/<%= image%>" alt="" />
                     <%}) %>
-
                     <input
                       name="product_img"
                       class="form-control"
                       type="file"
                       multiple
+                      accept="image/*"
                       onchange="viewImage(event)"
                     />
                   </div>

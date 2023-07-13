@@ -65,14 +65,31 @@ const usersList = async (req, res) => {
 };
 const usersBlocked = async (req, res) => {
   try {
-    const { id } = req.query;
-    const usersBlocked = await User.findById({ _id: id });
+    const { userId } = req.body;
+    console.log(userId, "this is user id");
+    const usersBlocked = await User.findById({ _id: userId });
     if (usersBlocked.blocked === false) {
-      await User.findByIdAndUpdate({ _id: id }, { $set: { blocked: true } });
-      res.redirect("/admin/usersList");
+      const userBlock = await User.findByIdAndUpdate(
+        { _id: userId },
+        { $set: { blocked: true } }
+      );
+      res
+        .status(201)
+        .json({
+          message: "success and modified",
+          updatedBlock: userBlock.blocked,
+        });
     } else {
-      await User.findByIdAndUpdate({ _id: id }, { $set: { blocked: false } });
-      res.redirect("/admin/usersList");
+      const userBlock = await User.findByIdAndUpdate(
+        { _id: userId },
+        { $set: { blocked: false } }
+      );
+      res
+        .status(201)
+        .json({
+          message: "success and modified",
+          updatedBlock: userBlock.blocked,
+        });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -132,14 +149,14 @@ const updatedCategory = async (req, res) => {
 };
 const listCategory = async (req, res) => {
   try {
-    const { id } = req.query;
-    const category = await Category.findById({ _id: id });
+    const { categoryId } = req.body;
+    const category = await Category.findById({ _id: categoryId });
     if (category.list === true) {
-      await Category.updateOne({ _id: id }, { $set: { list: false } });
-      res.redirect("/admin/categories");
+      await Category.updateOne({ _id: categoryId }, { $set: { list: false } });
+      res.status(201).json({ message: "success and modified" });
     } else {
-      await Category.updateOne({ _id: id }, { $set: { list: true } });
-      res.redirect("/admin/categories");
+      await Category.updateOne({ _id: categoryId }, { $set: { list: true } });
+      res.status(201).json({ message: "success and modified" });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -193,14 +210,14 @@ const productAdd = async (req, res) => {
 };
 const listProduct = async (req, res) => {
   try {
-    const { id } = req.query;
-    const product = await Product.findById({ _id: id });
+    const { productId } = req.body
+    const product = await Product.findById({ _id: productId });
     if (product.list === true) {
-      await Product.updateOne({ _id: id }, { $set: { list: false } });
-      res.redirect("/admin/productList");
+      await Product.updateOne({ _id: productId }, { $set: { list: false } });
+      res.status(201).json({message:'success and modified'})
     } else {
-      await Product.updateOne({ _id: id }, { $set: { list: true } });
-      res.redirect("/admin/productList");
+      await Product.updateOne({ _id: productId }, { $set: { list: true } });
+      res.status(201).json({message:'success and modified'})
     }
   } catch (error) {
     res.redirect("/error500");
@@ -236,7 +253,7 @@ const productUpdated = async (req, res) => {
         imageArr.push(req.files[i].filename);
       }
     }
-    if (req.files) {
+    if (req.files.length) {
       await Product.findByIdAndUpdate(
         { _id: product_id },
         {
@@ -272,26 +289,41 @@ const productUpdated = async (req, res) => {
 };
 const orders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("user").sort({createdAt:-1});
+    const orders = await Order.find().populate("user").sort({ createdAt: -1 });
     res.render("ordersList", { orders: orders });
   } catch (error) {
     res.redirect("/error500");
   }
 };
-const changeStatus = async (req,res) =>{
+const viewOrdered = async (req, res) => {
   try {
-    const {status,orderId} = req.body
-    await Order.updateOne({_id:orderId},{$set:{orderStatus:status}})
-    res.status(201).json({success:true})
+    const { id } = req.query;
+    const order = await Order.findById({ _id: id })
+      .populate("user")
+      .populate("items.product");
+    res.render("viewOrdered", { order: order });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const changeStatus = async (req, res) => {
+  try {
+    const { status, orderId } = req.body;
+    await Order.updateOne({ _id: orderId }, { $set: { orderStatus: status } });
+    res.status(201).json({ success: true });
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 const cancelOrder = async (req, res) => {
   try {
-    const {orderId,status} = req.body
-    const order = await Order.updateOne({_id:orderId},{$set:{orderStatus:status}})
-    if(order){
+    const { orderId, status } = req.body;
+    const order = await Order.updateOne(
+      { _id: orderId },
+      { $set: { orderStatus: status } }
+    );
+    if (order) {
       const orders = await Order.findById({ _id: orderId });
       for (let order of orders.items) {
         await Product.updateOne(
@@ -299,9 +331,9 @@ const cancelOrder = async (req, res) => {
           { $inc: { quantity: order.quantity } }
         );
       }
-      res.status(201).json({message:"Succefull and modified"})
-    }else{
-      res.status(400).json({message:"Seems like there is an error"})
+      res.status(201).json({ message: "Succefull and modified" });
+    } else {
+      res.status(400).json({ message: "Seems like there is an error" });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -321,9 +353,10 @@ module.exports = {
   productUpdated,
   loadDashboard,
   editCategory,
+  usersBlocked,
   listCategory,
   changeStatus,
-  usersBlocked,
+  viewOrdered,
   productList,
   addCategory,
   cancelOrder,

@@ -1,15 +1,17 @@
 <%- include('../layouts/adminHeader.ejs') %>
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Products List</h2>
-                    </div>
-                    <div>
-                        <a href="/admin/productAddPage" class="btn btn-primary btn-sm rounded">Create new</a>
-                    </div>
-                </div>
-                <div class="row gx-3">
-                    <!-- <div class="col-lg-4 col-md-6 me-auto">
+<section class="content-main">
+  <div class="content-header">
+    <div>
+      <h2 class="content-title card-title">Products List</h2>
+    </div>
+    <div>
+      <a href="/admin/productAddPage" class="btn btn-primary btn-sm rounded"
+        >Create new</a
+      >
+    </div>
+  </div>
+  <div class="row gx-3">
+    <!-- <div class="col-lg-4 col-md-6 me-auto">
                       <input
                         type="text"
                         placeholder="Search..."
@@ -32,90 +34,98 @@
                       </select>
                     </div>
                   </div> -->
-                <div class="card-body">
-                    <div class="table-responsive">
-                      <table id="myTable" class="table table-hover text-center">
-                        <thead>
-                          <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Quantity/Stock</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% if (product && product.length > 0) { for (let i = 0; i <
-                          product.length; i++) { %>
-                          <tr>
-                            <td width="25%">
-                              
-                                <div class="left">
-                                    <img src="/images/<%= product[i].image[0] %>" class="img-sm img-thumbnail" alt="Item" />
-                                </div>
-                                <div class="info pl-3">
-                                  <h6 class="mb-0 title">
-                                    <%= product[i].name %>
-                                  </h6>
-                                </div>
-                        
-                            </td>
-                            <td>
-                              <span
-                                >₹<%= product[i].price %></span>
-                            </td>
-                            <td>
-                              <span
-                                ><%= product[i].category.name %></span>
-                            </td>
-                            <td>
-                              <span
-                                ><%= product[i].description %></span>
-                            </td>
-                            
-                            <td>
-                              <span class="badge rounded-pill alert-success"
-                                ><%= product[i].quantity %></span></td>
-                            <td>
-                              <a
-                                href="/admin/productEditPage?id=<%= product[i]._id %>"
-                                class="btn btn-sm btn-danger rounded font-sm mt-15"
-                                >Edit</a
-                              >
-                              <%if(product[i].list === true){%>
-                                <a
-                                href="/admin/listProduct?id=<%= product[i]._id %>"
-                                class="btn btn-sm btn-danger rounded font-sm mt-15"
-                                >Unlist</a
-                              >
-                              <%}else{%>
-                                <a
-                                href="/admin/listProduct?id=<%= product[i]._id %>"
-                                class="btn btn-sm btn-success text-white rounded font-sm mt-15"
-                                >List</a
-                              >
-                               
-                                <%}%></td>
-                           
-                           
-                          </tr>
-                          <% } } else { %>
-                          <tr>
-                            <td colspan="5">Products Not Found</td>
-                          </tr>
-                          <% } %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="myTable" class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Quantity/Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (product && product.length > 0) { for (let i = 0; i <
+            product.length; i++) { %>
+            <tr>
+              <td width="25%">
+                <div class="left">
+                  <img
+                    src="/images/<%= product[i].image[0] %>"
+                    class="img-sm img-thumbnail"
+                    alt="Item"
+                  />
                 </div>
-           
-                
-            </section>
-            <%- include('../layouts/adminFooter.ejs') %>
-    <script>
-      $(document).ready(function () {
-        $("#myTable").DataTable();
-      });
-    </script>
+                <div class="info pl-3">
+                  <h6 class="mb-0 title"><%= product[i].name %></h6>
+                </div>
+              </td>
+              <td>
+                <span>₹<%= product[i].price %></span>
+              </td>
+              <td>
+                <span><%= product[i].category.name %></span>
+              </td>
+              <td>
+                <span><%= product[i].description %></span>
+              </td>
+
+              <td>
+                <span class="badge rounded-pill alert-success"
+                  ><%= product[i].quantity %></span
+                >
+              </td>
+              <td>
+                <a
+                  href="/admin/productEditPage?id=<%= product[i]._id %>"
+                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                  >Edit</a
+                >
+                <%if(product[i].list === true){%>
+                <button
+                  onclick="productList('<%= product[i]._id %>')"
+                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                >
+                  Unlist
+                </button>
+
+                <%}else{%>
+                <button
+                  onclick="productList('<%= product[i]._id %>')"
+                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                >
+                  List
+                </button>
+
+                <%}%>
+              </td>
+            </tr>
+            <% } } else { %>
+            <tr>
+              <td colspan="5">Products Not Found</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/adminFooter.ejs') %>
+<script>
+  const productList = async (productId) => {
+    try {
+      const productList = await axios.patch("/admin/listProduct",{productId});
+      if (productList) {
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  $(document).ready(function () {
+    $("#myTable").DataTable();
+  });
+</script>

@@ -11,6 +11,7 @@ const {
   listCategory,
   changeStatus,
   addCategory,
+  viewOrdered,
   cancelOrder,
   productList,
   productAdd,
@@ -98,7 +99,7 @@ adminRoute.get("/usersList", isAdminLogin, usersList);
  *       200:
  *         description:successful operation
  */
-adminRoute.get("/usersBlocked", isAdminLogin, usersBlocked);
+adminRoute.patch("/usersBlocked", isAdminLogin, usersBlocked);
 /**
  * @swagger
  * /admin/categories:
@@ -158,7 +159,7 @@ adminRoute.post("/editCategory", isAdminLogin, updatedCategory);
  *       200:
  *         description:successful operation
  */
-adminRoute.get("/listCategory", isAdminLogin, listCategory);
+adminRoute.patch("/listCategory", isAdminLogin, listCategory);
 /**
  * @swagger
  * admin/productList:
@@ -223,7 +224,7 @@ adminRoute.get("/productAddPage", isAdminLogin, productAddPage);
  *       200:
  *         description:successful operation
  */
-adminRoute.get("/listProduct", isAdminLogin, listProduct);
+adminRoute.patch("/listProduct", isAdminLogin, listProduct);
 /**
  * @swagger
  * /admin/productAddPage:
@@ -265,6 +266,18 @@ adminRoute.get("/orders", isAdminLogin, orders);
  *         description:successful operation
  */
 adminRoute.patch("/orders", isAdminLogin, cancelOrder);
+/**
+ * @swagger
+ * /admin/orders:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/viewOrdered", isAdminLogin, viewOrdered);
 /**
  * @swagger
  * /admin/orders:

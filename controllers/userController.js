@@ -1,5 +1,4 @@
 const userOTPVerification = require("../models/userOTPVerification");
-const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
@@ -18,7 +17,7 @@ const loadLogin = async (req, res) => {
 };
 const loginSuccess = async (req, res) => {
   try {
-    const { email,password } = req.body;
+    const { email, password } = req.body;
     const usersData = await User.findOne({ email: email });
     if (usersData) {
       const passwordMatch = await bcrypt.compare(password, usersData.password);
@@ -366,7 +365,11 @@ const orders = async (req, res) => {
 };
 const viewOrdered = async (req, res) => {
   try {
-    res.render('viewOrdered')
+    const { id } = req.query;
+    const order = await Order.findById({ _id: id })
+      .populate("user")
+      .populate("items.product");
+    res.render("viewOrdered", { order: order });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -433,7 +436,6 @@ const cancelOrder = async (req, res) => {
           { $inc: { quantity: order.quantity } }
         );
       }
-
       res.status(201).json({
         message: "Successfully updated and modified",
         status: status1,

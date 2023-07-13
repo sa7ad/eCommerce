@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/eCommerce");
-
+require("dotenv").config();
+const dbConnect = require("./controllers/dbController");
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
 const cartCount = require("./middleware/cartCount");
@@ -10,6 +9,7 @@ const session = require("express-session");
 const logger = require("morgan");
 const express = require("express");
 const app = express();
+dbConnect();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 app.use(logger("dev"));
@@ -24,7 +24,7 @@ app.use(express.static(__dirname + "/public/adminAssets"));
 app.use(nocache());
 app.use(
   session({
-    secret: "key",
+    secret: process.env.SESSIONSECRET,
     saveUninitialized: true,
     resave: false,
   })

@@ -105,10 +105,12 @@ const deleteFromCart = async (req, res) => {
       }
     );
     const carttotal = await Cart.findOne({ userId: userId });
-    const length = carttotal.items.length
-    res
-      .status(201)
-      .json({ message: "success and modified", total: carttotal.grandTotal , cart:length});
+    const length = carttotal.items.length;
+    res.status(201).json({
+      message: "success and modified",
+      total: carttotal.grandTotal,
+      cart: length,
+    });
   } catch (error) {
     res.redirect("/error500");
   }
@@ -156,28 +158,31 @@ const cartCount = async (req, res) => {
     res.redirect("/error500");
   }
 };
-const addOrderAddress = async (req,res) => {
+const addOrderAddress = async (req, res) => {
   try {
-    const {userId} = req.session
-    const {name,housename,city,state,phone,pincode} = req.body
-    await User.updateOne({_id:userId},{
-      $push: {
-        address: {
-          name: name,
-          housename: housename,
-          city: city,
-          state: state,
-          phone: phone,
-          pincode: pincode,
+    const { userId } = req.session;
+    const { name, housename, city, state, phone, pincode } = req.body;
+    await User.updateOne(
+      { _id: userId },
+      {
+        $push: {
+          address: {
+            name: name,
+            housename: housename,
+            city: city,
+            state: state,
+            phone: phone,
+            pincode: pincode,
+          },
         },
-      },
-    })
-    res.redirect('/placeOrder')
+      }
+    );
+    res.redirect("/placeOrder");
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
   }
-}
+};
 const placeOrder = async (req, res) => {
   try {
     const { userId } = req.session;
@@ -194,7 +199,7 @@ const placeOrder = async (req, res) => {
 const orderPlaced = async (req, res) => {
   try {
     const { userId } = req.session;
-    const { address, product_grandTotal, selector,orderNote } = req.body;
+    const { address, product_grandTotal, selector, orderNote } = req.body;
     const cart = await Cart.findOne({ userId: userId });
     const updatedArr = cart.items;
     const items = updatedArr.map((product) => ({
@@ -203,28 +208,23 @@ const orderPlaced = async (req, res) => {
       price: product.product_Id.price,
     }));
     const insertOrder = new Order({
-      date: new Date().toLocaleDateString("en-us", {
-        weekday: "long",
-        year: "numeric",
-        month: "short",
-      }),
+      date: new Date().toLocaleString("en-Us", { timeZone: "Asia/Kolkata" }),
       user: new mongoose.Types.ObjectId(userId),
       address: address,
       items: items,
-      orderNote:orderNote,
+      orderNote: orderNote,
       grandTotal: product_grandTotal,
       paymentMethod: selector,
     });
     const orderPlaced = await insertOrder.save();
     if (orderPlaced) {
       for (let item of items) {
-       await Product.updateOne(
+        await Product.updateOne(
           { _id: item.product },
           { $inc: { quantity: -item.quantity } }
         );
       }
       await Cart.deleteOne({ userId: userId });
-
     } else {
       res.redirect("/");
     }
@@ -237,7 +237,9 @@ const orderPlaced = async (req, res) => {
 const orderPlacedSuccess = async (req, res) => {
   try {
     const { userId } = req.session;
-    const details = await Order.findOne({ user: userId }).sort({createdAt:-1})
+    const details = await Order.findOne({ user: userId }).sort({
+      createdAt: -1,
+    });
     res.render("orderPlaced", { order: details });
   } catch (error) {
     console.log(error.message);

@@ -76,16 +76,20 @@
 <%- include('../layouts/footer.ejs') %>
 <script>
   const deleteAddress = async (addId) => {
-    try {
-      let addressId = await axios.put("/deleteAddress", { addId });
-      if (addressId) {
-        alert('Address has been removed')
-        document.getElementById("deleteLi").style.display = "none";
+    swal({
+      title: "Remove Address",
+      text: "Are you sure you want to remove this address?",
+      icon: "warning",
+      buttons: ["Cancel", "OK"],
+      dangerMode: true,
+    }).then(async (remove) => {
+      if (remove) {
+        let addressId = await axios.put("/deleteAddress", { addId });
+        if (addressId) {
+          document.getElementById("deleteLi").style.display = "none";
+        }
       }
-    } catch (error) {
-      console.log(error.message);
-    }
-    return true;
+    });
   };
 </script>
 

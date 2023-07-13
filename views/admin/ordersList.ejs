@@ -49,6 +49,7 @@
                     <th>Order ID</th>
                     <th scope="col">Date</th>
                     <th scope="col">Payment Method</th>
+                    <th scope="col">Ordered Items</th>
                     <th scope="col">Status</th>
                   </tr>
                 </thead>
@@ -58,6 +59,7 @@
                     <td><%= order._id%></td>
                     <td><%= order.date %></td>
                     <td><%= order.paymentMethod %></td>
+                    <td><a href="/admin/viewOrdered?id=<%= order._id%>">View Details</a></td>
                       <td>
                         <select onchange="orderStatus(this.value, '<%= order._id %>')" class="form-select statusSelector" name="statusSelector" id="statusSelector<%= order._id %>">
                           <option value="Canceled" <% if(order.orderStatus === 'Canceled'){ %>selected<% } %>>Canceled</option>

@@ -63,19 +63,22 @@
               <td><%= users[i].phone_number %></td>
               <%if(users[i].blocked===false){%>
               <td>
-                <a
-                  href="/admin/usersBlocked?id=<%= users[i]._id %>"
+                <button
+                  id="btnBlock"
                   class="btn btn-sm btn-danger rounded font-sm mt-15"
-                  >Block</a
+                  onclick="userBlock('<%= users[i]._id %>')"
                 >
+                  Block
+                </button>
               </td>
               <%}else{%>
               <td>
-                <a
-                  href="/admin/usersBlocked?id=<%= users[i]._id %>"
-                  class="btn btn-sm btn-brand rounded font-sm mt-15"
-                  >Unblock</a
+                <button
+                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                  onclick="userBlock('<%= users[i]._id %>')"
                 >
+                  UnBlock
+                </button>
               </td>
               <% }%>
             </tr>
@@ -92,6 +95,16 @@
 </section>
 <%- include('../layouts/adminFooter.ejs') %>
 <script>
+  const userBlock = async (userId) => {
+    try {
+      const userBlock = await axios.patch("/admin/usersBlocked", { userId });
+      if (userBlock) {
+        document.getElementById("btnBlock").style.display = "none";
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   $(document).ready(function () {
     $("#myTable").DataTable();
   });

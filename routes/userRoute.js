@@ -231,6 +231,18 @@ userRoute.patch("/orders", isLogin, cancelOrder);
  *       200:
  *         description:successful operation
  */
+userRoute.get("/viewOrdered", isLogin, viewOrdered);
+/**
+ * @swagger
+ * /editProfile:
+ *  get:
+ *     tags:
+ *     - User
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
 userRoute.get("/editProfile", isLogin, editProfile);
 /**
  * @swagger
