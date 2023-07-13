@@ -3,7 +3,6 @@ const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
-const Cart = require("../models/cartModel");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
@@ -19,8 +18,7 @@ const loadLogin = async (req, res) => {
 };
 const loginSuccess = async (req, res) => {
   try {
-    const { email } = req.body;
-    const { password } = req.body;
+    const { email,password } = req.body;
     const usersData = await User.findOne({ email: email });
     if (usersData) {
       const passwordMatch = await bcrypt.compare(password, usersData.password);
@@ -127,6 +125,7 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       expiresAt: Date.now() + 3600000,
     });
     let verified = await newVerificationOTP.save();
+    console.log(otp);
     await transporter.sendMail(mailOptions);
     return verified._id;
   } catch (error) {
@@ -170,6 +169,7 @@ const emailVerification = async (req, res) => {
         } else {
           const validOTP = await bcrypt.compare(otp, hashedOTP);
           if (!validOTP) {
+            console.log("hi");
             await User.deleteMany({
               _id: UserOTPVerificationRecords[0].userId,
             });
@@ -199,8 +199,7 @@ const loadHome = async (req, res) => {
     res.locals.session = userId;
     const products = await Product.find({ list: true }).populate("category");
     if (products) {
-      const cart = await Cart.findOne({ userId: req.session.userId });
-      res.render("userHome", { products, cart });
+      res.render("userHome", { products });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -357,8 +356,17 @@ const orders = async (req, res) => {
     const { userId } = req.session;
     const orders = await Order.find({ user: userId })
       .populate("items")
-      .populate("user");
+      .populate("user")
+      .sort({ createdAt: -1 });
     res.render("orders", { orders });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const viewOrdered = async (req, res) => {
+  try {
+    res.render('viewOrdered')
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -382,7 +390,6 @@ const updatedPassword = async (req, res) => {
     const passwordMatch = await bcrypt.compare(currentPassword, user.password);
     if (passwordMatch) {
       if (newPassword === confirmNewPassword) {
-        console.log("hi this matched confirm and new password");
         const hashPassword = await bcrypt.hash(newPassword, 10);
         const confirmHashPassword = await bcrypt.hash(confirmNewPassword, 10);
         await User.updateOne(
@@ -413,7 +420,7 @@ const updatedPassword = async (req, res) => {
 const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
-    let status1 = "Cancelled"
+    let status1 = "Cancelled";
     const cancelOrder = await Order.updateOne(
       { _id: orderId },
       { $set: { orderStatus: status1 } }
@@ -427,7 +434,10 @@ const cancelOrder = async (req, res) => {
         );
       }
 
-      res.status(201).json({ message: "Succefully updated and modified",status:status1});
+      res.status(201).json({
+        message: "Successfully updated and modified",
+        status: status1,
+      });
     } else {
       res.status(400).json({ message: "Seems like an error" });
     }
@@ -460,6 +470,7 @@ module.exports = {
   editProfile,
   userProfile,
   cancelOrder,
+  viewOrdered,
   editAddress,
   loadLogout,
   addAddress,

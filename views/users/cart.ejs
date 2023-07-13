@@ -13,7 +13,7 @@
     <%}else {%>
     <div class="cart_inner">
       <div class="table-responsive">
-        <table class="table">
+        <table class="table" id="table">
           <thead>
             <tr>
               <th scope="col">Products</th>
@@ -28,7 +28,10 @@
               <td>
                 <div class="media">
                   <div class="d-flex align-items-center">
-                    <img src="/images/<%= product.product_Id.image %>" alt="" />
+                    <img
+                      src="/images/<%= product.product_Id.image[0] %>"
+                      alt=""
+                    />
                   </div>
                   <div class="media-body">
                     <p><%= product.product_Id.description %></p>
@@ -89,6 +92,15 @@
               <td><h5>Grand Total:</h5></td>
               <td><h5 id="productTotal"><%= products.grandTotal %></h5></td>
             </tr>
+            <%}else{%>
+            <div class="text-center">
+              <img
+                src="/images/empty.jpg"
+                class="img-fluid"
+                style="height: 30rem"
+                alt="empty"
+              />
+            </div>
             <%} %>
 
             <tr class="out_button_area">
@@ -97,7 +109,10 @@
               <td></td>
               <td></td>
               <td>
-                <div class="checkout_btn_inner d-flex align-items-center">
+                <div
+                  class="checkout_btn_inner d-flex align-items-center"
+                  id="hideCheckOut"
+                >
                   <a class="gray_btn" href="/">Continue Shopping</a>
                   <a class="primary-btn ml-2" href="/placeOrder"
                     >Proceed to checkout</a
@@ -114,63 +129,37 @@
   </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<%- include('../layouts/footer.ejs') %>
 <script>
   const deleteFromCart = async (product_Id) => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger",
-      },
-      buttonsStyling: false,
-    });
+    swal({
+      title: "Cancel Order",
+      text: "Are you sure you want to cancel this order?",
+      icon: "warning",
+      buttons: ["Cancel", "OK"],
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        const deletedItem = await axios.put("/cart", { product_Id });
+        console.log(deletedItem.data.total, "the total");
+        document.getElementById("productTotal").innerHTML =
+          deletedItem?.data?.total;
 
-    swalWithBootstrapButtons
-      .fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          var deletedItem = axios.put("/cart", { product_Id }).then((res) => {
-            console.log(res.data.total, "the total");
-            document.getElementById("productTotal").innerHTML =
-              res?.data?.total;
-          });
-          if (deletedItem) {
-            document.getElementById(product_Id).style.display = "none";
-            document.getElementById("productTotal").textContent = updatedTotal;
+        const { cart } = deletedItem.data;
+
+        if (deletedItem) {
+          document.getElementById(product_Id).style.display = "none";
+          document.getElementById("productTotal").textContent =
+            deletedItem.data.total;
+          if (cart === 0) {
+            const remove = document.getElementById("hideCheckOut");
+            remove.parentNode.removeChild(remove);
           }
-          console.log(deletedItem, "the itm that ");
-          swalWithBootstrapButtons.fire(
-            "Deleted!",
-            "Your file has been deleted.",
-            "success"
-          );
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          swalWithBootstrapButtons.fire(
-            "Cancelled",
-            "Your imaginary file is safe :)",
-            "error"
-          );
         }
-      });
-
-    let updatedTotal = deletedItem.data.total;
-    // swal("Removed from cart", "", "success");``
-
-    return deletedItem;
+      }
+    });
   };
+
   const count = async (product_Id, userId, count) => {
     let input = document.getElementById(`inputCount${product_Id}`).value;
     let price = document.getElementById(`productPrice${product_Id}`).innerHTML;
@@ -205,4 +194,4 @@
     return true;
   };
 </script>
-<%- include('../layouts/footer.ejs') %>
+

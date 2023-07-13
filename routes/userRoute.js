@@ -1,6 +1,7 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
 const {
   orderPlacedSuccess,
+  addOrderAddress,
   deleteFromCart,
   orderPlaced,
   placeOrder,
@@ -25,6 +26,7 @@ const {
   editAddress,
   cancelOrder,
   userProfile,
+  viewOrdered,
   insertUser,
   loadLogout,
   addAddress,
@@ -352,6 +354,18 @@ userRoute.post("/changePassword", isLogin, updatedPassword);
 userRoute.get("/placeOrder", isLogin, placeOrder);
 /**
  * @swagger
+ * /addAddress:
+ *  post:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/addOrderAddress", isLogin, addOrderAddress);
+/**
+ * @swagger
  * /orderPlaced:
  *  get:
  *     tags:
@@ -374,6 +388,18 @@ userRoute.get("/orderPlaced", isLogin, orderPlacedSuccess);
  *         description:successful operation
  */
 userRoute.post("/placeOrder", isLogin, orderPlaced);
+/**
+ * @swagger
+ * /placeOrder:
+ *  get:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/viewOrdered", isLogin, viewOrdered);
 
 /**
  * @swagger

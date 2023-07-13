@@ -73,7 +73,7 @@
     </div>
   </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<%- include('../layouts/footer.ejs') %>
 <script>
   const deleteAddress = async (addId) => {
     try {
@@ -88,4 +88,4 @@
     return true;
   };
 </script>
-<%- include('../layouts/footer.ejs') %>
+

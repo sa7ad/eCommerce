@@ -272,7 +272,7 @@ const productUpdated = async (req, res) => {
 };
 const orders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("user");
+    const orders = await Order.find().populate("user").sort({createdAt:-1});
     res.render("ordersList", { orders: orders });
   } catch (error) {
     res.redirect("/error500");

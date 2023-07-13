@@ -1,0 +1,38 @@
+<%- include('../layouts/header.ejs') %>
+<h1>Order Details</h1>
+<table>
+  <tr>
+    <th>Order Number</th>
+    <th>Date</th>
+    <th>Customer Name</th>
+    <th>Shipping Address</th>
+    <th>Payment Method</th>
+    <th>Total Amount</th>
+  </tr>
+  <tr>
+    <td>123456789</td>
+    <td>July 12, 2023</td>
+    <td>John Doe</td>
+    <td>123 Main St, Anytown, USA</td>
+    <td>Credit Card</td>
+    <td>$99.99</td>
+  </tr>
+</table>
+
+<h2>Order Items</h2>
+
+<table>
+  <tr>
+    <th>Item</th>
+    <th>Quantity</th>
+    <th>Price</th>
+    <th>Total</th>
+  </tr>
+  <tr>
+    <td>Product A</td>
+    <td>2</td>
+    <td>$49.99</td>
+    <td>$99.98</td>
+  </tr>
+</table>
+<%- include('../layouts/footer.ejs') %>

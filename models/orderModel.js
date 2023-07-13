@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required:true
+      required: true,
     },
     items: [
       {
@@ -27,6 +27,9 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    orderNote: {
+      type: String,
+    },
     grandTotal: {
       type: Number,
     },

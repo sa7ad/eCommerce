@@ -3,6 +3,7 @@ mongoose.connect("mongodb://localhost:27017/eCommerce");
 
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
+const cartCount = require("./middleware/cartCount");
 
 const nocache = require("nocache");
 const session = require("express-session");
@@ -28,6 +29,9 @@ app.use(
     resave: false,
   })
 );
+
+//Cart Count Middleware
+app.use(cartCount);
 
 const PORT = 3000;
 
