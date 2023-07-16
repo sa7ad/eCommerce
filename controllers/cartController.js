@@ -196,44 +196,7 @@ const placeOrder = async (req, res) => {
     res.redirect("/error500");
   }
 };
-const orderPlaced = async (req, res) => {
-  try {
-    const { userId } = req.session;
-    const { address, product_grandTotal, selector, orderNote } = req.body;
-    const cart = await Cart.findOne({ userId: userId });
-    const updatedArr = cart.items;
-    const items = updatedArr.map((product) => ({
-      product: new mongoose.Types.ObjectId(product.product_Id),
-      quantity: product.quantity,
-      price: product.product_Id.price,
-    }));
-    const insertOrder = new Order({
-      date: new Date().toLocaleString("en-Us", { timeZone: "Asia/Kolkata" }),
-      user: new mongoose.Types.ObjectId(userId),
-      address: address,
-      items: items,
-      orderNote: orderNote,
-      grandTotal: product_grandTotal,
-      paymentMethod: selector,
-    });
-    const orderPlaced = await insertOrder.save();
-    if (orderPlaced) {
-      for (let item of items) {
-        await Product.updateOne(
-          { _id: item.product },
-          { $inc: { quantity: -item.quantity } }
-        );
-      }
-      await Cart.deleteOne({ userId: userId });
-    } else {
-      res.redirect("/");
-    }
-    res.redirect("/orderPlaced");
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
-  }
-};
+
 const orderPlacedSuccess = async (req, res) => {
   try {
     const { userId } = req.session;
@@ -257,7 +220,6 @@ module.exports = {
   orderPlacedSuccess,
   addOrderAddress,
   deleteFromCart,
-  orderPlaced,
   placeOrder,
   addToCart,
   cartCount,

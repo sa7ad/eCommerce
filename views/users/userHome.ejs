@@ -54,6 +54,7 @@
   <!--================ Hero Carousel end =================-->
 
   <!-- ================ trending product section start ================= -->
+  
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
@@ -124,10 +125,17 @@
   <!-- ================ offer section end ================= -->
 
   <!-- ================ Best Selling item  carousel ================= -->
+  <!-- Category Filter -->
+ 
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
         <h2>Best<span class="section-intro__style">Sellers</span></h2>
+      </div>
+      <div class="btn-group" role="group" aria-label="Default button group">
+        <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary">All</button>
+        <button onclick="filterProduct('Watches')" type="button" class="btn btn-outline-primary">Watches</button>
+        <button onclick="filterProduct('Bags')" type="button" class="btn btn-outline-primary">Bags</button>
       </div>
       <div class="row">
        
@@ -152,7 +160,7 @@
                   </ul>
                 </div>
                 <div class="card-body">
-                  <p><%=product.category.name%></p>
+                  <p id="<%=product.category.name%>"><%=product.category.name%></p>
                   <h4 class="card-product__title">
                     <a href="/singleProduct"><%=product.name%></a>
                   </h4>
@@ -314,3 +322,8 @@
   <!-- ================ Subscribe section end ================= -->
 </main>
 <%- include('../layouts/footer.ejs') %>
+<script>
+  const filterProduct = () => {
+    const filter = document.getElementById('').querySelectorAll('')
+  }
+</script>

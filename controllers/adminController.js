@@ -66,7 +66,6 @@ const usersList = async (req, res) => {
 const usersBlocked = async (req, res) => {
   try {
     const { userId } = req.body;
-    console.log(userId, "this is user id");
     const usersBlocked = await User.findById({ _id: userId });
     if (usersBlocked.blocked === false) {
       const userBlock = await User.findByIdAndUpdate(
@@ -87,7 +86,7 @@ const usersBlocked = async (req, res) => {
       res
         .status(201)
         .json({
-          message: "success and modified",
+          message: "success and unBlocked",
           updatedBlock: userBlock.blocked,
         });
     }

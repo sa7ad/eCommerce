@@ -369,6 +369,7 @@ const viewOrdered = async (req, res) => {
     const order = await Order.findById({ _id: id })
       .populate("user")
       .populate("items.product");
+      console.log(order,'this is order');
     res.render("viewOrdered", { order: order });
   } catch (error) {
     console.log(error.message);

@@ -1,9 +1,12 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
 const {
+  orderPlaced,
+  validatePaymentVerification,
+} = require("../controllers/paymentController");
+const {
   orderPlacedSuccess,
   addOrderAddress,
   deleteFromCart,
-  orderPlaced,
   placeOrder,
   addToCart,
   cartCount,
@@ -388,18 +391,30 @@ userRoute.post("/addOrderAddress", isLogin, addOrderAddress);
  *         description:successful operation
  */
 userRoute.get("/orderPlaced", isLogin, orderPlacedSuccess);
-/**
- * @swagger
- * /placeOrder:
- *  post:
- *     tags:
- *     - Orders
- *     description: displays the page of login
- *     responses:
- *       200:
- *         description:successful operation
- */
+// /**
+//  * @swagger
+//  * /placeOrder:
+//  *  post:
+//  *     tags:
+//  *     - Orders
+//  *     description: displays the page of login
+//  *     responses:
+//  *       200:
+//  *         description:successful operation
+//  */
 userRoute.post("/placeOrder", isLogin, orderPlaced);
+// /**
+//  * @swagger
+//  * /api/payment/verify:
+//  *  post:
+//  *     tags:
+//  *     - Orders
+//  *     description: displays the page of login
+//  *     responses:
+//  *       200:
+//  *         description:successful operation
+//  */
+userRoute.post("/verifyPayment", isLogin, validatePaymentVerification);
 /**
  * @swagger
  * /placeOrder:
