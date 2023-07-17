@@ -1,0 +1,74 @@
+<%- include('../layouts/header.ejs') %>
+<style>
+  .table thead th {
+    border-bottom: none;
+  }
+</style>
+<section class="wishlist_area">
+  <div class="container">
+    <div class="wishlist_inner">
+      <% if (products && products.items.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col"><span class="text-dark">Image</span></th>
+              <th scope="col"><span class="text-dark">Name</span></th>
+              <th scope="col"><span class="text-dark">Price</span></th>
+              <th scope="col"><span class="text-dark">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.items.forEach(item => { %>
+            <tr id="<%= item.product_Id._id %>">
+              <td class="align-middle">
+                <img
+                  src="/images/<%= item.product_Id.image[0] %>"
+                  alt="<%= item.product_Id.name %>"
+                  class="img-fluid rounded-start"
+                />
+              </td>
+              <td class="align-middle"><%= item.product_Id.name %></td>
+              <td class="align-middle">₹<%= item.product_Id.price %></td>
+              <td class="align-middle">
+                <button
+                  class="btn btn-danger"
+                  onclick="deleteFromWishList('<%= item.product_Id._id %>')"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } else { %>
+      <div class="text-center">
+        <p id="new" class="empty_message display-6">Your wishlist is empty.</p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>
+<script>
+  const deleteFromWishList = async (product_Id) => {
+    swal({
+      title: "Remove Product",
+      text: "Are you sure you want to remove this from Wishlist?",
+      icon: "warning",
+      buttons: ["Cancel", "OK"],
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        const deletedItem = await axios.put("/deleteFromWishlist", {
+          product_Id,
+        });
+        if (deletedItem) {
+          document.getElementById(product_Id).style.display = "none";
+        }
+      }
+    });
+  };
+</script>

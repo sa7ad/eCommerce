@@ -5,18 +5,20 @@ const {
   productUpdated,
   productAddPage,
   loadDashboard,
-  listProduct,
   editCategory,
   usersBlocked,
   listCategory,
   changeStatus,
   addCategory,
   viewOrdered,
+  listProduct,
+  salesReport,
   cancelOrder,
   productList,
   productAdd,
   categories,
   loadLogout,
+  datePicker,
   loadLogin,
   usersList,
   dashboard,
@@ -280,8 +282,8 @@ adminRoute.patch("/orders", isAdminLogin, cancelOrder);
 adminRoute.get("/viewOrdered", isAdminLogin, viewOrdered);
 /**
  * @swagger
- * /admin/orders:
- *  post:
+ * /admin/adminSalesReport:
+ *  get:
  *     tags:
  *     - Admin
  *     description: user home of ecommerce webpage
@@ -290,6 +292,30 @@ adminRoute.get("/viewOrdered", isAdminLogin, viewOrdered);
  *         description:successful operation
  */
 adminRoute.patch("/changeStatus", isAdminLogin, changeStatus);
+/**
+ * @swagger
+ * /admin/salesReport:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/salesReport", isAdminLogin, salesReport);
+/**
+ * @swagger
+ * /admin/salesReport:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.post("/salesReport", isAdminLogin, datePicker);
 /**
  * @swagger
  * /admin/error500:

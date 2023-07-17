@@ -1,8 +1,10 @@
 const userOTPVerification = require("../models/userOTPVerification");
+const Wishlist = require("../models/wishListModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
@@ -369,7 +371,7 @@ const viewOrdered = async (req, res) => {
     const order = await Order.findById({ _id: id })
       .populate("user")
       .populate("items.product");
-      console.log(order,'this is order');
+    console.log(order, "this is order");
     res.render("viewOrdered", { order: order });
   } catch (error) {
     console.log(error.message);
@@ -449,16 +451,94 @@ const cancelOrder = async (req, res) => {
     res.redirect("/error500");
   }
 };
+const wishList = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const products = await Wishlist.findOne({ userId: userId }).populate(
+      "items.product_Id"
+    );
+    res.render("wishList", { products:products, userId });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const addToWishList = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { product_Id } = req.body;
+    const userWishlist = await Wishlist.findOne({ userId: userId });
+    if (userWishlist) {
+      const findProduct = await Wishlist.findOne({
+        userId: userId,
+        "items.product_Id": new mongoose.Types.ObjectId(product_Id),
+      });
+      if (findProduct) {
+        await Wishlist.findOneAndUpdate(
+          {
+            userId: userId,
+            "items.product_Id": new mongoose.Types.ObjectId(product_Id),
+          },
+          { new: true }
+        );
+      } else {
+        await Wishlist.updateOne(
+          { userId: userId },
+          {
+            $push: {
+              items: {
+                product_Id: new mongoose.Types.ObjectId(product_Id),
+              },
+            },
+          }
+        );
+      }
+    } else {
+      const makeWishList = new Wishlist({
+        userId: userId,
+        items: [
+          {
+            product_Id: new mongoose.Types.ObjectId(product_Id),
+          },
+        ],
+      });
+      await makeWishList.save();
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const deleteFromWishList = async (req,res) => {
+  try {
+    const { userId } = req.session;
+    let { product_Id } = req.body;
+    let productId = new mongoose.Types.ObjectId(product_Id);
+    await Wishlist.updateOne(
+      { userId: userId },
+      {
+        $pull: { items: { product_Id: productId } },
+      }
+    );
+    res.status(201).json({
+      message: "success and modified",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+}
 const error500 = async (req, res) => {
   try {
     res.render("error500");
   } catch (error) {
     console.log(error.message);
+    res.redirect("/error500");
   }
 };
 
 module.exports = {
   emailVerificationPage,
+  deleteFromWishList,
   emailVerification,
   updatedPassword,
   addAddressPage,
@@ -467,6 +547,7 @@ module.exports = {
   changePassword,
   singleProduct,
   manageAddress,
+  addToWishList,
   deleteAddress,
   loginSuccess,
   loadRegister,
@@ -481,5 +562,6 @@ module.exports = {
   loadLogin,
   error500,
   loadHome,
+  wishList,
   orders,
 };

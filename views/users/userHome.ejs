@@ -54,51 +54,59 @@
   <!--================ Hero Carousel end =================-->
 
   <!-- ================ trending product section start ================= -->
-  
+
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
-        <h2>Trending <span class="section-intro__style">Product</span></h2>
+        <h2 class="text-center">Trending<span class="section-intro__style">Products</span></h2>
       </div>
-      <div class="row">
-        <%for(let product of products){%>
-         <%if(product.category.list === true){%>
-
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <a href="/singleProduct?id=<%=product._id%>"><img class="card-img" src="/images/<%=product.image[0]%>" alt="" /></a>
-                <ul class="card-product__imgOverlay">
-                  <li>
-                    <button><i class="ti-search"></i></button>
-                  </li>
-                  <li>
-                    <button><i class="ti-shopping-cart"></i></button>
-                  </li>
-                  <li>
-                    <button><i class="ti-heart"></i></button>
-                  </li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p><%=product.category.name%></p>
-                <h4 class="card-product__title">
-                  <a href="single-product.html"><%=product.name%></a>
-                </h4>
-                <p class="card-product__price">₹<%=product.price%></p>
-              </div>
-            </div>
-          </div>
-          
-          <%}%>
-          <%}%>
-  
-  
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-center align-items-center mb-4">
+            <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2">All</button>
+            <% products.forEach(product => { %>
+            <button onclick="filterProduct('<%= product.category.name %>')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2"><%= product.category.name %></button>
+            <% }) %>
           </div>
         </div>
       </div>
+      <div class="row">
+        <% for (let product of products) { %> <% if (product.category.list === true) { %>
+        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= product.category.name.toLowerCase() %>">
+          <div class="card text-center card-product">
+            <div class="card-product__img">
+              <a href="/singleProduct?id=<%= product._id %>">
+                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
+              </a>
+              <ul class="card-product__imgOverlay">
+                <li>
+                  <a href="/singleProduct"><i class="ti-search"></i></a>
+                </li>
+                <li>
+                  <button><i class="ti-shopping-cart"></i></button>
+                </li>
+                <li>
+                  <button><i class="ti-heart"></i></button>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p class="card-product__category"><%= product.category.name %></p>
+              <h4 class="card-product__title">
+                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
+              </h4>
+              <p class="card-product__price">₹<%= product.price %></p>
+            </div>
+          </div>
+        </div>
+        <% } %> <% } %>
+      </div>
     </div>
   </section>
+  
+  
+  
+  
   <!-- ================ trending product section end ================= -->
 
   <!-- ================ offer section start ================= -->
@@ -126,63 +134,56 @@
 
   <!-- ================ Best Selling item  carousel ================= -->
   <!-- Category Filter -->
- 
+
+  <!-- ================ Best Selling item  carousel end ================= -->
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
-        <h2>Best<span class="section-intro__style">Sellers</span></h2>
+        <h2 class="text-center">Best<span class="section-intro__style">Sellers</span></h2>
       </div>
-      <div class="btn-group" role="group" aria-label="Default button group">
-        <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary">All</button>
-        <button onclick="filterProduct('Watches')" type="button" class="btn btn-outline-primary">Watches</button>
-        <button onclick="filterProduct('Bags')" type="button" class="btn btn-outline-primary">Bags</button>
-      </div>
-      <div class="row">
-       
-          <%for(let product of products){%>
-            <%if(product.category.list === true){%>
-
-            
-            <div class="col-md-6 col-lg-4 col-xl-3">
-              <div class="card text-center card-product">
-                <div class="card-product__img">
-                  <a href="/singleProduct?id=<%=product._id%>"><img class="card-img" src="/images/<%=product.image[0]%>" alt="" /></a>
-                  <ul class="card-product__imgOverlay">
-                    <li>
-                      <button><a href="/singleProduct"><i class="ti-search"></i></a></button>
-                    </li>
-                    <li>
-                      <button><i class="ti-shopping-cart"></i></button>
-                    </li>
-                    <li>
-                      <button><i class="ti-heart"></i></button>
-                    </li>
-                  </ul>
-                </div>
-                <div class="card-body">
-                  <p id="<%=product.category.name%>"><%=product.category.name%></p>
-                  <h4 class="card-product__title">
-                    <a href="/singleProduct"><%=product.name%></a>
-                  </h4>
-                  <p class="card-product__price">₹<%=product.price%></p>
-                </div>
-              </div>
-            </div>
-            <%}%>
-
-            <%}%>
-          
-    
-       
-        
-  
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-center align-items-center mb-4">
+            <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2">All</button>
+            <% products.forEach(product => { %>
+            <button onclick="filterProduct('<%= product.category.name %>')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2"><%= product.category.name %></button>
+            <% }) %>
           </div>
         </div>
       </div>
+      <div class="row">
+        <% for (let product of products) { %> <% if (product.category.list === true) { %>
+        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= product.category.name.toLowerCase() %>">
+          <div class="card text-center card-product">
+            <div class="card-product__img">
+              <a href="/singleProduct?id=<%= product._id %>">
+                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
+              </a>
+              <ul class="card-product__imgOverlay">
+                <li>
+                  <a href="/singleProduct"><i class="ti-search"></i></a>
+                </li>
+                <li>
+                  <button><i class="ti-shopping-cart"></i></button>
+                </li>
+                <li>
+                  <button><i class="ti-heart"></i></button>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p class="card-product__category"><%= product.category.name %></p>
+              <h4 class="card-product__title">
+                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
+              </h4>
+              <p class="card-product__price">₹<%= product.price %></p>
+            </div>
+          </div>
+        </div>
+        <% } %> <% } %>
+      </div>
     </div>
   </section>
-  <!-- ================ Best Selling item  carousel end ================= -->
-
   <!-- ================ Blog section start ================= -->
   <section class="blog">
     <div class="container">
@@ -288,10 +289,7 @@
         <h3 class="subscribe__title">Get Update From Anywhere</h3>
         <p>Bearing Void gathering light light his eavening unto dont afraid</p>
         <div id="mc_embed_signup">
-          <form
-            method="post"
-            class="subscribe-form form-inline mt-5 pt-1"
-          >
+          <form method="post" class="subscribe-form form-inline mt-5 pt-1">
             <div class="form-group ml-sm-auto">
               <input
                 class="form-control mb-1"
@@ -323,7 +321,18 @@
 </main>
 <%- include('../layouts/footer.ejs') %>
 <script>
-  const filterProduct = () => {
-    const filter = document.getElementById('').querySelectorAll('')
+  function filterProduct(category) {
+    category = category.toLowerCase();
+    let productCards = document.querySelectorAll(".filter-item");
+    productCards.forEach(function (card) {
+      let cardCategory = card
+        .querySelector(".card-product__category")
+        .textContent.toLowerCase();
+      if (category === "all" || cardCategory === category) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
   }
 </script>

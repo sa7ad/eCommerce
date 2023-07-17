@@ -50,7 +50,7 @@
               </div>
               <div class="product-actions">
                 <a class="btn btn-primary mr-2" href="/cart?id=<%= userId %>" onclick="addToCart('<%=products._id%>')">Add to Cart</a>
-                <a class="btn btn-outline-primary" href="#"><i class="lnr lnr-heart"></i></a>
+                <a class="btn btn-outline-primary" ><i class="lnr lnr-heart" onclick="addTowishList('<%=products._id%>')"></i></a>
               </div>
             </div>
           </div>
@@ -565,158 +565,25 @@
         </div>
       </div>
     </section>
-    <!--================End Product Description Area =================-->
-
-    <!--================ Start related Product area =================-->
-    <!-- <section class="related-product-area section-margin--small mt-0">
-      <div class="container">
-        <div class="section-intro pb-60px">
-          <p>Popular Item in the market</p>
-          <h2>Top <span class="section-intro__style">Product</span></h2>
-        </div>
-        <div class="row mt-30">
-          <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-            <div class="single-search-product-wrapper">
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-1.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-2.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-3.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-            <div class="single-search-product-wrapper">
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-4.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-5.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-6.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-            <div class="single-search-product-wrapper">
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-7.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-8.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-9.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-            <div class="single-search-product-wrapper">
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-1.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-2.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-              <div class="single-search-product d-flex">
-                <a href="#"
-                  ><img src="img/product/product-sm-3.png" alt=""
-                /></a>
-                <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> -->
-    <!--================ end related Product area =================-->
-
-    <!--================ Start footer Area  =================-->
-    
-    <!--================ End footer Area  =================-->
 
     <%- include('../layouts/footer.ejs') %>
     <script>
      addToCart = async (product_Id)=>{   
       try {
         event.preventDefault()
-        swal("Added To Cart", "", "success");
+        Toastify({
+        text: "Added To Cart",
+        duration: 1000,
+        destination:'/cart',
+        newWindow: false,
+        close: false,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: false,
+        style: {
+        background: "#384aeb",
+        }
+        }).showToast();
         let product_quantity = document.getElementById('sst').value
         const quantityData = await axios.post('/cart',{product_quantity,product_Id})
         return quantityData
@@ -725,6 +592,32 @@
       }
       }
     </script>
+    <script>
+       addTowishList = async (product_Id)=>{   
+      try {
+        event.preventDefault()
+        Toastify({
+        text: "Added To Wishlist",
+        duration: 1000,
+        destination:'/wishList',
+        newWindow: false,
+        close: false,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: false,
+        style: {
+        background: "#FFFFFF",
+        color:"#384aeb"
+        }
+        }).showToast();
+        const wishList = await axios.post('/addToWishList',{product_Id})
+      } catch (error) {
+        console.log(error.message);
+      }
+      }
+    </script>
+ 
+    
  
 
 

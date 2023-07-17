@@ -2,8 +2,6 @@ const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
-const mongoose = require("mongoose");
-const e = require("express");
 require("dotenv").config();
 
 const credentials = {
@@ -42,7 +40,9 @@ const loadDashboard = async (req, res) => {
 };
 const dashboard = async (req, res) => {
   try {
-    res.render("adminDashboard");
+    const ordersCount = await Order.aggregate([{$match:{orderStatus:'Placed'}},{$group:{total:{$sum:'$orderStatus'}}}])
+    console.log(ordersCount,'this is orders couont');
+    res.render("adminDashboard",{ordersCount});
   } catch {
     res.redirect("/error500");
   }
@@ -72,23 +72,19 @@ const usersBlocked = async (req, res) => {
         { _id: userId },
         { $set: { blocked: true } }
       );
-      res
-        .status(201)
-        .json({
-          message: "success and modified",
-          updatedBlock: userBlock.blocked,
-        });
+      res.status(201).json({
+        message: "success and modified",
+        updatedBlock: userBlock.blocked,
+      });
     } else {
       const userBlock = await User.findByIdAndUpdate(
         { _id: userId },
         { $set: { blocked: false } }
       );
-      res
-        .status(201)
-        .json({
-          message: "success and unBlocked",
-          updatedBlock: userBlock.blocked,
-        });
+      res.status(201).json({
+        message: "success and unBlocked",
+        updatedBlock: userBlock.blocked,
+      });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -209,14 +205,14 @@ const productAdd = async (req, res) => {
 };
 const listProduct = async (req, res) => {
   try {
-    const { productId } = req.body
+    const { productId } = req.body;
     const product = await Product.findById({ _id: productId });
     if (product.list === true) {
       await Product.updateOne({ _id: productId }, { $set: { list: false } });
-      res.status(201).json({message:'success and modified'})
+      res.status(201).json({ message: "success and modified" });
     } else {
       await Product.updateOne({ _id: productId }, { $set: { list: true } });
-      res.status(201).json({message:'success and modified'})
+      res.status(201).json({ message: "success and modified" });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -338,6 +334,35 @@ const cancelOrder = async (req, res) => {
     res.redirect("/error500");
   }
 };
+const salesReport = async (req, res) => {
+  try {
+    const salesReport = await Order.find().populate("user");
+    res.render("salesReport", { salesReport });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const datePicker = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+    const selectedDate = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate)
+          },
+        },
+      },
+    ])
+    console.log(selectedDate,'this is latest date');
+    res.status(200).json({ selectedDate:selectedDate });
+  } catch (error) {
+    res.redirect("/error500");
+    console.log(error.message);
+  }
+};
 const error500 = async (req, res) => {
   try {
     res.render("error500");
@@ -357,10 +382,12 @@ module.exports = {
   changeStatus,
   viewOrdered,
   productList,
+  salesReport,
   addCategory,
   cancelOrder,
   listProduct,
   loadLogout,
+  datePicker,
   productAdd,
   categories,
   loadLogin,

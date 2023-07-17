@@ -1,0 +1,98 @@
+<%- include('../layouts/adminHeader.ejs') %>
+<div class="container">
+  <h1 class="mt-5">Sales Report</h1>
+  <button type="button" onclick="printDiv('printThisDiv')" class="btn btn-primary mt-3">Print</button>
+  <div class="row mt-4">
+    <div class="col-lg-6">
+      <div class="form-group">
+        <label for="startDatePicker">Select start date:</label>
+        <input
+          type="date"
+          id="startDatePicker"
+          class="form-control"
+          onchange="selectedDate()"
+        />
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="form-group">
+        <label for="endDatePicker">Select end date:</label>
+        <input
+          type="date"
+          id="endDatePicker"
+          class="form-control"
+          onchange="selectedDate()"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col">
+      <div id="reportContainer">
+        <div id="printThisDiv">
+          <table class="table table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportBody">
+              <% salesReport.forEach(element => {%>
+              <tr>
+                <td><%= element._id%></td>
+                <td><%= element.date%></td>
+                <td><%= element.paymentMethod%></td>
+                <td><%= element.orderStatus%></td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/adminFooter.ejs') %>
+<script>
+  const selectedDate = async () => {
+    try {
+      const startDate = document.getElementById("startDatePicker").value;
+      const endDate = document.getElementById("endDatePicker").value;
+
+      const response = await axios.post("/admin/salesReport", {
+        startDate,
+        endDate,
+      });
+
+      const salesReport = response.data.selectedDate;
+      const reportBody = document.getElementById("reportBody");
+
+      reportBody.innerHTML = salesReport
+        .map(
+          (element) => `
+        <tr>
+          <td>${element._id}</td>
+          <td>${element.paymentMethod}</td>
+          <td>${element.date}</td>
+          <td>${element.orderStatus}</td>
+        </tr>
+      `
+        )
+        .join("");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+</script>
+<script>
+  function printDiv(divName) {
+    const printContents = document.getElementById(divName).innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+  }
+</script>

@@ -14,6 +14,7 @@ const {
 } = require("../controllers/cartController");
 const {
   emailVerificationPage,
+  deleteFromWishList,
   emailVerification,
   updatedPassword,
   addAddressPage,
@@ -23,6 +24,7 @@ const {
   manageAddress,
   deleteAddress,
   singleProduct,
+  addToWishList,
   loginSuccess,
   loadRegister,
   editProfile,
@@ -36,6 +38,7 @@ const {
   loadLogin,
   error500,
   loadHome,
+  wishList,
   orders,
 } = require("../controllers/userController");
 
@@ -427,6 +430,42 @@ userRoute.post("/verifyPayment", isLogin, validatePaymentVerification);
  *         description:successful operation
  */
 userRoute.post("/viewOrdered", isLogin, viewOrdered);
+/**
+ * @swagger
+ * /placeOrder:
+ *  get:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.get("/wishList", isLogin, wishList);
+/**
+ * @swagger
+ * /addToWishList:
+ *  post:
+ *     tags:
+ *     - Wishlist
+ *     description: displays the page of wishlist
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/addToWishList", isLogin, addToWishList);
+/**
+ * @swagger
+ * /deleteFromWishList:
+ *  put:
+ *     tags:
+ *     - Wishlist
+ *     description: displays the page of wishlist
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.put("/deleteFromWishList", isLogin, deleteFromWishList);
 
 /**
  * @swagger

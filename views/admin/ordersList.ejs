@@ -65,6 +65,8 @@
                           <option value="Canceled" <% if(order.orderStatus === 'Canceled'){ %>selected<% } %>>Canceled</option>
                           <option value="Pending" <% if(order.orderStatus === 'Pending'){ %>selected<% } %>>Pending</option>
                           <option value="Delivered" <% if(order.orderStatus === 'Delivered'){ %>selected<% } %>>Delivered</option>
+                          <option value="Dispatched" <% if(order.orderStatus === 'Dispatched'){ %>selected<% } %>>Dispatched</option>
+                          <option value="Returned" <% if(order.orderStatus === 'Returned'){ %>selected<% } %>>Returned</option>
                         </select>
                       </td>
                   <%}%> 
