@@ -11,29 +11,6 @@
     </div>
   </div>
   <div class="row gx-3">
-    <!-- <div class="col-lg-4 col-md-6 me-auto">
-                      <input
-                        type="text"
-                        placeholder="Search..."
-                        class="form-control"
-                      />
-                    </div>
-                    <div class="col-lg-2 col-md-3 col-6">
-                      <select class="form-select">
-                        <option>Status</option>
-                        <option>Verified</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
-                      </select>
-                    </div>
-                    <div class="col-lg-2 col-md-3 col-6">
-                      <select class="form-select">
-                        <option>Show 20</option>
-                        <option>Show 30</option>
-                        <option>Show 40</option>
-                      </select>
-                    </div>
-                  </div> -->
     <div class="card-body">
       <div class="table-responsive">
         <table id="myTable" class="table table-hover text-center">
@@ -72,7 +49,6 @@
               <td>
                 <span><%= product[i].description %></span>
               </td>
-
               <td>
                 <span class="badge rounded-pill alert-success"
                   ><%= product[i].quantity %></span
@@ -84,23 +60,14 @@
                   class="btn btn-sm btn-danger rounded font-sm mt-15"
                   >Edit</a
                 >
-                <%if(product[i].list === true){%>
                 <button
+                  id="block-<%= product[i]._id %>"
                   onclick="productList('<%= product[i]._id %>')"
                   class="btn btn-sm btn-danger rounded font-sm mt-15"
                 >
-                  Unlist
+                  <% if (product[i].list === true) { %> Unlist <% } else { %>
+                  List <% } %>
                 </button>
-
-                <%}else{%>
-                <button
-                  onclick="productList('<%= product[i]._id %>')"
-                  class="btn btn-sm btn-danger rounded font-sm mt-15"
-                >
-                  List
-                </button>
-
-                <%}%>
               </td>
             </tr>
             <% } } else { %>
@@ -118,8 +85,12 @@
 <script>
   const productList = async (productId) => {
     try {
-      const productList = await axios.patch("/admin/listProduct",{productId});
-      if (productList) {
+      const button = document.getElementById(`block-${productId}`);
+      const responses = await axios.patch("/admin/listProduct", { productId });
+      if (responses.data.unlistSuccess) {
+        button.textContent = "List";
+      } else if (responses.data.listSuccess) {
+        button.textContent = "Unlist";
       }
     } catch (error) {
       console.log(error.message);

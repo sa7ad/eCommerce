@@ -53,6 +53,6 @@ const userSchema = new mongoose.Schema({
   blocked: {
     type: Boolean,
   },
-});
+},{timestamps:true});
 
 module.exports = mongoose.model("User", userSchema);

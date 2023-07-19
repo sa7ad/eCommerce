@@ -20,6 +20,7 @@
               <th scope="col">Price</th>
               <th scope="col">Quantity</th>
               <th scope="col">Total</th>
+              <th scope="col">Remove</th>
             </tr>
           </thead>
           <tbody>
@@ -41,32 +42,19 @@
               <td>
                 <h5 class="product-price"><%= product.product_Id.price %></h5>
               </td>
-
               <td>
-                <div class="quantity">
-                  <button
-                    class="btn btn-decrement"
-                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',-1)"
-                  >
+                <div class="quantity d-flex justify-content-between align-items-center">
+                  <button class="btn btn-decrement" onclick="count('<%= product.product_Id._id %>','<%= userId %>',-1)">
                     -
                   </button>
-                  <input
-                    class="text-center"
-                    style="width: 60px"
-                    id="inputCount<%=product.product_Id._id %>"
-                    type="text"
-                    min="1"
-                    value="<%= product.quantity %>"
-                    readonly
-                  />
-                  <button
-                    class="btn btn-increment"
-                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',1)"
-                  >
+                  <input class="text-center" style="width: 60px" id="inputCount<%=product.product_Id._id %>"
+                    type="text" min="1" value="<%= product.quantity %>" readonly />
+                  <button class="btn btn-increment" onclick="count('<%= product.product_Id._id %>','<%= userId %>',1)">
                     +
                   </button>
                 </div>
               </td>
+              
               <td>
                 <h5 id="productPrice<%= product.product_Id._id %>">
                   <%= product.product_Id.price * product.quantity %>
@@ -82,9 +70,11 @@
               </td>
             </tr>
             <% }%> <%} else { %>
-
-            <h5 class="text-center">Empty Cart List</h5>
-
+            <tr>
+              <td colspan="5">
+                <h5 class="text-center">Empty Cart List</h5>
+              </td>
+            </tr>
             <% } %> <% if (products && products.items.length > 0) { %>
             <%if(products.items && products.grandTotal>0){ %>
             <tr>
@@ -93,21 +83,21 @@
               <td><h5 id="productTotal"><%= products.grandTotal %></h5></td>
             </tr>
             <%}else{%>
-            <div class="text-center">
-              <img
-                src="/images/empty.jpg"
-                class="img-fluid"
-                style="height: 30rem"
-                alt="empty"
-              />
-            </div>
+            <tr>
+              <td colspan="5">
+                <div class="text-center">
+                  <img
+                    src="/images/empty.jpg"
+                    class="img-fluid"
+                    style="height: 30rem"
+                    alt="empty"
+                  />
+                </div>
+              </td>
+            </tr>
             <%} %>
-
             <tr class="out_button_area">
-              <td class="d-none-l"></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td colspan="4"></td>
               <td>
                 <div
                   class="checkout_btn_inner d-flex align-items-center"
@@ -128,6 +118,7 @@
     <%}%>
   </div>
 </section>
+
 
 <%- include('../layouts/footer.ejs') %>
 <script>

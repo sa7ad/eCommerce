@@ -61,26 +61,16 @@
                 >
               </td>
               <td><%= users[i].phone_number %></td>
-              <%if(users[i].blocked===false){%>
-              <td id="UnBlock">
-                <button
-                  id="btnBlock"
-                  class="btn btn-sm btn-danger rounded font-sm mt-15"
-                  onclick="userBlock('<%= users[i]._id %>')"
-                >
-                  Unblock
-                </button>
-              </td>
-              <%}else{%>
               <td id="block">
                 <button
+                  id="prodId<%=users[i]._id%>"
                   class="btn btn-sm btn-danger rounded font-sm mt-15"
                   onclick="userBlock('<%= users[i]._id %>')"
                 >
-                  Block
+                  <%if(users[i].blocked===false){%> Block <%}else{%> Unblock <%
+                  }%>
                 </button>
               </td>
-              <% }%>
             </tr>
             <% } } else { %>
             <tr>
@@ -98,25 +88,10 @@
   const userBlock = async (userId) => {
     try {
       const userBlock = await axios.patch("/admin/usersBlocked", { userId });
-      if (userBlock.data.message=="success and unBlocked") {
-        console.log('successss');
-        let div=`<button
-                  class="btn btn-sm btn-danger rounded font-sm mt-15"
-                  onclick="userBlock('${userId}')"
-                >
-                  Block
-                </button>`
-        document.getElementById('block').innerHTML = div
-      }else{
-        let div =` <button
-                  id="btnBlock"
-                  class="btn btn-sm btn-danger rounded font-sm mt-15"
-                  onclick="userBlock('${userId}')"
-                >
-                  Unblock
-                </button>`
-        console.log('eeeeeeeeeeeeeeeeeeeeee');
-        document.getElementById('UnBlock').innerHTML =div
+      if (userBlock.data.message === true) {
+        document.getElementById(`prodId${userId}`).textContent = 'Unblock'
+      } else if (userBlock.data.message === false) {
+        document.getElementById(`prodId${userId}`).textContent = 'Block'
       }
     } catch (error) {
       console.log(error.message);

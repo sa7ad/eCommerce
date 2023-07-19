@@ -39,6 +39,7 @@ const {
   error500,
   loadHome,
   wishList,
+  shopPage,
   orders,
 } = require("../controllers/userController");
 
@@ -142,6 +143,18 @@ userRoute.get("/emailVerification", isLogout, emailVerificationPage);
  *         description:successful operation
  */
 userRoute.post("/emailVerification", emailVerification);
+/**
+ * @swagger
+ * /cart:
+ *  get:
+ *     tags:
+ *     - shop
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.get("/shopPage", shopPage);
 /**
  * @swagger
  * /cart:

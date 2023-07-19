@@ -1,0 +1,102 @@
+<%- include('../layouts/header.ejs') %>
+<section class="section-margin--small mb-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3 col-lg-4 col-md-5">
+        <div class="sidebar-categories">
+          <div class="head">Browse Categories</div>
+          <ul class="main-categories">
+            <li class="common-filter">
+              <form action="#">
+                <ul id="category-filter">
+                  <li onclick="filterProduct('All')" class="filter-list">
+                    <input
+                      class="pixel-radio"
+                      type="radio"
+                      id="all"
+                      name="category"
+                      checked
+                    />
+                    <label for="all">All</label>
+                  </li>
+                  <% products.forEach(item => { %>
+                  <li
+                    onclick="filterProduct('<%= item.category.name %>')"
+                    class="filter-list"
+                  >
+                    <input
+                      class="pixel-radio"
+                      type="radio"
+                      id="<%= item.category.name %>"
+                      name="category"
+                    />
+                    <label for="<%= item.category.name %>"
+                      ><%= item.category.name %></label
+                    >
+                  </li>
+                  <% }) %>
+                </ul>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-xl-9 col-lg-8 col-md-7">
+        <section class="lattest-product-area pb-40 category-list">
+          <div class="row" id="product-list">
+            <% products.forEach(item => { %>
+            <div
+              class="col-md-6 col-lg-4 filter-item"
+              data-category="<%= item.category.name %>"
+            >
+              <div class="card text-center card-product">
+                <div class="card-product__img">
+                  <img
+                    class="card-img"
+                    src="/images/<%= item.image[0] %>"
+                    alt=""
+                  />
+                  <ul class="card-product__imgOverlay">
+                    <li>
+                      <button><i class="ti-search"></i></button>
+                    </li>
+                    <li>
+                      <button><i class="ti-shopping-cart"></i></button>
+                    </li>
+                    <li>
+                      <button><i class="ti-heart"></i></button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <p class="card-product__category">
+                    <%= item.category.name %>
+                  </p>
+                  <h4 class="card-product__title">
+                    <a href="#"><%= item.name %></a>
+                  </h4>
+                  <p class="card-product__price"><%= item.price %></p>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>
+
+<script>
+  function filterProduct(category) {
+    let productCards = document.querySelectorAll(".filter-item");
+    productCards.forEach((card) => {
+      card.style.display =
+        category === "All" ||
+        card.dataset.category.toLowerCase() === category.toLowerCase()
+          ? "block"
+          : "none";
+    });
+  }
+</script>

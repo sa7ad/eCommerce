@@ -40,9 +40,69 @@ const loadDashboard = async (req, res) => {
 };
 const dashboard = async (req, res) => {
   try {
-    const ordersCount = await Order.aggregate([{$match:{orderStatus:'Placed'}},{$group:{total:{$sum:'$orderStatus'}}}])
-    console.log(ordersCount,'this is orders couont');
-    res.render("adminDashboard",{ordersCount});
+    const profitMargin = 0.5;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    const latestOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .populate("user");
+    const currentYearProfit = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Placed",
+          $expr: { $eq: [{ $year: "$createdAt" }, currentYear] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          profit: {
+            $sum: { $multiply: [profitMargin, "$grandTotal"] },
+          },
+        },
+      },
+    ]);
+    const revenue = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: { $ne: "Canceled" },
+        },
+      },
+      { $group: { _id: null, revenue: { $sum: "$grandTotal" } } },
+    ]);
+    const monthlyEarning = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Placed",
+          $expr: { $eq: [{ $month: "$createdAt" }, currentMonth] },
+        },
+      },
+      { $group: { _id: null, earning: { $sum: "$grandTotal" } } },
+    ]);
+    const latestUsers = await User.find().sort({ createdAt: -1 }).limit(4);
+    const pendingOrder = await Order.countDocuments({ orderStatus: "Pending" });
+    const placedOrder = await Order.countDocuments({ orderStatus: "Placed" });
+    const cancelledOrder = await Order.countDocuments({
+      orderStatus: "Cancelled",
+    });
+    const deliveredOrder = await Order.countDocuments({
+      orderStatus: "Delivered",
+    });
+    const countProduct = await Product.countDocuments();
+    const categoryCount = await Category.countDocuments();
+    res.render("adminDashboard", {
+      pendingOrder,
+      revenue,
+      latestUsers,
+      countProduct,
+      categoryCount,
+      latestOrders,
+      monthlyEarning,
+      currentYearProfit,
+      placedOrder,
+      cancelledOrder,
+      deliveredOrder,
+    });
   } catch {
     res.redirect("/error500");
   }
@@ -68,22 +128,20 @@ const usersBlocked = async (req, res) => {
     const { userId } = req.body;
     const usersBlocked = await User.findById({ _id: userId });
     if (usersBlocked.blocked === false) {
-      const userBlock = await User.findByIdAndUpdate(
+      await User.findByIdAndUpdate(
         { _id: userId },
         { $set: { blocked: true } }
       );
       res.status(201).json({
-        message: "success and modified",
-        updatedBlock: userBlock.blocked,
+        message: true,
       });
     } else {
-      const userBlock = await User.findByIdAndUpdate(
+      await User.findByIdAndUpdate(
         { _id: userId },
         { $set: { blocked: false } }
       );
       res.status(201).json({
-        message: "success and unBlocked",
-        updatedBlock: userBlock.blocked,
+        message: false,
       });
     }
   } catch (error) {
@@ -148,15 +206,16 @@ const listCategory = async (req, res) => {
     const category = await Category.findById({ _id: categoryId });
     if (category.list === true) {
       await Category.updateOne({ _id: categoryId }, { $set: { list: false } });
-      res.status(201).json({ message: "success and modified" });
+      res.status(201).json({ message: true });
     } else {
       await Category.updateOne({ _id: categoryId }, { $set: { list: true } });
-      res.status(201).json({ message: "success and modified" });
+      res.status(201).json({ message: false });
     }
   } catch (error) {
     res.redirect("/error500");
   }
 };
+
 const productAddPage = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -209,10 +268,10 @@ const listProduct = async (req, res) => {
     const product = await Product.findById({ _id: productId });
     if (product.list === true) {
       await Product.updateOne({ _id: productId }, { $set: { list: false } });
-      res.status(201).json({ message: "success and modified" });
+      res.status(201).json({ unlistSuccess: true });
     } else {
       await Product.updateOne({ _id: productId }, { $set: { list: true } });
-      res.status(201).json({ message: "success and modified" });
+      res.status(201).json({ listSuccess: true });
     }
   } catch (error) {
     res.redirect("/error500");
@@ -351,13 +410,12 @@ const datePicker = async (req, res) => {
         $match: {
           createdAt: {
             $gte: new Date(startDate),
-            $lte: new Date(endDate)
+            $lte: new Date(endDate),
           },
         },
       },
-    ])
-    console.log(selectedDate,'this is latest date');
-    res.status(200).json({ selectedDate:selectedDate });
+    ]);
+    res.status(200).json({ selectedDate: selectedDate });
   } catch (error) {
     res.redirect("/error500");
     console.log(error.message);

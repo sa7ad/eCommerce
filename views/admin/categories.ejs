@@ -52,17 +52,14 @@
                                                           class="btn btn-sm btn-success rounded font-sm text-white mt-15"
                                                           >Edit</a
                                                         >
-                                                        <%if(category[i].list === true){%>
-                                                            <button onclick="categoryList('<%= category[i]._id %>')"
-                                                          class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
-                                                          >Unlist</button>
-                                                        <%}else{%>
-
-                                                            <button onclick="categoryList('<%= category[i]._id %>')"
-                                                                class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
-                                                                >List</button>
-                                                        
-                                                            <%}%>
+                                                        <button id="categId<%= category[i]._id %>" onclick="categoryList('<%= category[i]._id %>')"
+                                                            class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2">
+                                                            <%if(category[i].list === true){%>
+                                                          Unlist
+                                                          <%}else{%>
+                                                        List
+                                                        <%}%>
+                                                        </button>
                                                         </td>
                                                 </tr>
                                             <%}}else{%>
@@ -98,12 +95,15 @@
     const categoryList = async (categoryId) => {
         try {
             const categoryList = await axios.patch('/admin/listCategory',{categoryId})
-            if (categoryList) {
-                
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
+            if (categoryList.data.message === true) {
+        document.getElementById(`categId${categoryId}`).textContent = 'List'
+      } else if (categoryList.data.message === false) {
+        document.getElementById(`categId${categoryId}`).textContent = 'Unlist'
+      }
+    } catch{
+        console.log(console.message);
+    }
+       
     }
   $(document).ready(function () {
     $("#myTable").DataTable();

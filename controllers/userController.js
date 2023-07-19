@@ -112,6 +112,7 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       },
     });
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    console.log(otp,'this is otp in userController');
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
@@ -126,7 +127,6 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       expiresAt: Date.now() + 3600000,
     });
     let verified = await newVerificationOTP.save();
-    console.log(otp);
     await transporter.sendMail(mailOptions);
     return verified._id;
   } catch (error) {
@@ -170,7 +170,6 @@ const emailVerification = async (req, res) => {
         } else {
           const validOTP = await bcrypt.compare(otp, hashedOTP);
           if (!validOTP) {
-            console.log("hi");
             await User.deleteMany({
               _id: UserOTPVerificationRecords[0].userId,
             });
@@ -203,6 +202,15 @@ const loadHome = async (req, res) => {
       res.render("userHome", { products });
     }
   } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const shopPage = async (req, res) => {
+  try {
+    const products = await Product.find({ list: true }).populate("category");
+    res.render("shopPage", { products });
+  } catch (error) {
+    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -457,7 +465,7 @@ const wishList = async (req, res) => {
     const products = await Wishlist.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
-    res.render("wishList", { products:products, userId });
+    res.render("wishList", { products: products, userId });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -508,7 +516,7 @@ const addToWishList = async (req, res) => {
     console.log(error.message);
   }
 };
-const deleteFromWishList = async (req,res) => {
+const deleteFromWishList = async (req, res) => {
   try {
     const { userId } = req.session;
     let { product_Id } = req.body;
@@ -526,7 +534,7 @@ const deleteFromWishList = async (req,res) => {
     console.log(error.message);
     res.redirect("/error500");
   }
-}
+};
 const error500 = async (req, res) => {
   try {
     res.render("error500");
@@ -561,6 +569,7 @@ module.exports = {
   insertUser,
   loadLogin,
   error500,
+  shopPage,
   loadHome,
   wishList,
   orders,
