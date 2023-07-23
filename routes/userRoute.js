@@ -31,6 +31,7 @@ const {
   editAddress,
   cancelOrder,
   userProfile,
+  returnOrder,
   viewOrdered,
   insertUser,
   loadLogout,
@@ -239,6 +240,18 @@ userRoute.get("/orders", isLogin, orders);
  *         description:successful operation
  */
 userRoute.patch("/orders", isLogin, cancelOrder);
+/**
+ * @swagger
+ * /orders:
+ *  put:
+ *     tags:
+ *     - Orders
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.patch("/returnOrder", isLogin, returnOrder);
 /**
  * @swagger
  * /editProfile:

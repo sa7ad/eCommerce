@@ -1,9 +1,9 @@
 <%- include('../layouts/header.ejs') %>
 
-<section style="background-color: #eee">
+<section style="background-color: #f8f9fa;">
   <div class="container py-5">
     <% if(typeof message!=='undefined'){ %>
-    <h6 class="text-success"><%=message %></h6>
+    <div class="text-success"><%=message %></div>
     <% } %>
     <div class="row">
       <div class="col-lg-4">
@@ -13,7 +13,7 @@
               src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
               alt="avatar"
               class="rounded-circle img-fluid"
-              style="width: 150px"
+              style="width: 150px; border: 4px solid #fff;"
             />
             <h5 class="my-3">
               <%= userProfile.first_name %> <%= userProfile.last_name %>
@@ -24,31 +24,36 @@
           <div class="card-body">
             <ul class="list-group list-group-flush">
               <li class="list-group-item">
-                <a href="/editProfile" class="text-decoration-none"
-                  >Edit Profile</a
-                >
+                <a href="/editProfile" class="btn btn-outline-primary btn-block">Edit Profile</a>
               </li>
               <li class="list-group-item">
-                <a href="/orders" class="text-decoration-none">Orders</a>
+                <a href="/orders" class="btn btn-outline-primary btn-block">Orders</a>
               </li>
               <li class="list-group-item">
-                <a href="/manageAddress" class="text-decoration-none"
-                  >Manage Address</a
-                >
+                <a href="/manageAddress" class="btn btn-outline-primary btn-block">Manage Address</a>
               </li>
             </ul>
           </div>
         </div>
       </div>
-
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
+            <h5 class="card-title">Wallet</h5>
+            <p class="mb-0">₹<%= userProfile.wallet %></p>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#walletModal">
+              View Wallet
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
             <h5 class="card-title">User Profile</h5>
             <hr />
-            <div class="row">
+
+            <div class="row mb-3">
               <div class="col-sm-3">
-                <p class="mb-0">Full Name</p>
+                <p class="font-weight-bold mb-0">Full Name</p>
               </div>
               <div class="col-sm-9">
                 <p class="text-muted mb-0">
@@ -57,18 +62,18 @@
               </div>
             </div>
             <hr />
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-sm-3">
-                <p class="mb-0">Email</p>
+                <p class="font-weight-bold mb-0">Email</p>
               </div>
               <div class="col-sm-9">
                 <p class="text-muted mb-0"><%= userProfile.email %></p>
               </div>
             </div>
             <hr />
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-sm-3">
-                <p class="mb-0">Phone</p>
+                <p class="font-weight-bold mb-0">Phone</p>
               </div>
               <div class="col-sm-9">
                 <p class="text-muted mb-0"><%= userProfile.phone_number %></p>
@@ -77,9 +82,7 @@
             <hr />
             <div class="row">
               <div class="col-sm-9">
-                <a href="/changePassword" class="btn btn-sm btn-primary"
-                  >Change Password</a
-                >
+                <a href="/changePassword" class="btn btn-primary btn-sm">Change Password</a>
               </div>
             </div>
           </div>
@@ -88,5 +91,27 @@
     </div>
   </div>
 </section>
+<div class="modal fade mt-5" id="walletModal" tabindex="-1" role="dialog" aria-labelledby="walletModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="walletModalLabel">Wallet Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Your Wallet Balance:₹<%= userProfile.wallet%> </p>
+        <!-- Display wallet history -->
+        <ul>
+        
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <%- include('../layouts/footer.ejs') %>

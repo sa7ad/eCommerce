@@ -22,8 +22,17 @@ const orderPlaced = async (req, res) => {
       quantity: product.quantity,
       price: product.product_Id.price,
     }));
+    const date = new Date().toLocaleString("en-IN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      timeZone: "Asia/Kolkata",
+    });
     const insertOrder = new Order({
-      date: new Date().toLocaleString("en-Us", { timeZone: "Asia/Kolkata" }),
+      date: date,
       user: new mongoose.Types.ObjectId(userId),
       address: address,
       items: items,
@@ -71,6 +80,7 @@ const validatePaymentVerification = async (req, res) => {
     );
     hmac = hmac.digest("hex");
     if (hmac === body.payment.razorpay_signature) {
+      console.log(body.payment.razorpay_signature);
       const items = await Order.findByIdAndUpdate(
         { _id: body.order.receipt },
         { $set: { paymentId: body.payment.razorpay_payment_id } }

@@ -5,6 +5,9 @@ const orderSchema = new mongoose.Schema(
     date: {
       type: String,
     },
+    expiredDate: {
+      type: String,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -28,6 +31,9 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     orderNote: {
+      type: String,
+    },
+    cancelReason: {
       type: String,
     },
     grandTotal: {

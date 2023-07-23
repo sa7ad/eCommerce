@@ -112,7 +112,7 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       },
     });
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    console.log(otp,'this is otp in userController');
+    console.log(otp, "this is otp in userController");
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
@@ -363,11 +363,12 @@ const deleteAddress = async (req, res) => {
 const orders = async (req, res) => {
   try {
     const { userId } = req.session;
+    let currentDate = new Date()
     const orders = await Order.find({ user: userId })
       .populate("items")
       .populate("user")
       .sort({ createdAt: -1 });
-    res.render("orders", { orders });
+    res.render("orders", { orders ,currentDate});
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -379,7 +380,6 @@ const viewOrdered = async (req, res) => {
     const order = await Order.findById({ _id: id })
       .populate("user")
       .populate("items.product");
-    console.log(order, "this is order");
     res.render("viewOrdered", { order: order });
   } catch (error) {
     console.log(error.message);
@@ -388,9 +388,10 @@ const viewOrdered = async (req, res) => {
 };
 const changePassword = async (req, res) => {
   try {
-    let { message } = req.session;
+    let { message, userId } = req.session;
     req.session.message = "";
-    res.render("changePassword", { message });
+    const userProfile = await User.findById({ _id: userId });
+    res.render("changePassword", { message, userProfile });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -431,13 +432,35 @@ const updatedPassword = async (req, res) => {
     res.redirect("/error500");
   }
 };
+const returnOrder = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { orderId, expiredDate, grandTotal } = req.body;
+    let expiringDate = new Date(expiredDate)
+    let todayDate = new Date();
+    if (expiringDate > todayDate) {
+      await Order.findByIdAndUpdate(
+        { _id: orderId },
+        { $set: { orderStatus: "Returned" } }
+      );
+      await User.updateOne({ _id: userId }, { $inc: { wallet: grandTotal } });
+      const updatedReturn = await Order.findById({ _id: orderId });
+      res.status(201).json({ message: updatedReturn.orderStatus });
+    } else {
+      res.status(400).json({ message: "Bad request" });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
 const cancelOrder = async (req, res) => {
   try {
-    const { orderId } = req.body;
+    const { orderId, cancelReason } = req.body;
     let status1 = "Cancelled";
     const cancelOrder = await Order.updateOne(
       { _id: orderId },
-      { $set: { orderStatus: status1 } }
+      { $set: { orderStatus: status1, cancelReason: cancelReason } }
     );
     if (cancelOrder) {
       const orders = await Order.findById({ _id: orderId });
@@ -560,6 +583,7 @@ module.exports = {
   loginSuccess,
   loadRegister,
   editProfile,
+  returnOrder,
   userProfile,
   cancelOrder,
   viewOrdered,

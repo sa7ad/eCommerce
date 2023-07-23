@@ -63,6 +63,7 @@
                       <td>
                         <select onchange="orderStatus(this.value, '<%= order._id %>')" class="form-select statusSelector" name="statusSelector" id="statusSelector<%= order._id %>">
                           <option value="Canceled" <% if(order.orderStatus === 'Canceled'){ %>selected<% } %>>Canceled</option>
+                          <option value="Placed" <% if(order.orderStatus === 'Placed'){ %>selected<% } %>>Placed</option>
                           <option value="Pending" <% if(order.orderStatus === 'Pending'){ %>selected<% } %>>Pending</option>
                           <option value="Delivered" <% if(order.orderStatus === 'Delivered'){ %>selected<% } %>>Delivered</option>
                           <option value="Dispatched" <% if(order.orderStatus === 'Dispatched'){ %>selected<% } %>>Dispatched</option>

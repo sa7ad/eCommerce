@@ -15,8 +15,8 @@
                     <th>Order ID</th>
                     <th>Address</th>
                     <th>Payment Method</th>
-                    <th>Order Status</th>
                     <th>Ordered Items</th>
+                    <th>Order Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -31,21 +31,28 @@
                         >View Details</a
                       >
                     </td>
+
                     <td id="status"><%= order.orderStatus %></td>
-
-                    <td class="cancel">
-                      <% if(order.orderStatus !== "Cancelled" ){ %>
-                      <button
-                        class="btn btn-danger"
-                        onclick="cancelOrder('<%= order._id %>')"
-                      >
-                        Cancel
-                      </button>
-
-                      <% }%>
+                    
+      
+                    <% if(order.orderStatus === "Delivered" && order.orderStatus !=="Returned"){ %>
+                      <td class="return">
+                        <button onclick="returnOrder('<%= order._id%>','<%= order.expiredDate%>','<%= order.grandTotal%>')" class="btn btn-danger">
+                          Return
+                        </button>
+                      </td>
+                      <% }else if(order.orderStatus !== 'Delivered' && order.orderStatus !=="Cancelled" && order.orderStatus !=="Returned"){%>
+                        <td class="cancel">
+                          <button
+                            class="btn btn-danger"
+                            onclick="cancel('<%= order._id%>')"
+                          >
+                            Cancel
+                          </button>
+                       </td>
+                      <%}%>
                       <span id="delete" style="display: none"
-                        >order has been removed</span
-                      >
+                        >order has been removed</span>
                     </td>
                   </tr>
                   <% }}else{ %>
@@ -62,8 +69,54 @@
 </section>
 
 <%- include('../layouts/footer.ejs') %>
+<div id="cancelReason" class="modal mt-5" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cancel Reason</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form onsubmit="event.preventDefault(); cancelOrder();">
+        <div class="modal-body">
+          <label for="cancelTextArea">Enter the cancel reason:</label>
+          <textarea
+            id="cancelTextArea"
+            class="form-control"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer.ejs') %>
 <script>
-  const cancelOrder = async (orderId) => {
+  let currentOrderId;
+  const cancel = (orderId) => {
+    const cancelModal = document.getElementById("cancelReason");
+    currentOrderId = orderId;
+    cancelModal.style.display = "block";
+  };
+  const cancelOrder = async () => {
+    const cancelModal = document.getElementById("cancelReason");
+    cancelModal.style.display = "none";
+    const orderId = currentOrderId;
+    let cancelValue = document.getElementById("cancelTextArea").value;
+    if (!cancelValue) {
+      alert("Cancel statement is required");
+      return false;
+    }
     swal({
       title: "Cancel Order",
       text: "Are you sure you want to cancel this order?",
@@ -72,7 +125,10 @@
       dangerMode: true,
     }).then(async (cancel) => {
       if (cancel) {
-        const cancelItem = await axios.patch("/orders", { orderId });
+        const cancelItem = await axios.patch("/orders", {
+          orderId,
+          cancelReason: cancelValue,
+        });
         if (cancelItem.data.message) {
           document.getElementById("status").textContent =
             cancelItem.data.status;
@@ -84,4 +140,35 @@
       }
     });
   };
+</script>
+<script>
+const returnOrder = async (orderId, expiredDate, grandTotal) => {
+  swal({
+    title: "Return Order",
+    text: "Are you sure you want to return this order?",
+    icon: "warning",
+    buttons: ["Cancel", "OK"],
+    dangerMode: true,
+  }).then(async (returnOrder) => {
+    if (returnOrder) {
+      const returnItem = await axios.patch("/returnOrder", {
+        orderId: orderId,
+        expiredDate: expiredDate,
+        grandTotal: grandTotal,
+      });
+      if (returnItem.data.message) {
+        document.getElementById("returnStatus").textContent =
+          returnItem.data.message;
+        const remove = document
+          .getElementById(`ordertable-${orderId}`)
+          .querySelector(".return");
+        remove.parentNode.removeChild(remove);
+
+        // Update the order status in the table to "Returned"
+        const statusCell = document.getElementById(`ordertable-${orderId}`).querySelector("#status");
+        statusCell.textContent = "Returned";
+      }
+    }
+  });
+};
 </script>

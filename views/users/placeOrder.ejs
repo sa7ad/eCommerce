@@ -92,10 +92,10 @@
                 <input type="hidden" name="amount" id="amount" value='<%=item.product_Id.price%>'>
                 <ul class="list">
                   <li>
-                    <a href="#"><h4>Product <span>Total</span></h4></a>
+                    <a href="#"><h4>Product<span>Total</span></h4></a>
                   </li>
                   <li>
-                    <a href="#"><%= item.product_Id.name%><span class="middle">x <%= item.quantity %></span><span class="last"><%= item.total %></span></a>
+                    <a href="#"><%= item.product_Id.name%><span class="middle">x <%= item.quantity %></span><span class="last">₹<%= item.total %></span></a>
                   </li>
                 </ul>
               <%}) %>
@@ -104,7 +104,7 @@
             <input type="hidden" name="product_grandTotal" id="product_grandTotal" value='<%= carts.grandTotal%>'>
             <ul class="list list_2">
               <li>
-                <a href="#">Total <span><%= carts.grandTotal%></span></a>
+                <a href="#">Total <span>₹<%= carts.grandTotal%></span></a>
               </li>
             </ul>
             <% } %>
@@ -184,7 +184,6 @@
     "image": "https://example.com/your_logo",
     "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     "handler": function (response){
-      console.log(response)
         verifyPayment(response,order)
     },
     "prefill": {

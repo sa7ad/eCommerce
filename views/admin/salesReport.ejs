@@ -17,6 +17,7 @@
           id="startDatePicker"
           class="form-control"
           onchange="selectedDate()"
+          required
         />
       </div>
     </div>
@@ -28,6 +29,7 @@
           id="endDatePicker"
           class="form-control"
           onchange="selectedDate()"
+          required
         />
       </div>
     </div>
@@ -37,7 +39,7 @@
       <div id="reportContainer">
         <div id="printThisDiv">
           <table class="table table-striped">
-            <thead class="thead-dark">
+            <thead class="thead-dark" id="reportHeader">
               <tr>
                 <th>Order ID</th>
                 <th>Date</th>
@@ -65,29 +67,75 @@
 <script>
   const selectedDate = async () => {
     try {
-      const startDate = document.getElementById("startDatePicker").value;
-      const endDate = document.getElementById("endDatePicker").value;
-
+      let startDate = document.getElementById("startDatePicker").value;
+      let endDate = document.getElementById("endDatePicker").value;
+      if (!startDate || !endDate) {
+        Toastify({
+          text: "Please select both start and end dates",
+          duration: 3000,
+          position: "center",
+          style: {
+            background: "#FFFFFF",
+            color: "#384aeb",
+          },
+        }).showToast();
+        return false;
+      }
+      let startDateObj = new Date(startDate);
+      let endDateObj = new Date(endDate);
+      if (startDateObj > endDateObj) {
+        Toastify({
+          text: "Start date cannot be greater than end date",
+          duration: 3000,
+          position: "center",
+          style: {
+            background: "#FFFFFF",
+            color: "#384aeb",
+          },
+        }).showToast();
+        return false;
+      }
+      const today = new Date();
+      if (endDateObj > today) {
+        Toastify({
+          text: "End date cannot be in the future",
+          duration: 3000,
+          position: "center",
+          style: {
+            background: "#FFFFFF",
+            color: "#384aeb",
+          },
+        }).showToast();
+        return false;
+      }
       const response = await axios.post("/admin/salesReport", {
         startDate,
         endDate,
       });
-
       const salesReport = response.data.selectedDate;
       const reportBody = document.getElementById("reportBody");
-
       reportBody.innerHTML = salesReport
         .map(
           (element) => `
         <tr>
           <td>${element._id}</td>
-          <td>${element.paymentMethod}</td>
           <td>${element.date}</td>
+          <td>${element.paymentMethod}</td>
           <td>${element.orderStatus}</td>
         </tr>
       `
         )
         .join("");
+      const tableHeader = `
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Payment Method</th>
+          <th>Status</th>
+        </tr>
+      `;
+      const reportHeader = document.getElementById("reportHeader");
+      reportHeader.innerHTML = tableHeader;
     } catch (error) {
       console.log(error.message);
     }

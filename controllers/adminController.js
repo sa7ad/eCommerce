@@ -40,6 +40,74 @@ const loadDashboard = async (req, res) => {
 };
 const dashboard = async (req, res) => {
   try {
+    let usersData = [];
+    let currentSalesYear = new Date(new Date().getFullYear(), 0, 1);
+    let usersByYear = await User.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: currentSalesYear },
+          blocked: { $ne: true },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%m", date: "$createdAt" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    for (let i = 1; i <= 12; i++) {
+      let result = true;
+      for (let j = 0; j < usersByYear.length; j++) {
+        result = false;
+        if (usersByYear[j]._id == i) {
+          usersData.push(usersByYear[j]);
+          break;
+        } else {
+          result = true;
+        }
+      }
+      if (result) usersData.push({ _id: i, count: 0 });
+    }
+    let userData = [];
+    for (let i = 0; i < usersData.length; i++) {
+      userData.push(usersData[i].count);
+    }
+    let sales = [];
+    let salesByYear = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: currentSalesYear },
+          orderStatus: { $ne: "Cancelled" },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%m", date: "$createdAt" } },
+          total: { $sum: "$grandTotal" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    for (let i = 1; i <= 12; i++) {
+      let result = true;
+      for (let j = 0; j < salesByYear.length; j++) {
+        result = false;
+        if (salesByYear[j]._id == i) {
+          sales.push(salesByYear[j]);
+          break;
+        } else {
+          result = true;
+        }
+      }
+      if (result) sales.push({ _id: i, total: 0, count: 0 });
+    }
+    let salesData = [];
+    for (let i = 0; i < sales.length; i++) {
+      salesData.push(sales[i].total);
+    }
     const profitMargin = 0.5;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
@@ -49,7 +117,7 @@ const dashboard = async (req, res) => {
     const currentYearProfit = await Order.aggregate([
       {
         $match: {
-          orderStatus: "Placed",
+          orderStatus: "Delivered",
           $expr: { $eq: [{ $year: "$createdAt" }, currentYear] },
         },
       },
@@ -65,7 +133,7 @@ const dashboard = async (req, res) => {
     const revenue = await Order.aggregate([
       {
         $match: {
-          orderStatus: { $ne: "Canceled" },
+          orderStatus: { $ne: "Delivered" },
         },
       },
       { $group: { _id: null, revenue: { $sum: "$grandTotal" } } },
@@ -73,7 +141,7 @@ const dashboard = async (req, res) => {
     const monthlyEarning = await Order.aggregate([
       {
         $match: {
-          orderStatus: "Placed",
+          orderStatus: "Delivered",
           $expr: { $eq: [{ $month: "$createdAt" }, currentMonth] },
         },
       },
@@ -99,11 +167,14 @@ const dashboard = async (req, res) => {
       latestOrders,
       monthlyEarning,
       currentYearProfit,
+      salesData,
       placedOrder,
       cancelledOrder,
+      userData,
       deliveredOrder,
     });
-  } catch {
+  } catch (error) {
+    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -301,7 +372,12 @@ const productUpdated = async (req, res) => {
       product_category,
       product_description,
     } = req.body;
+    // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
+    //if all the images should not be deleted while updating
+    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
+    //   imageArr = existingProduct.image
+    // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
         imageArr.push(req.files[i].filename);
@@ -364,7 +440,28 @@ const viewOrdered = async (req, res) => {
 const changeStatus = async (req, res) => {
   try {
     const { status, orderId } = req.body;
-    await Order.updateOne({ _id: orderId }, { $set: { orderStatus: status } });
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 10);
+    const dateInTenDays = currentDate.toLocaleString("en-IN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      timeZone: "Asia/Kolkata",
+    });
+    if (status === "Delivered") {
+      await Order.updateOne(
+        { _id: orderId },
+        { $set: { orderStatus: status, expiredDate: dateInTenDays } }
+      );
+    } else {
+      await Order.updateOne(
+        { _id: orderId },
+        { $set: { orderStatus: status } }
+      );
+    }
     res.status(201).json({ success: true });
   } catch (error) {
     console.log(error.message);

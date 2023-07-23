@@ -3,9 +3,11 @@
   <div class="content-header">
     <div>
       <h2 class="content-title card-title">Dashboard</h2>
-      <p>Football boots are an essential part of a player's equipment. 
-        <br>They are designed to provide traction on the field and grip the <br>
-         ground in order to avoid slipping and sliding.</p>
+      <p>
+        Football boots are an essential part of a player's equipment. <br />They
+        are designed to provide traction on the field and grip the <br />
+        ground in order to avoid slipping and sliding.
+      </p>
     </div>
     <div>
       <a href="/admin/salesReport" class="btn btn-primary">Sales Report</a>
@@ -23,7 +25,9 @@
             <%if(revenue.length){%>
             <span>₹ <%= revenue[0].revenue%></span>
             <%}%>
-            <span class="text-sm">Revenue on the basis of placed orders.</span>
+            <span class="text-sm"
+              >Revenue on the basis of delivered orders.</span
+            >
           </div>
         </article>
       </div>
@@ -223,15 +227,14 @@
     <div class="col-xl-4 col-lg-12">
       <div class="card mb-4">
         <article class="card-body">
-          <h5 class="card-title"></h5>
-          <!-- <canvas id="myChart2" height="217"></canvas> -->
+          <h5 class="card-title">Order Chart</h5>
           <div id="chart2"></div>
         </article>
       </div>
       <div class="card mb-4">
         <article class="card-body">
           <h5 class="card-title">Marketing Chanel</h5>
-          <span class="text-muted font-xs">Facebook</span>
+          <span class="text-muted font-xs"></span>
           <div class="progress mb-3">
             <div class="progress-bar" role="progressbar" style="width: 15%">
               15%
@@ -266,9 +269,9 @@
     </div>
   </div>
   <div class="card mb-4">
-    <!-- <header class="card-header">
+    <header class="card-header">
       <h4 class="card-title">Latest orders</h4>
-      <div class="row align-items-center">
+      <!-- <div class="row align-items-center">
         <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
           <div class="custom_select">
             <select class="form-select select-nice">
@@ -300,8 +303,8 @@
             </select>
           </div>
         </div>
-      </div>
-    </header> -->
+      </div> -->
+    </header>
     <div class="card-body">
       <div class="table-responsive">
         <div class="table-responsive">
@@ -374,93 +377,59 @@
     </nav>
   </div>
 </section>
-<%- include('../layouts/adminFooter.ejs') %>
-<script>
-  const profitSale = parseInt("");
-  var options = {
-    series: [
-      {
-        name: "Current Year Profit",
-        data: [profitSale, profitSale],
-      },
-      {
-        name: "Monthly",
-        data: [11, 32, 45, 32, 34, 52, 41],
-      },
-    ],
-    chart: {
-      height: 350,
-      type: "area",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      curve: "smooth",
-    },
-    xaxis: {
-      type: "datetime",
-      categories: [
-        "2018-09-19T00:00:00.000Z",
-        "2018-09-19T01:30:00.000Z",
-        "2018-09-19T02:30:00.000Z",
-        "2018-09-19T03:30:00.000Z",
-        "2018-09-19T04:30:00.000Z",
-        "2018-09-19T05:30:00.000Z",
-        "2018-09-19T06:30:00.000Z",
-      ],
-    },
-    tooltip: {
-      x: {
-        format: "dd/MM/yy HH:mm",
-      },
-    },
-  };
+<input type="hidden" value="<%= salesData[0]%>" id="jan" />
+<input type="hidden" value="<%= salesData[1]%>" id="feb" />
+<input type="hidden" value="<%= salesData[2]%>" id="mar" />
+<input type="hidden" value="<%= salesData[3]%>" id="apr" />
+<input type="hidden" value="<%= salesData[4]%>" id="may" />
+<input type="hidden" value="<%= salesData[5]%>" id="jun" />
+<input type="hidden" value="<%= salesData[6]%>" id="jul" />
+<input type="hidden" value="<%= salesData[7]%>" id="aug" />
+<input type="hidden" value="<%= salesData[8]%>" id="sep" />
+<input type="hidden" value="<%= salesData[9]%>" id="oct" />
+<input type="hidden" value="<%= salesData[10]%>" id="nov" />
+<input type="hidden" value="<%= salesData[11]%>" id="dec" />
 
-  var chart1 = new ApexCharts(document.querySelector("#chart"), options);
-  chart1.render();
-  let cancel = parseInt("");
-  let placeOrder = parseInt("");
-  let deliveredOrder = parseInt("");
+<input type="hidden" value="<%= userData[0]%>" id="Jan" />
+<input type="hidden" value="<%= userData[1]%>" id="Feb" />
+<input type="hidden" value="<%= userData[2]%>" id="Mar" />
+<input type="hidden" value="<%= userData[3]%>" id="Apr" />
+<input type="hidden" value="<%= userData[4]%>" id="May" />
+<input type="hidden" value="<%= userData[5]%>" id="Jun" />
+<input type="hidden" value="<%= userData[6]%>" id="Jul" />
+<input type="hidden" value="<%= userData[7]%>" id="Aug" />
+<input type="hidden" value="<%= userData[8]%>" id="Sep" />
+<input type="hidden" value="<%= userData[9]%>" id="Oct" />
+<input type="hidden" value="<%= userData[10]%>" id="Nov" />
+<input type="hidden" value="<%= userData[11]%>" id="Dec" />
+<%- include('../layouts/adminFooter.ejs') %>
+<script src="/public/adminAssets/assets/js/custom-chart.js"></script>
+<script>
+  let cancel = parseInt("<%=cancelledOrder%>");
+  let placeOrder = parseInt("<%=placedOrder%>");
+  let deliveredOrder = parseInt("<%=deliveredOrder%>");
   var options = {
     series: [cancel, placeOrder, deliveredOrder],
     chart: {
-      width: 290,
-      type: "polarArea",
+      width: 280,
+      type: "pie",
     },
     labels: ["Cancelled", "Placed", "Delivered"],
-    fill: {
-      opacity: 1,
-    },
-    stroke: {
-      width: 1,
-      colors: undefined,
-    },
-    yaxis: {
-      show: false,
-    },
-    legend: {
-      position: "bottom",
-    },
-    plotOptions: {
-      polarArea: {
-        rings: {
-          strokeWidth: 0,
-        },
-        spokes: {
-          strokeWidth: 0,
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
+          },
         },
       },
-    },
-    theme: {
-      monochrome: {
-        enabled: true,
-        shadeTo: "light",
-        shadeIntensity: 0.6,
-      },
-    },
+    ],
   };
 
-  var chart2 = new ApexCharts(document.querySelector("#chart2"), options);
-  chart2.render();
+  var chart = new ApexCharts(document.querySelector("#chart2"), options);
+  chart.render();
 </script>

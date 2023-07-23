@@ -10,7 +10,6 @@ const loadCart = async (req, res) => {
     const products = await Cart.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
-    console.log(products, "this is products from the cart");
     res.render("cart", { products, userId });
   } catch (error) {
     res.redirect("/error500");
