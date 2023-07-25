@@ -10,6 +10,18 @@ const bannerSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
+    field: {
+      type: String,
+      required: true,
+    },
+    list: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

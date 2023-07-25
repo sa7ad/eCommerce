@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel")
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
@@ -189,8 +190,23 @@ const placeOrder = async (req, res) => {
     const cart = await Cart.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
+    const coupon = await Coupon.find()
     const address = await User.findOne({ _id: userId });
-    res.render("placeOrder", { address: address, carts: cart });
+    if (address.wallet >= cart.grandTotal) {
+      res.render("placeOrder", {
+        address: address,
+        carts: cart,
+        coupon:coupon,
+        wallet: address.wallet,
+      });
+    } else {
+      res.render("placeOrder", {
+        address: address,
+        carts: cart,
+        coupon:coupon,
+        wallet: "null",
+      });
+    }
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");

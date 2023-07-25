@@ -5,6 +5,7 @@ const {
   productUpdated,
   productAddPage,
   loadDashboard,
+  updatedCoupon,
   editCategory,
   usersBlocked,
   listCategory,
@@ -15,15 +16,24 @@ const {
   salesReport,
   cancelOrder,
   productList,
+  couponAdded,
   productAdd,
   categories,
+  editCoupon,
+  listBanner,
   loadLogout,
   datePicker,
+  bannerAdd,
+  bannerEdit,
   loadLogin,
   usersList,
   dashboard,
   error500,
+  coupon,
+  banner,
   orders,
+  bannerAdded,
+  bannerUpdated,
 } = require("../controllers/adminController");
 const upload = require("../middleware/uploadImage");
 const express = require("express");
@@ -258,6 +268,88 @@ adminRoute.post(
 adminRoute.get("/orders", isAdminLogin, orders);
 /**
  * @swagger
+ * /admin/banner:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/banner", isAdminLogin, banner);
+/**
+ * @swagger
+ * /admin/bannerAdd:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/bannerAdd", isAdminLogin, bannerAdd);
+/**
+ * @swagger
+ * /admin/bannerAdd:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.post(
+  "/bannerAdd",
+  isAdminLogin,
+  upload.array("bannerImage", 4),
+  bannerAdded
+);
+/**
+ * @swagger
+ * /admin/bannerEdit:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/bannerEdit", isAdminLogin, bannerEdit);
+/**
+ * @swagger
+ * /admin/bannerEdit:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.post(
+  "/bannerEdit",
+  isAdminLogin,
+  upload.array("bannerImage", 4),
+  bannerUpdated
+);
+/**
+ * @swagger
+ * /admin/listBanner:
+ *  patch:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.patch("/listBanner", isAdminLogin, listBanner);
+/**
+ * @swagger
  * /admin/orders:
  *  post:
  *     tags:
@@ -316,6 +408,54 @@ adminRoute.get("/salesReport", isAdminLogin, salesReport);
  *         description:successful operation
  */
 adminRoute.post("/salesReport", isAdminLogin, datePicker);
+/**
+ * @swagger
+ * /admin/coupon:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/coupon", isAdminLogin, coupon);
+/**
+ * @swagger
+ * /admin/coupon:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.post("/coupon", isAdminLogin, couponAdded);
+/**
+ * @swagger
+ * /admin/coupon:
+ *  get:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.get("/editCoupon", isAdminLogin, editCoupon);
+/**
+ * @swagger
+ * /admin/coupon:
+ *  post:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.post("/editCoupon", isAdminLogin, updatedCoupon);
 /**
  * @swagger
  * /admin/error500:

@@ -51,10 +51,18 @@ const userSchema = new mongoose.Schema(
     verified: {
       type: Boolean,
     },
-    wallet:{
-      type:Number,
-      default:0
+    wallet: {
+      type: Number,
+      default: 0,
     },
+    walletTransactions: [
+      {
+        walletDetails: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Order",
+        },
+      },
+    ],
     blocked: {
       type: Boolean,
     },

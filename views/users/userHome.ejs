@@ -3,11 +3,15 @@
   <section class="hero-banner">
     <div class="container">
       <div class="row no-gutters align-items-center pt-60px">
+        <%if(banner && banner[0].list === true){%>
         <div class="col-5 d-none d-sm-block">
           <div class="hero-banner__img">
-            <img class="img-fluid" src="img/home/hero-banner.png" alt="" />
+            <%banner.forEach(img=>{%>
+            <img class="img-fluid" src="/images/<%= img.image[0]%>" alt="" />
+            <%})%>
           </div>
         </div>
+        <%}%>
         <div class="col-sm-7 col-lg-6 offset-lg-1 pl-4 pl-md-5 pl-lg-0">
           <div class="hero-banner__content">
             <h4>Shop is fun</h4>
@@ -58,25 +62,46 @@
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
-        <h2 class="text-center">Trending<span class="section-intro__style">Products</span></h2>
+        <h2 class="text-center">
+          Our<span class="section-intro__style">Products</span>
+        </h2>
       </div>
       <div class="row justify-content-center">
         <div class="col-lg-8">
           <div class="d-flex justify-content-center align-items-center mb-4">
-            <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2">All</button>
-            <% products.forEach(product => { %>
-            <button onclick="filterProduct('<%= product.category.name %>')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2"><%= product.category.name %></button>
-            <% }) %>
+            <button
+              onclick="filterProduct('All')"
+              type="button"
+              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+            >
+              All
+            </button>
+              <%brands.forEach(brand=>{%>
+                <button
+                  onclick="filterProduct('<%= brand %>')"
+                  type="button"
+                  class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+                >
+                  <%= brand %>
+                </button>
+              <%})%>
           </div>
         </div>
       </div>
       <div class="row">
-        <% for (let product of products) { %> <% if (product.category.list === true) { %>
-        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= product.category.name.toLowerCase() %>">
+        <% for (let product of products) { %> <% if (product.category.list ===
+        true) { %>
+        <div
+          class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>"
+        >
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
-                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
+                <img
+                  class="card-img"
+                  src="/images/<%= product.image[0] %>"
+                  alt=""
+                />
               </a>
               <ul class="card-product__imgOverlay">
                 <li>
@@ -91,9 +116,11 @@
               </ul>
             </div>
             <div class="card-body">
-              <p class="card-product__category"><%= product.category.name %></p>
+              <p class="card-product__category"><%= product.brand %></p>
               <h4 class="card-product__title">
-                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
+                <a href="/singleProduct?id=<%= product._id %>"
+                  ><%= product.name %></a
+                >
               </h4>
               <p class="card-product__price">₹<%= product.price %></p>
             </div>
@@ -103,10 +130,7 @@
       </div>
     </div>
   </section>
-  
-  
-  
-  
+
   <!-- ================ trending product section end ================= -->
 
   <!-- ================ offer section start ================= -->
@@ -139,25 +163,46 @@
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
-        <h2 class="text-center">Best<span class="section-intro__style">Sellers</span></h2>
+        <h2 class="text-center">
+          Best<span class="section-intro__style">Sellers</span>
+        </h2>
       </div>
       <div class="row justify-content-center">
         <div class="col-lg-8">
           <div class="d-flex justify-content-center align-items-center mb-4">
-            <button onclick="filterProduct('All')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2">All</button>
-            <% products.forEach(product => { %>
-            <button onclick="filterProduct('<%= product.category.name %>')" type="button" class="btn btn-outline-primary btn-sm rounded-pill mr-2"><%= product.category.name %></button>
-            <% }) %>
+            <button
+              onclick="filterProduct('All')"
+              type="button"
+              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+            >
+              All
+            </button>
+              <%brands.forEach(brand=>{%>
+                <button
+                  onclick="filterProduct('<%= brand %>')"
+                  type="button"
+                  class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+                >
+                  <%= brand %>
+                </button>
+              <%})%>
           </div>
         </div>
       </div>
       <div class="row">
-        <% for (let product of products) { %> <% if (product.category.list === true) { %>
-        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= product.category.name.toLowerCase() %>">
+        <% for (let product of products) { %> <% if (product.category.list ===
+        true) { %>
+        <div
+          class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>"
+        >
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
-                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
+                <img
+                  class="card-img"
+                  src="/images/<%= product.image[0] %>"
+                  alt=""
+                />
               </a>
               <ul class="card-product__imgOverlay">
                 <li>
@@ -172,9 +217,11 @@
               </ul>
             </div>
             <div class="card-body">
-              <p class="card-product__category"><%= product.category.name %></p>
+              <p class="card-product__category"><%= product.brand %></p>
               <h4 class="card-product__title">
-                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
+                <a href="/singleProduct?id=<%= product._id %>"
+                  ><%= product.name %></a
+                >
               </h4>
               <p class="card-product__price">₹<%= product.price %></p>
             </div>
@@ -185,101 +232,7 @@
     </div>
   </section>
   <!-- ================ Blog section start ================= -->
-  <section class="blog">
-    <div class="container">
-      <div class="section-intro pb-60px">
-        <h2>Latest <span class="section-intro__style">News</span></h2>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-          <div class="card card-blog">
-            <div class="card-blog__img">
-              <img class="card-img rounded-0" src="img/blog/blog1.png" alt="" />
-            </div>
-            <div class="card-body">
-              <ul class="card-blog__info">
-                <li><a href="#">By Admin</a></li>
-                <li>
-                  <a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a>
-                </li>
-              </ul>
-              <h4 class="card-blog__title">
-                <a href="single-blog.html"
-                  >The Richland Center Shooping News and weekly shooper</a
-                >
-              </h4>
-              <p>
-                Let one fifth i bring fly to divided face for bearing divide
-                unto seed. Winged divided light Forth.
-              </p>
-              <a class="card-blog__link" href="#"
-                >Read More <i class="ti-arrow-right"></i
-              ></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-          <div class="card card-blog">
-            <div class="card-blog__img">
-              <img class="card-img rounded-0" src="img/blog/blog2.png" alt="" />
-            </div>
-            <div class="card-body">
-              <ul class="card-blog__info">
-                <li><a href="#">By Admin</a></li>
-                <li>
-                  <a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a>
-                </li>
-              </ul>
-              <h4 class="card-blog__title">
-                <a href="single-blog.html"
-                  >The Shopping News also offers top-quality printing
-                  services</a
-                >
-              </h4>
-              <p>
-                Let one fifth i bring fly to divided face for bearing divide
-                unto seed. Winged divided light Forth.
-              </p>
-              <a class="card-blog__link" href="#"
-                >Read More <i class="ti-arrow-right"></i
-              ></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-          <div class="card card-blog">
-            <div class="card-blog__img">
-              <img class="card-img rounded-0" src="img/blog/blog3.png" alt="" />
-            </div>
-            <div class="card-body">
-              <ul class="card-blog__info">
-                <li><a href="#">By Admin</a></li>
-                <li>
-                  <a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a>
-                </li>
-              </ul>
-              <h4 class="card-blog__title">
-                <a href="single-blog.html"
-                  >Professional design staff and efficient equipment you’ll find
-                  we offer</a
-                >
-              </h4>
-              <p>
-                Let one fifth i bring fly to divided face for bearing divide
-                unto seed. Winged divided light Forth.
-              </p>
-              <a class="card-blog__link" href="#"
-                >Read More <i class="ti-arrow-right"></i
-              ></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
   <!-- ================ Blog section end ================= -->
 
   <!-- ================ Subscribe section start ================= -->
@@ -321,14 +274,13 @@
 </main>
 <%- include('../layouts/footer.ejs') %>
 <script>
-  function filterProduct(category) {
-    category = category.toLowerCase();
+  function filterProduct(brand) {
     let productCards = document.querySelectorAll(".filter-item");
     productCards.forEach(function (card) {
       let cardCategory = card
         .querySelector(".card-product__category")
-        .textContent.toLowerCase();
-      if (category === "all" || cardCategory === category) {
+        .textContent
+      if (brand === "All" || cardCategory === brand) {
         card.style.display = "block";
       } else {
         card.style.display = "none";

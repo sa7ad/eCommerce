@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
+const User = require("../models/userModel");
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel");
 
 var instance = new Razorpay({
   key_id: process.env.paymentId,
@@ -13,8 +15,16 @@ var instance = new Razorpay({
 const orderPlaced = async (req, res) => {
   try {
     const { userId } = req.session;
-    const { address, product_grandTotal, selector, orderNote } = req.body;
-    const status = selector === "COD" ? "Placed" : "Pending";
+    const { address, product_grandTotal, selector, orderNote, coupon } =
+      req.body;
+    if (coupon !== "undefined") {
+      const amountReduced = await Coupon.aggregate([
+        { $match: { code: coupon } },
+        { $group: { _id: 0 } }
+      ]);
+      console.log(amountReduced, "this is amount reduced in the backend");
+    }
+    const status = selector === "COD" || "Wallet" ? "Placed" : "Pending";
     const cart = await Cart.findOne({ userId: userId });
     const updatedArr = cart.items;
     const items = updatedArr.map((product) => ({
@@ -42,7 +52,7 @@ const orderPlaced = async (req, res) => {
       orderStatus: status,
     });
     const orderPlaced = await insertOrder.save();
-    if (status === "Placed") {
+    if (status === "Placed" && orderPlaced.paymentMethod === "COD") {
       for (let item of items) {
         await Product.updateOne(
           { _id: item.product },
@@ -51,6 +61,19 @@ const orderPlaced = async (req, res) => {
       }
       await Cart.deleteOne({ userId: userId });
       res.json({ codSuccess: true });
+    } else if (status === "Placed" && orderPlaced.paymentMethod === "Wallet") {
+      for (let item of items) {
+        await User.updateOne(
+          { _id: userId },
+          { $inc: { wallet: -orderPlaced.grandTotal } }
+        );
+        await Product.updateOne(
+          { _id: item.product },
+          { $inc: { quantity: -item.quantity } }
+        );
+      }
+      await Cart.deleteOne({ userId: userId });
+      res.json({ walletSuccess: true });
     } else {
       var options = {
         amount: orderPlaced.grandTotal * 100,
@@ -80,7 +103,6 @@ const validatePaymentVerification = async (req, res) => {
     );
     hmac = hmac.digest("hex");
     if (hmac === body.payment.razorpay_signature) {
-      console.log(body.payment.razorpay_signature);
       const items = await Order.findByIdAndUpdate(
         { _id: body.order.receipt },
         { $set: { paymentId: body.payment.razorpay_payment_id } }

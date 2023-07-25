@@ -1,7 +1,9 @@
 const userOTPVerification = require("../models/userOTPVerification");
+const Banner = require("../models/bannerModel");
 const Wishlist = require("../models/wishListModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
+const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
 const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
@@ -197,18 +199,70 @@ const loadHome = async (req, res) => {
   try {
     const { userId } = req.session;
     res.locals.session = userId;
+    const banner = await Banner.find({ title: "Main Banner" });
+    const bannerNews = await Banner.find({ title: "News" });
     const products = await Product.find({ list: true }).populate("category");
+    const brands = await Product.distinct("brand");
     if (products) {
-      res.render("userHome", { products });
+      res.render("userHome", { products, brands, banner, bannerNews });
     }
   } catch (error) {
     res.redirect("/error500");
   }
 };
+
 const shopPage = async (req, res) => {
   try {
-    const products = await Product.find({ list: true }).populate("category");
-    res.render("shopPage", { products });
+    const ITEMS_PER_PAGE = 6;
+    const { category, search, brand, sort } = req.query;
+    let page = Number(req.query.page);
+    if (isNaN(page) || page < 1) {
+      page = 1;
+    }
+    const condition = { list: true };
+    if (category) {
+      condition.category = category;
+    }
+    if (search) {
+      condition.name = { $regex: search, $options: "i" };
+    }
+    if (brand) {
+      condition.brand = brand;
+    }
+    const sortOptions = {};
+    if (sort === "price-asc") {
+      sortOptions.price = 1;
+    } else if (sort === "price-desc") {
+      sortOptions.price = -1;
+    } else {
+      sortOptions.createdAt = -1;
+    }
+    const products = await Product.find(condition)
+      .sort(sortOptions)
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE)
+      .populate("category");
+
+    const productCount = await Product.find(condition).count();
+    const categoryFind = await Category.find({ list: true });
+    const brandFind = await Product.distinct("brand");
+
+    res.render("shopPage", {
+      products,
+      categoryFind,
+      category,
+      search,
+      brandFind,
+      brand,
+      sort,
+      totalCount: productCount,
+      currentPage: page,
+      hasNextPage: page * ITEMS_PER_PAGE < productCount,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+      lastPage: Math.ceil(productCount / ITEMS_PER_PAGE),
+    });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -363,12 +417,12 @@ const deleteAddress = async (req, res) => {
 const orders = async (req, res) => {
   try {
     const { userId } = req.session;
-    let currentDate = new Date()
+    let currentDate = new Date();
     const orders = await Order.find({ user: userId })
       .populate("items")
       .populate("user")
       .sort({ createdAt: -1 });
-    res.render("orders", { orders ,currentDate});
+    res.render("orders", { orders, currentDate });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -436,7 +490,7 @@ const returnOrder = async (req, res) => {
   try {
     const { userId } = req.session;
     const { orderId, expiredDate, grandTotal } = req.body;
-    let expiringDate = new Date(expiredDate)
+    let expiringDate = new Date(expiredDate);
     let todayDate = new Date();
     if (expiringDate > todayDate) {
       await Order.findByIdAndUpdate(

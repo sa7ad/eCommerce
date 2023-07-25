@@ -1,0 +1,133 @@
+<%- include('../layouts/adminHeader.ejs') %>
+<section class="content-main">
+  <div class="row">
+    <div class="col-9">
+      <div class="content-header">
+        <h2 class="content-title">Edit Banner</h2>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4>Basic</h4>
+        </div>
+        <div class="card-body">
+          <form
+            action="/admin/bannerEdit"
+            enctype="multipart/form-data"
+            method="post"
+          >
+            <div class="mb-4">
+              <input
+                type="hidden"
+                placeholder="bannerId"
+                class="form-control"
+                name="bannerId"
+                id="bannerId"
+                value="<%= bannerId%>"
+              />
+            </div>
+            <div class="mb-4">
+              <label for="bannerName" class="form-label">Banner Title</label>
+              <input
+                type="text"
+                placeholder="Banner Title"
+                class="form-control"
+                id="bannerName"
+                name="bannerName"
+                value="<%=banner.title %>"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Banner Description</label>
+              <textarea
+                placeholder="Description"
+                class="form-control"
+                rows="4"
+                id="bannerDescription"
+                name="bannerDescription"
+                required
+              >
+<%=banner.description  %></textarea
+              >
+            </div>
+            <div class="mb-4">
+              <label for="bannerField" class="form-label">Banner Field</label>
+              <input
+                type="text"
+                placeholder="Banner Field"
+                class="form-control"
+                id="bannerField"
+                name="bannerField"
+                value="<%=banner.field %>"
+                required
+              />
+            </div>
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Banner Image</h4>
+                </div>
+                <div class="card-body">
+                  <div class="input-upload">
+                    <% banner.image.forEach((image) => {%>
+                    <img id="bannerImage" src="/images/<%= image%>" alt="" />
+                    <%}) %>
+                    <input
+                      name="bannerImage"
+                      class="form-control"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onchange="viewImage(event)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-md rounded font-sm hover-up">
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/adminFooter.ejs') %>
+<script>
+  function viewImage(event) {
+    document.getElementById("bannerImage").src = URL.createObjectURL(
+      event.target.files[0]
+    );
+  }
+</script>
+<script>
+  let bannerName = document.getElementById("bannerName");
+  let bannerField = document.getElementById("bannerField");
+  let bannerDescription = document.getElementById("bannerDescription");
+  bannerName.addEventListener("input", () => {
+    if (bannerName.value.trim() == "") {
+      product_name.setCustomValidity("Field must be filled out");
+    } else {
+      bannerName.setCustomValidity("");
+    }
+  });
+  bannerField.addEventListener("input", () => {
+    if (bannerField.value.trim() == "") {
+      bannerField.setCustomValidity("Field must be filled out");
+    } else {
+      bannerField.setCustomValidity("");
+    }
+  });
+  bannerDescription.addEventListener("input", () => {
+    if (bannerDescription.value.trim() == "") {
+      bannerDescription.setCustomValidity("Field must be filled out");
+    } else {
+      product_quantity.setCustomValidity("");
+    }
+  });
+</script>

@@ -7,7 +7,7 @@ const fileStorageEngine = multer.diskStorage({
     if (ext !== ".png" && ext !== ".jpg" && ext !== ".gif" && ext !== ".jpeg") {
       return cb(new Error("Images Only Allowed"));
     }
-    cb(null, path.join(__dirname, "../public/images"));
+    cb(null, path.join(__dirname, "../public/uncroppedImages"));
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "--" + file.originalname);

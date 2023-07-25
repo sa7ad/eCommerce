@@ -1,7 +1,11 @@
 const Category = require("../models/categoryModel");
+const Banner = require("../models/bannerModel");
+const Coupon = require("../models/couponModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
+const path = require("path");
+const sharp = require("sharp");
 require("dotenv").config();
 
 const credentials = {
@@ -232,11 +236,12 @@ const categories = async (req, res) => {
 const addCategory = async (req, res) => {
   try {
     const { category_name, category_description } = req.body;
-    const categ_name = category_name.toLowerCase();
-    const existingCategory = await Category.findOne({ name: categ_name });
+    const existingCategory = await Category.find({
+      name: { $regex: new RegExp(`^${category_name}$`, "i") },
+    });
     if (!existingCategory) {
       const categ = new Category({
-        name: categ_name,
+        name: category_name,
         description: category_description,
       });
       await categ.save();
@@ -246,6 +251,7 @@ const addCategory = async (req, res) => {
       res.redirect("/admin/categories");
     }
   } catch (error) {
+    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -311,10 +317,19 @@ const productAdd = async (req, res) => {
       product_price,
       product_quantity,
       product_category,
+      product_brand,
     } = req.body;
     const imageArr = [];
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
+        const filePath = path.join(
+          __dirname,
+          "../public/images",
+          req.files[i].filename
+        );
+        await sharp(req.files[i].path)
+          .resize({ width: 250, height: 250 })
+          .toFile(filePath);
         imageArr.push(req.files[i].filename);
       }
     }
@@ -325,11 +340,13 @@ const productAdd = async (req, res) => {
       quantity: product_quantity,
       category: product_category,
       image: imageArr,
+      brand: product_brand,
       stock: true,
     });
     await product.save();
     res.redirect("/admin/productList");
   } catch (error) {
+    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -371,6 +388,7 @@ const productUpdated = async (req, res) => {
       product_price,
       product_category,
       product_description,
+      product_brand,
     } = req.body;
     // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
@@ -380,6 +398,14 @@ const productUpdated = async (req, res) => {
     // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
+        const filePath = path.join(
+          __dirname,
+          "../public/images",
+          req.files[i].filename
+        );
+        await sharp(req.files[i].path)
+          .resize({ width: 250, height: 250 })
+          .toFile(filePath);
         imageArr.push(req.files[i].filename);
       }
     }
@@ -393,6 +419,7 @@ const productUpdated = async (req, res) => {
             quantity: product_quantity,
             category: product_category,
             description: product_description,
+            brand: product_brand,
             image: imageArr,
           },
         }
@@ -518,6 +545,193 @@ const datePicker = async (req, res) => {
     console.log(error.message);
   }
 };
+const banner = async (req, res) => {
+  try {
+    const banner = await Banner.find();
+    res.render("banner", { banner });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const bannerAdd = async (req, res) => {
+  try {
+    res.render("bannerAdd");
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const bannerAdded = async (req, res) => {
+  try {
+    const { bannerName, bannerDescription, bannerField } = req.body;
+    const imageArr = [];
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const filePath = path.join(
+          __dirname,
+          "../public/images",
+          req.files[i].filename
+        );
+        await sharp(req.files[i].path)
+          .resize({ width: 1000, height: 1000 })
+          .toFile(filePath);
+        imageArr.push(req.files[i].filename);
+      }
+    }
+    const banner = new Banner({
+      title: bannerName,
+      description: bannerDescription,
+      field: bannerField,
+      image: imageArr,
+    });
+    await banner.save();
+    res.redirect("/admin/banner");
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const bannerEdit = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const banner = await Banner.findById({ _id: id });
+    res.render("bannerEdit", { banner, bannerId: banner._id });
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const bannerUpdated = async (req, res) => {
+  try {
+    const { bannerId, bannerName, bannerField, bannerDescription } = req.body;
+    console.log(bannerId, bannerName, bannerField, bannerDescription);
+    // const existingProduct = await Product.findById(product_id)
+    const imageArr = [];
+    //if all the images should not be deleted while updating
+    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
+    //   imageArr = existingProduct.image
+    // }
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const filePath = path.join(
+          __dirname,
+          "../public/images",
+          req.files[i].filename
+        );
+        await sharp(req.files[i].path)
+          .resize({ width: 1000, height: 1000 })
+          .toFile(filePath);
+        imageArr.push(req.files[i].filename);
+      }
+    }
+
+    if (req.files.length) {
+      await Banner.findByIdAndUpdate(
+        { _id: bannerId },
+        {
+          $set: {
+            title: bannerName,
+            field: bannerField,
+            description: bannerDescription,
+            image: imageArr,
+          },
+        }
+      );
+      res.redirect("/admin/banner");
+    } else {
+      await Product.findByIdAndUpdate(
+        { _id: bannerId },
+        {
+          $set: {
+            name: bannerName,
+            field: bannerField,
+            description: bannerDescription,
+          },
+        }
+      );
+      res.redirect("/admin/banner");
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const listBanner = async (req, res) => {
+  try {
+    const { bannerId } = req.body;
+    const banner = await Banner.findById({ _id: bannerId });
+    if (banner.list === true) {
+      await Banner.updateOne({ _id: bannerId }, { $set: { list: false } });
+      res.status(201).json({ unlistSuccess: true });
+    } else {
+      await Banner.updateOne({ _id: bannerId }, { $set: { list: true } });
+      res.status(201).json({ listSuccess: true });
+    }
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const coupon = async (req, res) => {
+  try {
+    let { message } = req.session;
+    req.session.message = "";
+    const coupon = await Coupon.find();
+    res.render("coupon", { coupon, message });
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const couponAdded = async (req, res) => {
+  try {
+    const { code, percentage, description, applicableLimit } = req.body;
+    const lowerCode = code.toLowerCase();
+    const sameCoupon = await Coupon.findOne({ code: lowerCode });
+    if (!sameCoupon) {
+      const makeCoupon = new Coupon({
+        code: code,
+        percentage: percentage,
+        description: description,
+        applicableLimit: applicableLimit,
+      });
+      await makeCoupon.save();
+    } else {
+      req.session.message = "This code has been already used";
+    }
+    res.redirect("/admin/coupon");
+  } catch (error) {
+    res.redirect("/error500");
+    console.log(error.message);
+  }
+};
+const editCoupon = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const coupon = await Coupon.findById({ _id: id });
+    res.render("editCoupon", { coupon });
+  } catch {
+    res.redirect("/error500");
+  }
+};
+const updatedCoupon = async (req, res) => {
+  try {
+    const { id, code, description, percentage, applicableLimit } = req.body;
+    const updatedCoupon = await Coupon.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          code: code,
+          description: description,
+          percentage: percentage,
+          applicableLimit: applicableLimit,
+        },
+      }
+    );
+    await updatedCoupon.save();
+    res.redirect("/admin/coupon");
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
 const error500 = async (req, res) => {
   try {
     res.render("error500");
@@ -530,24 +744,34 @@ module.exports = {
   updatedCategory,
   productAddPage,
   productUpdated,
+  updatedCoupon,
   loadDashboard,
+  bannerUpdated,
   editCategory,
   usersBlocked,
   listCategory,
   changeStatus,
   viewOrdered,
+  bannerAdded,
   productList,
   salesReport,
   addCategory,
   cancelOrder,
+  editCoupon,
   listProduct,
+  couponAdded,
   loadLogout,
   datePicker,
   productAdd,
   categories,
+  bannerEdit,
+  bannerAdd,
   loadLogin,
   dashboard,
   usersList,
+  listBanner,
   error500,
+  coupon,
+  banner,
   orders,
 };
