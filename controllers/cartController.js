@@ -1,5 +1,5 @@
 const Product = require("../models/productModel");
-const Coupon = require("../models/couponModel")
+const Coupon = require("../models/couponModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
@@ -73,6 +73,8 @@ const addToCart = async (req, res) => {
       });
       await makeCart.save();
     }
+    const cart = await Cart.findOne({ userId: userId });
+    res.json({count:cart.items.length})
   } catch (error) {
     res.redirect("/error500");
   }
@@ -187,24 +189,30 @@ const addOrderAddress = async (req, res) => {
 const placeOrder = async (req, res) => {
   try {
     const { userId } = req.session;
+    req.session.couponApplied = false;
+    req.session.discountAmount=0
+    const currentDate = new Date();
+    req.session.message = "";
     const cart = await Cart.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
-    const coupon = await Coupon.find()
+    const coupon = await Coupon.find();
     const address = await User.findOne({ _id: userId });
     if (address.wallet >= cart.grandTotal) {
       res.render("placeOrder", {
         address: address,
         carts: cart,
-        coupon:coupon,
+        coupon: coupon,
         wallet: address.wallet,
+        currentDate:currentDate
       });
     } else {
       res.render("placeOrder", {
         address: address,
         carts: cart,
-        coupon:coupon,
+        coupon: coupon,
         wallet: "null",
+        currentDate:currentDate
       });
     }
   } catch (error) {
@@ -212,7 +220,51 @@ const placeOrder = async (req, res) => {
     res.redirect("/error500");
   }
 };
-
+const applyCoupon = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { selectedCoupon } = req.body;
+    const couponApplied = await Coupon.findOne({ code: selectedCoupon });
+    const alreadyUsed = await Order.findOne({$and:[{coupon: couponApplied._id},{user: new mongoose.Types.ObjectId(userId)}]})
+    const cartValue = await Cart.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+    });
+    if (couponApplied) {
+      if (req.session.couponApplied === false) {
+        if(!alreadyUsed){
+          let currDate= new Date()
+          if(currDate<couponApplied.expireDate){
+        const discountAmount = Math.round(
+          (cartValue.grandTotal * couponApplied.percentage) / 100
+        );
+        const grandTotalDiscounted = cartValue.grandTotal- discountAmount
+        req.session.couponApplied = true;
+        req.session.couponCode=couponApplied._id
+        req.session.discountAmount=discountAmount
+        res.json({
+          message: true,
+          discountAmount: discountAmount,
+          cartTotal: grandTotalDiscounted,
+        });
+      }
+      else{
+        res.json({ expired: true });
+      }
+      }
+        else{
+          res.json({ alreadyUsed: true });
+        }
+      } else {
+        res.json({ onetime: true });
+      }
+    } else {
+      res.json({ message: false });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
 const orderPlacedSuccess = async (req, res) => {
   try {
     const { userId } = req.session;
@@ -241,4 +293,5 @@ module.exports = {
   cartCount,
   error500,
   loadCart,
+  applyCoupon,
 };

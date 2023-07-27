@@ -69,28 +69,45 @@
               </div>
               <textarea class="form-control mt-3" name="orderNote" id="message" rows="2" placeholder="Order Notes"></textarea>
           </div>
-<div class="coupon-section">
-    <h3>Apply Coupon</h3>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Enter coupon code">
-        <button type="button" class="btn btn-secondary" id="apply_coupon_btn">Apply Coupon</button>
-    </div>
-    <p id="coupon_message"></p>
-</div>
-
-<!-- Button to show available coupons -->
-<button type="button" class="btn btn-primary mt-3" id="show_coupons_btn">Show Available Coupons</button>
-
-<!-- Section to display available coupons (Initially hidden) -->
-<div id="available_coupons_section" class="mt-3" style="display: none;">
-    <h3>Available Coupons</h3>
-    <% coupon.forEach(coupon => { %>
-        <div class="alert alert-success" role="alert">
-            <%= coupon.code %>
-        </div>
-    <% }) %>
-</div>
-        </div>
+          <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                  <div class="modal-body">
+                    <div class="text-center">
+                      <% coupon.forEach(coupon => { %>
+                        <div class="alert alert-success my-2" role="alert">
+                          <h6><%= coupon.description %></h6>
+                          <%= coupon.code %>
+                          <p class="text-danger text-sm"><%= coupon.expireDate %></p>
+                          <button type="submit" id="applyCode" value="<%= coupon._id %>" onclick="applyCoupon('<%= coupon.code %>')" class="btn btn-sm btn-primary">Apply Code</button>
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="coupon-section my-4">
+                <h3 class="mb-3">Apply Coupon</h3>
+                <div class="input-group">
+                  <input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Enter coupon code">
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">Apply Coupon</button>
+                  </div>
+                </div>
+                <p id="coupon_message" class="mt-2"></p>
+                <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal" data-target="#couponModal">Show Available Coupons</button>
+              </div>
+          
+          
+          </div>
         <div class="col-lg-4">
           <div class="order_box">
             <h2>Your Order</h2>
@@ -111,9 +128,14 @@
             <%}%>
             <%if(carts){%>
             <input type="hidden" name="product_grandTotal" id="product_grandTotal" value='<%= carts.grandTotal%>'>
+            <ul class="list">
+              <li>
+                <a href="#">Discount<span id="dicountAmount"></span></a>
+              </li>
+            </ul>
             <ul class="list list_2">
               <li>
-                <a href="#">Total <span>₹<%= carts.grandTotal%></span></a>
+                <a href="#">Total <span id="grandTotal">₹<%= carts.grandTotal%></span></a>
               </li>
             </ul>
             <% } %>
@@ -165,13 +187,12 @@
     </div>
   </div>
 </section>
-
-<!-- Modal -->
-
-
 <%- include('../layouts/footer.ejs') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
+  
  $('#checkoutForm').submit((e) => {
   let address = $('input[name=address]:checked').val()
   let selector = $('input[name=selector]:checked').val()
@@ -209,9 +230,9 @@
         verifyPayment(response,order)
     },
     "prefill": {
-        "name": "Gaurav Kumar",
-        "email": "gaurav.kumar@example.com",
-        "contact": "9000090000"
+        "name": "dapperr",
+        "email": "dapper@gmail.com",
+        "contact": "+919074649078"
     },
     "notes": {
         "address": "Razorpay Corporate Office"
@@ -243,3 +264,34 @@ var rzp1 = new Razorpay(options);
   })
  }
   </script>
+<script>
+  let selectedCouponId
+  function applyCoupon(couponId) {
+    let applyCouponInput = document.getElementById('coupon_code');
+    applyCouponInput.value = couponId;
+     selectedCouponId = couponId
+  }
+  let couponApply = async ()=>{
+    let selectedCoupon = document.getElementById("coupon_code").value
+      const couponApplied = await axios.post('/coupon',{selectedCoupon})
+      console.log(couponApplied.data)
+     if(couponApplied.data.message === true){
+      document.getElementById('dicountAmount').innerHTML = `- ₹${couponApplied.data.discountAmount}`
+      document.getElementById('grandTotal').innerHTML = `₹ ${couponApplied.data.cartTotal}`
+     }else {
+      event.preventDefault()
+        Toastify({
+        text: "Invalid Coupon Id",
+        duration: 1000,
+        newWindow: false,
+        close: false,
+        gravity: "top",
+        position: "center",
+        stopOnFocus: false,
+        style: {
+        background: "#384aeb",
+        }
+        }).showToast();
+     }
+   } 
+</script>

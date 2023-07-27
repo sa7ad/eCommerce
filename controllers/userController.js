@@ -290,9 +290,23 @@ const userProfile = async (req, res) => {
   try {
     let { message } = req.session;
     const { userId } = req.session;
+    const walletHistory = await Order.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(userId),
+          paymentMethod: "Wallet",
+        },
+      },
+      {
+        $sort: { date: -1 },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
     req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
-    res.render("userProfile", { userProfile, message });
+    res.render("userProfile", { userProfile, message, walletHistory });
   } catch (error) {
     res.redirect("/error500");
   }
@@ -417,7 +431,17 @@ const deleteAddress = async (req, res) => {
 const orders = async (req, res) => {
   try {
     const { userId } = req.session;
-    let currentDate = new Date();
+    let currentDateObj = new Date();
+    currentDateObj.setDate(currentDateObj.getDate());
+    const currentDate = currentDateObj.toLocaleString("en-IN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      timeZone: "Asia/Kolkata",
+    });
     const orders = await Order.find({ user: userId })
       .populate("items")
       .populate("user")

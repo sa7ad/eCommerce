@@ -14,17 +14,20 @@ var instance = new Razorpay({
 
 const orderPlaced = async (req, res) => {
   try {
-    const { userId } = req.session;
+    const { userId,discountAmount,couponCode} = req.session;
+    if(!discountAmount){
+      discountAmount=0
+    }
     const { address, product_grandTotal, selector, orderNote, coupon } =
       req.body;
     if (coupon !== "undefined") {
       const amountReduced = await Coupon.aggregate([
         { $match: { code: coupon } },
-        { $group: { _id: 0 } }
+        { $group: { _id: 0 } },
       ]);
-      console.log(amountReduced, "this is amount reduced in the backend");
     }
     const status = selector === "COD" || "Wallet" ? "Placed" : "Pending";
+    const walletAmount = await User.findOne({ _id: userId });
     const cart = await Cart.findOne({ userId: userId });
     const updatedArr = cart.items;
     const items = updatedArr.map((product) => ({
@@ -47,7 +50,10 @@ const orderPlaced = async (req, res) => {
       address: address,
       items: items,
       orderNote: orderNote,
-      grandTotal: product_grandTotal,
+      total:product_grandTotal,
+      discount:discountAmount,
+      coupon:couponCode,
+      grandTotal: product_grandTotal-discountAmount,
       paymentMethod: selector,
       orderStatus: status,
     });
@@ -61,6 +67,14 @@ const orderPlaced = async (req, res) => {
       }
       await Cart.deleteOne({ userId: userId });
       res.json({ codSuccess: true });
+    } else if (
+      status === "Placed" &&
+      orderPlaced.paymentMethod === "Wallet" &&
+      orderPlaced.grandTotal > walletAmount.wallet
+    ) {
+      req.session.message =
+        "Cannot Purchase,Total Amount is greater than Wallet Balance";
+      res.redirect("/placeOrder");
     } else if (status === "Placed" && orderPlaced.paymentMethod === "Wallet") {
       for (let item of items) {
         await User.updateOne(

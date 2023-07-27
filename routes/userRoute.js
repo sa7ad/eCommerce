@@ -11,6 +11,7 @@ const {
   addToCart,
   cartCount,
   loadCart,
+  applyCoupon,
 } = require("../controllers/cartController");
 const {
   emailVerificationPage,
@@ -505,6 +506,18 @@ userRoute.put("/deleteFromWishList", isLogin, deleteFromWishList);
  *         description:successful operation
  */
 userRoute.get("/logout", isLogin, loadLogout);
+/**
+ * @swagger
+ * /coupon:
+ *  post:
+ *     tags:
+ *     - apply Coupon
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/coupon", isLogin, applyCoupon);
 /**
  * @swagger
  * /error500:

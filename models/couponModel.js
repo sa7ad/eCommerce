@@ -11,22 +11,21 @@ const couponSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    cart: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cart",
-    },
     percentage: {
       type: Number,
       required: true,
     },
-    applicableLimit:{
-      type:Number,
-      required:true
+    applicableLimit: {
+      type: Number,
+      required: true,
     },
     validity: {
       type: Boolean,
       default: true,
       required: true,
+    },
+    expireDate: {
+      type: Date,
     },
   },
   { timestamps: true }

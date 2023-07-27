@@ -529,12 +529,16 @@ const salesReport = async (req, res) => {
 const datePicker = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
+    const startDateObj = new Date(startDate);
+    startDateObj.setHours(0, 0, 0, 0);
+    const endDateObj = new Date(endDate);
+    endDateObj.setHours(23, 59, 59, 999);
     const selectedDate = await Order.aggregate([
       {
         $match: {
           createdAt: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
+            $gte: startDateObj,
+            $lte: endDateObj,
           },
         },
       },
@@ -683,7 +687,13 @@ const coupon = async (req, res) => {
 };
 const couponAdded = async (req, res) => {
   try {
-    const { code, percentage, description, applicableLimit } = req.body;
+    const { code, percentage, description, applicableLimit,expireDate } = req.body;
+    const date = expireDate.toLocaleString("en-IN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "Asia/Kolkata",
+    });
     const lowerCode = code.toLowerCase();
     const sameCoupon = await Coupon.findOne({ code: lowerCode });
     if (!sameCoupon) {
@@ -692,6 +702,7 @@ const couponAdded = async (req, res) => {
         percentage: percentage,
         description: description,
         applicableLimit: applicableLimit,
+        expireDate:date
       });
       await makeCoupon.save();
     } else {
@@ -714,7 +725,7 @@ const editCoupon = async (req, res) => {
 };
 const updatedCoupon = async (req, res) => {
   try {
-    const { id, code, description, percentage, applicableLimit } = req.body;
+    const { id, code, description, percentage, applicableLimit,expireDate } = req.body;
     const updatedCoupon = await Coupon.findByIdAndUpdate(
       { _id: id },
       {
@@ -723,6 +734,7 @@ const updatedCoupon = async (req, res) => {
           description: description,
           percentage: percentage,
           applicableLimit: applicableLimit,
+          expireDate:expireDate
         },
       }
     );
