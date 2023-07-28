@@ -687,7 +687,8 @@ const coupon = async (req, res) => {
 };
 const couponAdded = async (req, res) => {
   try {
-    const { code, percentage, description, applicableLimit,expireDate } = req.body;
+    const { code, percentage, description, applicableLimit, expireDate } =
+      req.body;
     const date = expireDate.toLocaleString("en-IN", {
       year: "numeric",
       month: "long",
@@ -702,7 +703,7 @@ const couponAdded = async (req, res) => {
         percentage: percentage,
         description: description,
         applicableLimit: applicableLimit,
-        expireDate:date
+        expireDate: date,
       });
       await makeCoupon.save();
     } else {
@@ -725,7 +726,8 @@ const editCoupon = async (req, res) => {
 };
 const updatedCoupon = async (req, res) => {
   try {
-    const { id, code, description, percentage, applicableLimit,expireDate } = req.body;
+    const { id, code, description, percentage, applicableLimit, expireDate } =
+      req.body;
     const updatedCoupon = await Coupon.findByIdAndUpdate(
       { _id: id },
       {
@@ -734,12 +736,27 @@ const updatedCoupon = async (req, res) => {
           description: description,
           percentage: percentage,
           applicableLimit: applicableLimit,
-          expireDate:expireDate
+          expireDate: expireDate,
         },
       }
     );
     await updatedCoupon.save();
     res.redirect("/admin/coupon");
+  } catch (error) {
+    res.redirect("/error500");
+  }
+};
+const listCoupon = async (req, res) => {
+  try {
+    const { couponId } = req.body;
+    const coupon = await Coupon.findById({ _id: couponId });
+    if (coupon.list === true) {
+      await Coupon.updateOne({ _id: couponId }, { $set: { list: false } });
+      res.status(201).json({ unlistSuccess: true });
+    } else {
+      await Coupon.updateOne({ _id: couponId }, { $set: { list: true } });
+      res.status(201).json({ listSuccess: true });
+    }
   } catch (error) {
     res.redirect("/error500");
   }
@@ -768,6 +785,7 @@ module.exports = {
   productList,
   salesReport,
   addCategory,
+  listCoupon,
   cancelOrder,
   editCoupon,
   listProduct,

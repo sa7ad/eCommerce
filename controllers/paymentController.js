@@ -14,9 +14,10 @@ var instance = new Razorpay({
 
 const orderPlaced = async (req, res) => {
   try {
-    const { userId,discountAmount,couponCode} = req.session;
-    if(!discountAmount){
-      discountAmount=0
+    const { userId, couponCode } = req.session;
+    let { discountAmount } = req.session;
+    if (!discountAmount) {
+      discountAmount = 0;
     }
     const { address, product_grandTotal, selector, orderNote, coupon } =
       req.body;
@@ -50,10 +51,10 @@ const orderPlaced = async (req, res) => {
       address: address,
       items: items,
       orderNote: orderNote,
-      total:product_grandTotal,
-      discount:discountAmount,
-      coupon:couponCode,
-      grandTotal: product_grandTotal-discountAmount,
+      total: product_grandTotal,
+      discount: discountAmount,
+      coupon: couponCode,
+      grandTotal: product_grandTotal - discountAmount,
       paymentMethod: selector,
       orderStatus: status,
     });
@@ -77,15 +78,24 @@ const orderPlaced = async (req, res) => {
       res.redirect("/placeOrder");
     } else if (status === "Placed" && orderPlaced.paymentMethod === "Wallet") {
       for (let item of items) {
-        await User.updateOne(
-          { _id: userId },
-          { $inc: { wallet: -orderPlaced.grandTotal } }
-        );
         await Product.updateOne(
           { _id: item.product },
           { $inc: { quantity: -item.quantity } }
         );
       }
+      await User.updateOne(
+        { _id: userId },
+        {
+          $inc: { wallet: -orderPlaced.grandTotal },
+          $push: {
+            walletHistory: {
+              date: new Date(),
+              amount: -orderPlaced.grandTotal,
+              description: "Order placed using wallet amount",
+            },
+          },
+        }
+      );
       await Cart.deleteOne({ userId: userId });
       res.json({ walletSuccess: true });
     } else {

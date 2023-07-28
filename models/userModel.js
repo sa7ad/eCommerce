@@ -55,11 +55,16 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    walletTransactions: [
+    walletHistory: [
       {
-        walletDetails: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Order",
+        date: {
+          type: Date,
+        },
+        amount: {
+          type: Number,
+        },
+        description: {
+          type: String,
         },
       },
     ],

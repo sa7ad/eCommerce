@@ -585,7 +585,6 @@
         }
         }).showToast();
         let product_quantity = document.getElementById('sst').value
-        console.log("sssssssss")
         const quantityData = await axios.post('/cart',{product_quantity,product_Id})
         console.log(quantityData.data.count)
         if(quantityData.data.count){

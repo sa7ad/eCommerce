@@ -106,12 +106,26 @@
     </div>
   </div>
 </section>
-<div class="modal fade mt-5" id="walletModal" tabindex="-1" role="dialog" aria-labelledby="walletModalLabel" aria-hidden="true">
+<div
+  class="modal fade mt-5"
+  id="walletModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="walletModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title text-white" id="walletModalLabel">Wallet Details</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title text-white" id="walletModalLabel">
+          Wallet Details
+        </h5>
+        <button
+          type="button"
+          class="close text-white"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -128,13 +142,12 @@
               </div>
             </div>
           </div>
-
           <!-- Add Wallet Money Button -->
-          <div class="col-md-6 mb-4 text-md-right">
+          <!-- <div class="col-md-6 mb-4 text-md-right">
             <a href="/addWalletMoney" class="btn btn-primary">
               Add Wallet Money
             </a>
-          </div>
+          </div> -->
         </div>
 
         <div class="row">
@@ -147,20 +160,29 @@
                     <thead>
                       <tr>
                         <th>Date</th>
-                        <th>Order ID</th>
-                        <th>Status</th>
-                        <th>Total Amount</th>
+                        <th>Amount</th>
+                        <th>Description</th>
                       </tr>
                     </thead>
                     <tbody>
                       <% walletHistory.forEach(wallet => { %>
                       <tr>
-                        <td><%= wallet._id %></td>
-                        <td><%= wallet.date %></td>
-                        <td><%= wallet.orderStatus %></td>
-                        <td class="text-primary font-weight-bold">
-                          ₹<%= wallet.grandTotal %>
+                        <td>
+                          <%=
+                          wallet.walletHistory.date.toISOString().substr(0, 10)
+                          %>
                         </td>
+                        <% if(wallet.walletHistory.amount>0){%>
+                        <td class="text-success">
+                          <%= wallet.walletHistory.amount %>
+                        </td>
+                        <% } else{%>
+                        <td class="text-danger">
+                          <%= wallet.walletHistory.amount %>
+                        </td>
+                        <% }%>
+
+                        <td><%= wallet.walletHistory.description %></td>
                       </tr>
                       <% }) %>
                     </tbody>
@@ -172,9 +194,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a href="/orders" class="btn btn-primary">
-          Show Full Transactions
-        </a>
+        <a href="/orders" class="btn btn-primary"> Show Full Transactions </a>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
           Close
         </button>

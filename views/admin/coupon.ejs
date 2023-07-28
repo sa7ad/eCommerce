@@ -63,7 +63,9 @@
               />
             </div>
             <div class="mb-4">
-              <label for="applicableLimit" class="form-label">Applicable Limit</label>
+              <label for="applicableLimit" class="form-label"
+                >Applicable Limit</label
+              >
               <input
                 type="number"
                 placeholder="Applicable Limit"
@@ -87,7 +89,6 @@
               <thead>
                 <tr>
                   <th>Code</th>
-                  <th>Validity</th>
                   <th>Description</th>
                   <th>Percecentage</th>
                   <th>Applicable Limit</th>
@@ -98,15 +99,9 @@
                 <%if(coupon){%> <% coupon.forEach(coupon=> {%>
                 <tr>
                   <td><b><%= coupon.code%></b></td>
-                  <td>
-                    <b>
-                      <%if(coupon.validity === true){%> Valid <%}else{%> Invalid
-                      <%}%>
-                    </b>
-                  </td>
                   <td><%= coupon.description%></td>
                   <td><%= coupon.percentage%></td>
-                  <td><%= coupon.applicableLimit%></td>
+                  <td>₹<%= coupon.applicableLimit%></td>
                   <td>
                     <a
                       href="/admin/editCoupon?id=<%= coupon._id%>"
@@ -114,11 +109,12 @@
                       >Edit</a
                     >
                     <button
-                      id="categId"
-                      onclick="deleteCoupon('<%= coupon._id%>')"
-                      class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2"
+                      id="couponId<%= coupon._id%>"
+                      onclick="listCoupon('<%= coupon._id%>')"
+                      class="btn btn-sm btn-danger rounded font-sm mt-15"
                     >
-                      Delete
+                      <% if (coupon.list === true) { %> Unlist <% } else { %>
+                      List <% } %>
                     </button>
                   </td>
                 </tr>
@@ -143,18 +139,20 @@
   });
 </script>
 <script>
-  const couponDelete = async (couponId) => {
+  const listCoupon = async (couponId) => {
     try {
-      const categoryList = await axios.patch("/admin/listCategory", {
-        categoryId,
-      });
-      if (categoryList.data.message === true) {
-        document.getElementById(`couponId${couponId}`).textContent = "List";
-      } else if (categoryList.data.message === false) {
-        document.getElementById(`couponId${couponId}`).textContent = "Unlist";
+      const button = document.getElementById(`couponId${couponId}`);
+      const responses = await axios.patch("/admin/listCoupon", { couponId });
+      if (responses.data.unlistSuccess) {
+        button.textContent = "List";
+      } else if (responses.data.listSuccess) {
+        button.textContent = "Unlist";
       }
-    } catch {
-      console.log(console.message);
+    } catch (error) {
+      console.log(error.message);
     }
   };
+  $(document).ready(function () {
+    $("#myTable").DataTable();
+  });
 </script>

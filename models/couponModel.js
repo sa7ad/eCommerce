@@ -19,10 +19,10 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    validity: {
+    list:{
       type: Boolean,
-      default: true,
       required: true,
+      default: true,
     },
     expireDate: {
       type: Date,

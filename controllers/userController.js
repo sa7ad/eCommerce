@@ -290,20 +290,23 @@ const userProfile = async (req, res) => {
   try {
     let { message } = req.session;
     const { userId } = req.session;
-    const walletHistory = await Order.aggregate([
+    const walletHistory = await User.aggregate([
       {
         $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          paymentMethod: "Wallet",
+          _id: new mongoose.Types.ObjectId(userId),
         },
       },
       {
-        $sort: { date: -1 },
+        $project:{walletHistory:1}
       },
       {
-        $limit: 5,
+        $unwind:"$walletHistory"
+      },
+      {
+        $sort:{"walletHistory.date":-1}
       },
     ]);
+    console.log(walletHistory);
     req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
     res.render("userProfile", { userProfile, message, walletHistory });
@@ -521,7 +524,11 @@ const returnOrder = async (req, res) => {
         { _id: orderId },
         { $set: { orderStatus: "Returned" } }
       );
-      await User.updateOne({ _id: userId }, { $inc: { wallet: grandTotal } });
+      await User.updateOne({ _id: userId }, { $inc: { wallet: grandTotal },$push:{ walletHistory: {
+        date: new Date(),
+        amount: grandTotal,
+        description: `refund for return the order ${orderId}`,
+      },} });
       const updatedReturn = await Order.findById({ _id: orderId });
       res.status(201).json({ message: updatedReturn.orderStatus });
     } else {
@@ -534,6 +541,7 @@ const returnOrder = async (req, res) => {
 };
 const cancelOrder = async (req, res) => {
   try {
+    const {userId} = req.session
     const { orderId, cancelReason } = req.body;
     let status1 = "Cancelled";
     const cancelOrder = await Order.updateOne(
@@ -547,6 +555,13 @@ const cancelOrder = async (req, res) => {
           { _id: order.product },
           { $inc: { quantity: order.quantity } }
         );
+      }
+      if(orders.paymentMethod === "Razorpay" || orders.paymentMethod === "Wallet"){
+        await User.updateOne({ _id: userId }, { $inc: { wallet: orders.grandTotal },$push:{ walletHistory: {
+          date: new Date(),
+          amount: orders.grandTotal,
+          description: `refund for cancellation of order ${orderId}`,
+        },} });
       }
       res.status(201).json({
         message: "Successfully updated and modified",

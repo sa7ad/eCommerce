@@ -69,22 +69,22 @@
               </div>
               <textarea class="form-control mt-3" name="orderNote" id="message" rows="2" placeholder="Order Notes"></textarea>
           </div>
-          <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
+            <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
                   <div class="modal-body">
                     <div class="text-center">
                       <% coupon.forEach(coupon => { %>
                         <div class="alert alert-success my-2" role="alert">
                           <h6><%= coupon.description %></h6>
                           <%= coupon.code %>
-                          <p class="text-danger text-sm"><%= coupon.expireDate %></p>
+                          <p>valid from <%= moment(coupon.createdAt).format('MM/DD/YYYY') %> to <%= moment(coupon.expireDate).format('MM/DD/YYYY') %> </p>
                           <button type="submit" id="applyCode" value="<%= coupon._id %>" onclick="applyCoupon('<%= coupon.code %>')" class="btn btn-sm btn-primary">Apply Code</button>
                         </div>
                         <% }) %>
@@ -93,20 +93,20 @@
                   </div>
                 </div>
               </div>
-              
               <div class="coupon-section my-4">
-                <h3 class="mb-3">Apply Coupon</h3>
-                <div class="input-group">
-                  <input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Enter coupon code">
-                  <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">Apply Coupon</button>
+                  <h3 class="mb-3">Apply Coupon</h3>
+                  <div class="input-group">
+                    <input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Enter coupon code">
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">Apply Coupon</button>
+                    </div>
                   </div>
+                  <p id="coupon_message" class="mt-2"></p>
+                  <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal" data-target="#couponModal">Show Available Coupons</button>
                 </div>
-                <p id="coupon_message" class="mt-2"></p>
-                <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal" data-target="#couponModal">Show Available Coupons</button>
-              </div>
-          
-          
+            
+            
+    
           </div>
         <div class="col-lg-4">
           <div class="order_box">
@@ -163,7 +163,6 @@
                 </p>
               </div>
               <%if(wallet!=='null'){%>
-
                 <div class="payment_item">
                   <div class="radion_btn">
                     <input type="radio" id="f-option8" name="selector" value="Wallet" required/>
@@ -274,24 +273,65 @@ var rzp1 = new Razorpay(options);
   let couponApply = async ()=>{
     let selectedCoupon = document.getElementById("coupon_code").value
       const couponApplied = await axios.post('/coupon',{selectedCoupon})
-      console.log(couponApplied.data)
      if(couponApplied.data.message === true){
       document.getElementById('dicountAmount').innerHTML = `- ₹${couponApplied.data.discountAmount}`
       document.getElementById('grandTotal').innerHTML = `₹ ${couponApplied.data.cartTotal}`
-     }else {
       event.preventDefault()
-        Toastify({
-        text: "Invalid Coupon Id",
-        duration: 1000,
-        newWindow: false,
-        close: false,
-        gravity: "top",
-        position: "center",
-        stopOnFocus: false,
-        style: {
-        background: "#384aeb",
-        }
-        }).showToast();
+     }else if(couponApplied.data.expire){
+         Toastify({
+         text: "Coupon has been expired",
+         duration: 1000,
+         newWindow: false,
+         close: false,
+         gravity: "top",
+         position: "center",
+         stopOnFocus: false,
+         style: {
+         background: "#384aeb",
+         }
+         }).showToast();
+
+     }else if(couponApplied.data.onetime){
+         Toastify({
+         text: "Coupon has been already used",
+         duration: 1000,
+         newWindow: false,
+         close: false,
+         gravity: "top",
+         position: "center",
+         stopOnFocus: false,
+         style: {
+         background: "#384aeb",
+         }
+         }).showToast();
+
+     }else if(couponApplied.data.alreadyUsed){
+         Toastify({
+         text: "Coupon has been already used by user",
+         duration: 1000,
+         newWindow: false,
+         close: false,
+         gravity: "top",
+         position: "center",
+         stopOnFocus: false,
+         style: {
+         background: "#384aeb",
+         }
+         }).showToast();
+
+     }else{
+      Toastify({
+         text: "Invalid Coupon Id",
+         duration: 1000,
+         newWindow: false,
+         close: false,
+         gravity: "top",
+         position: "center",
+         stopOnFocus: false,
+         style: {
+         background: "#384aeb",
+         }
+         }).showToast();
      }
    } 
 </script>

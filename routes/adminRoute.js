@@ -34,6 +34,7 @@ const {
   orders,
   bannerAdded,
   bannerUpdated,
+  listCoupon,
 } = require("../controllers/adminController");
 const upload = require("../middleware/uploadImage");
 const express = require("express");
@@ -456,6 +457,18 @@ adminRoute.get("/editCoupon", isAdminLogin, editCoupon);
  *         description:successful operation
  */
 adminRoute.post("/editCoupon", isAdminLogin, updatedCoupon);
+/**
+ * @swagger
+ * /admin/listCoupon:
+ *  patch:
+ *     tags:
+ *     - Admin
+ *     description: user home of ecommerce webpage
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+adminRoute.patch("/listCoupon", isAdminLogin, listCoupon);
 /**
  * @swagger
  * /admin/error500:
