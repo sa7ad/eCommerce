@@ -3,7 +3,12 @@
   <div class="container">
     <% if (!products || !products?.items?.length > 0) { %>
     <div class="text-center">
-      <img src="/images/empty.jpg" class="img-fluid" style="height: 30rem" alt="empty" />
+      <img
+        src="/images/empty.jpg"
+        class="img-fluid"
+        style="height: 30rem"
+        alt="empty"
+      />
     </div>
     <% } else { %>
     <div class="cart_inner">
@@ -24,7 +29,10 @@
               <td>
                 <div class="media">
                   <div class="d-flex align-items-center">
-                    <img src="/images/<%= product.product_Id.image[0] %>" alt="" />
+                    <img
+                      src="/images/<%= product.product_Id.image[0] %>"
+                      alt=""
+                    />
                   </div>
                   <div class="media-body">
                     <p><%= product.product_Id.description %></p>
@@ -35,29 +43,50 @@
                 <h5 class="product-price">₹<%= product.product_Id.price %></h5>
               </td>
               <td>
-                <div class="quantity d-flex justify-content-between align-items-center">
-                  <button class="btn btn-decrement"
-                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',-1)">
+                <div
+                  class="quantity d-flex justify-content-between align-items-center"
+                >
+                  <button
+                    class="btn btn-decrement"
+                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',-1)"
+                  >
                     -
                   </button>
-                  <input class="text-center" style="width: 60px" id="inputCount<%=product.product_Id._id %>"
-                    type="text" min="1" value="<%= product.quantity %>" readonly />
-                  <button class="btn btn-increment"
-                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',1)">
+                  <input
+                    class="text-center"
+                    style="width: 60px"
+                    id="inputCount<%=product.product_Id._id %>"
+                    type="text"
+                    min="1"
+                    value="<%= product.quantity %>"
+                    readonly
+                  />
+                  <button
+                    class="btn btn-increment"
+                    onclick="count('<%= product.product_Id._id %>','<%= userId %>',1)"
+                  >
                     +
                   </button>
                 </div>
               </td>
               <td>
                 <div class="d-flex align-items-center">
-                  <h5 style="margin: 0;">₹</h5>
-                  <h5 id="productPrice<%= product.product_Id._id %>"
-                    style="margin: 0;"> <%= product.product_Id.price * product.quantity %></h5>
+                  <h5 style="margin: 0">₹</h5>
+                  <h5
+                    id="productPrice<%= product.product_Id._id %>"
+                    style="margin: 0"
+                  >
+                    <%= product.product_Id.price * product.quantity %>
+                  </h5>
                 </div>
               </td>
               <td>
-                <button class="btn-sm btn btn-danger"
-                  onclick="deleteFromCart('<%= product.product_Id._id %>')">Remove</button>
+                <button
+                  class="btn-sm btn btn-danger"
+                  onclick="deleteFromCart('<%= product.product_Id._id %>')"
+                >
+                  Remove
+                </button>
               </td>
             </tr>
             <% } %> <% } else { %>
@@ -66,8 +95,8 @@
                 <h5 class="text-center">Empty Cart List</h5>
               </td>
             </tr>
-            <% } %> <% if (products && products.items.length > 0) { %>
-            <% if (products.items && products.grandTotal > 0) { %>
+            <% } %> <% if (products && products.items.length > 0) { %> <% if
+            (products.items && products.grandTotal > 0) { %>
             <tr>
               <td colspan="3"></td>
               <td>
@@ -75,8 +104,10 @@
               </td>
               <td>
                 <div class="d-flex align-items-center">
-                  <h5 style="margin: 0;">₹</h5>
-                  <h5 id="productTotal" style="margin: 0;"><%= products.grandTotal %></h5>
+                  <h5 style="margin: 0">₹</h5>
+                  <h5 id="productTotal" style="margin: 0">
+                    <%= products.grandTotal %>
+                  </h5>
                 </div>
               </td>
             </tr>
@@ -84,7 +115,12 @@
             <tr>
               <td colspan="5">
                 <div class="text-center">
-                  <img src="/images/empty.jpg" class="img-fluid" style="height: 30rem" alt="empty" />
+                  <img
+                    src="/images/empty.jpg"
+                    class="img-fluid"
+                    style="height: 30rem"
+                    alt="empty"
+                  />
                 </div>
               </td>
             </tr>
@@ -92,9 +128,14 @@
             <tr class="out_button_area">
               <td colspan="4"></td>
               <td>
-                <div class="checkout_btn_inner d-flex align-items-center" id="hideCheckOut">
+                <div
+                  class="checkout_btn_inner d-flex align-items-center"
+                  id="hideCheckOut"
+                >
                   <a class="gray_btn" href="/">Continue Shopping</a>
-                  <a class="primary-btn ml-2" href="/placeOrder">Proceed to checkout</a>
+                  <a class="primary-btn ml-2" href="/placeOrder"
+                    >Proceed to checkout</a
+                  >
                 </div>
               </td>
             </tr>
@@ -120,10 +161,8 @@
       if (willDelete) {
         const deletedItem = await axios.put("/cart", { product_Id });
         document.getElementById("productTotal").innerHTML =
-          deletedItem?.data?.total;
-
+          deletedItem?.data?.total
         const { cart } = deletedItem.data;
-
         if (deletedItem) {
           document.getElementById(product_Id).style.display = "none";
           document.getElementById("productTotal").textContent =

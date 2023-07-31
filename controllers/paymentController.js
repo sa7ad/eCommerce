@@ -19,16 +19,23 @@ const orderPlaced = async (req, res) => {
     if (!discountAmount) {
       discountAmount = 0;
     }
-    const { address, product_grandTotal, selector, orderNote, coupon } =
-      req.body;
-    if (coupon !== "undefined") {
-      const amountReduced = await Coupon.aggregate([
-        { $match: { code: coupon } },
-        { $group: { _id: 0 } },
-      ]);
-    }
+    const { address, selector, orderNote, walletChecked } = req.body;
+    let { product_grandTotal } = req.body;
     const status = selector === "COD" || "Wallet" ? "Placed" : "Pending";
     const walletAmount = await User.findOne({ _id: userId });
+    if (walletChecked !== null) {
+      let product = parseInt(product_grandTotal);
+      let wallet = parseInt(walletChecked);
+      product_grandTotal = product - wallet >= 0 ? product - wallet : 0;
+      if (product_grandTotal !== 0) {
+        await User.updateOne({ _id: userId }, { $inc: { wallet: -wallet } });
+      } else {
+        await User.updateOne(
+          { _id: userId },
+          { $set: { wallet: wallet - product } }
+        );
+      }
+    }
     const cart = await Cart.findOne({ userId: userId });
     const updatedArr = cart.items;
     const items = updatedArr.map((product) => ({
@@ -45,20 +52,37 @@ const orderPlaced = async (req, res) => {
       minute: "numeric",
       timeZone: "Asia/Kolkata",
     });
-    const insertOrder = new Order({
-      date: date,
-      user: new mongoose.Types.ObjectId(userId),
-      address: address,
-      items: items,
-      orderNote: orderNote,
-      total: product_grandTotal,
-      discount: discountAmount,
-      coupon: couponCode,
-      grandTotal: product_grandTotal - discountAmount,
-      paymentMethod: selector,
-      orderStatus: status,
-    });
-    const orderPlaced = await insertOrder.save();
+    let orderPlaced;
+    if (couponCode !== null) {
+      const insertOrder = new Order({
+        date: date,
+        user: new mongoose.Types.ObjectId(userId),
+        address: address,
+        items: items,
+        orderNote: orderNote,
+        total: product_grandTotal,
+        discount: discountAmount,
+        coupon: couponCode,
+        grandTotal: product_grandTotal - discountAmount,
+        paymentMethod: selector,
+        orderStatus: status,
+      });
+      orderPlaced = await insertOrder.save();
+    } else {
+      const insertOrder = new Order({
+        date: date,
+        user: new mongoose.Types.ObjectId(userId),
+        address: address,
+        items: items,
+        orderNote: orderNote,
+        total: product_grandTotal,
+        discount: discountAmount,
+        grandTotal: product_grandTotal - discountAmount,
+        paymentMethod: selector,
+        orderStatus: status,
+      });
+      orderPlaced = await insertOrder.save();
+    }
     if (status === "Placed" && orderPlaced.paymentMethod === "COD") {
       for (let item of items) {
         await Product.updateOne(

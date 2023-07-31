@@ -6,17 +6,17 @@ const cartCount = async (req, res, next) => {
     const cartCount = await Cart.findOne({ userId: userId });
     if (cartCount) {
       res.locals.count = cartCount.items.length;
-      const {count} = res.locals
+      const { count } = res.locals;
       next();
     } else {
       res.locals.count = 0;
-      const {count} = res.locals
+      const { count } = res.locals;
       next();
     }
   } else {
     res.locals.count = 0;
-    const {count} = res.locals
-    next()
+    const { count } = res.locals;
+    next();
   }
 };
 

@@ -36,8 +36,8 @@ const orderSchema = new mongoose.Schema(
     cancelReason: {
       type: String,
     },
-    returnReason:{
-      type:String
+    returnReason: {
+      type: String,
     },
     grandTotal: {
       type: Number,
@@ -50,15 +50,15 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    coupon:{
-      type:mongoose.Schema.Types.ObjectId
-     },
-    discount:{
-      type:Number
-     },
-     total:{
-      type:Number
-     },
+    coupon: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    discount: {
+      type: Number,
+    },
+    total: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

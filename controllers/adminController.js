@@ -1,11 +1,11 @@
 const Category = require("../models/categoryModel");
-const Banner = require("../models/bannerModel");
-const Coupon = require("../models/couponModel");
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel");
+const Banner = require("../models/bannerModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
-const path = require("path");
 const sharp = require("sharp");
+const path = require("path");
 require("dotenv").config();
 
 const credentials = {
@@ -178,7 +178,6 @@ const dashboard = async (req, res) => {
       deliveredOrder,
     });
   } catch (error) {
-    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -519,8 +518,17 @@ const cancelOrder = async (req, res) => {
 };
 const salesReport = async (req, res) => {
   try {
-    const salesReport = await Order.find().populate("user");
-    res.render("salesReport", { salesReport });
+    const moment = require("moment");
+    const firstOrder = await Order.find().sort({ createdAt: 1 });
+    const lastOrder = await Order.find().sort({ createdAt: -1 });
+    const salesReport = await Order.find()
+      .populate("user")
+      .sort({ createdAt: -1 });
+    res.render("salesReport", {
+      salesReport,
+      firstOrder: moment(firstOrder[0].createdAt).format("YYYY-MM-DD"),
+      lastOrder: moment(lastOrder[0].createdAt).format("YYYY-MM-DD"),
+    });
   } catch (error) {
     console.log(error.message);
     res.redirect("/error500");
@@ -542,7 +550,9 @@ const datePicker = async (req, res) => {
           },
         },
       },
+      {$lookup:{from:"users",localField:"user",foreignField:"_id",as:"user"}},
     ]);
+    console.log(selectedDate,"sele")
     res.status(200).json({ selectedDate: selectedDate });
   } catch (error) {
     res.redirect("/error500");

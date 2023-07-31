@@ -1,30 +1,74 @@
 <%- include('../layouts/header.ejs') %>
 <main class="site-main">
-  <section class="hero-banner">
-    <div class="container">
-      <div class="row no-gutters align-items-center pt-60px">
-        <%if(banner && banner[0].list === true){%>
-        <div class="col-5 d-none d-sm-block">
-          <div class="hero-banner__img">
-            <%banner.forEach(img=>{%>
-            <img class="img-fluid" src="/images/<%= img.image[0]%>" alt="" />
-            <%})%>
-          </div>
-        </div>
-        <%}%>
-        <div class="col-sm-7 col-lg-6 offset-lg-1 pl-4 pl-md-5 pl-lg-0">
-          <div class="hero-banner__content">
-            <h1>The Perfect Boot DAPPE-R</h1>
-            <p>
-              Best Ecommerce for football boots with different categories that makes you feel comfort with a wide range of collection.
-              So lace up with DAPPE-R and show your skills.
-            </p>
-            <a class="button button-hero" href="/login">Browse Now</a>
+  <div class="container">
+    <div class="row no-gutters align-items-center pt-60px">
+      <% if (banner && banner[0].list === true) { %>
+      <div class="col-5 d-none d-sm-block">
+        <div class="hero-banner__img">
+          <div
+            id="heroBannerCarousel"
+            class="carousel slide"
+            data-ride="carousel"
+            data-interval="3000"
+          >
+            <ol class="carousel-indicators">
+              <% banner[0].image.forEach((img, index) => { %> <li
+              data-target="#heroBannerCarousel" data-slide-to="<%= index %>" <%=
+              index === 0 ? 'class="active"' : '' %>> <% }) %>
+            </ol>
+            <div class="carousel-inner">
+              <% banner[0].image.forEach((img, index) => { %>
+              <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <img
+                  class="d-block img-fluid"
+                  src="/images/<%= img %>"
+                  alt=""
+                />
+              </div>
+              <% }) %>
+            </div>
+            <a
+              class="carousel-control-prev"
+              href="#heroBannerCarousel"
+              role="button"
+              data-slide="prev"
+            >
+              <span
+                class="carousel-control-prev-icon"
+                aria-hidden="true"
+              ></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a
+              class="carousel-control-next"
+              href="#heroBannerCarousel"
+              role="button"
+              data-slide="next"
+            >
+              <span
+                class="carousel-control-next-icon"
+                aria-hidden="true"
+              ></span>
+              <span class="sr-only">Next</span>
+            </a>
           </div>
         </div>
       </div>
+      <% } %>
+
+      <div class="col-sm-7 col-lg-6 offset-lg-1 pl-4 pl-md-5 pl-lg-0">
+        <div class="hero-banner__content">
+          <h1>The Perfect Boot DAPPE-R</h1>
+          <p>
+            Best Ecommerce for football boots with different categories that
+            makes you feel comfort with a wide range of collection. So lace up
+            with DAPPE-R and show your skills.
+          </p>
+          <a class="button button-hero" href="/shopPage">Browse Now</a>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
   <!--================ Hero banner start =================-->
 
   <!--================ Hero Carousel start =================-->
@@ -74,24 +118,22 @@
             >
               All
             </button>
-              <%brands.forEach(brand=>{%>
-                <button
-                  onclick="filterProduct('<%= brand %>')"
-                  type="button"
-                  class="btn btn-outline-primary btn-sm rounded-pill mr-2"
-                >
-                  <%= brand %>
-                </button>
-              <%})%>
+            <%brands.forEach(brand=>{%>
+            <button
+              onclick="filterProduct('<%= brand %>')"
+              type="button"
+              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+            >
+              <%= brand %>
+            </button>
+            <%})%>
           </div>
         </div>
       </div>
       <div class="row">
         <% for (let product of products) { %> <% if (product.category.list ===
         true) { %>
-        <div
-          class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>"
-        >
+        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>">
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
@@ -103,7 +145,9 @@
               </a>
               <ul class="card-product__imgOverlay">
                 <li>
-                  <a href="/singleProduct?id=<%=product._id%>"><i class="ti-search"></i></a>
+                  <a href="/singleProduct?id=<%=product._id%>"
+                    ><i class="ti-search"></i
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -169,24 +213,22 @@
             >
               All
             </button>
-              <%brands.forEach(brand=>{%>
-                <button
-                  onclick="filterProduct('<%= brand %>')"
-                  type="button"
-                  class="btn btn-outline-primary btn-sm rounded-pill mr-2"
-                >
-                  <%= brand %>
-                </button>
-              <%})%>
+            <%brands.forEach(brand=>{%>
+            <button
+              onclick="filterProduct('<%= brand %>')"
+              type="button"
+              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
+            >
+              <%= brand %>
+            </button>
+            <%})%>
           </div>
         </div>
       </div>
       <div class="row">
         <% for (let product of products) { %> <% if (product.category.list ===
         true) { %>
-        <div
-          class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>"
-        >
+        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>">
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
@@ -198,7 +240,9 @@
               </a>
               <ul class="card-product__imgOverlay">
                 <li>
-                  <a href="/singleProduct?id=<%=product._id%>"><i class="ti-search"></i></a>
+                  <a href="/singleProduct?id=<%=product._id%>"
+                    ><i class="ti-search"></i
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -226,7 +270,10 @@
     <div class="container">
       <div class="subscribe text-center">
         <h3 class="subscribe__title">Get Update From Anywhere</h3>
-        <p>Get latest news about our trending products,and to know more about special deals and offers.</p>
+        <p>
+          Get latest news about our trending products,and to know more about
+          special deals and offers.
+        </p>
         <div id="mc_embed_signup">
           <form method="post" class="subscribe-form form-inline mt-5 pt-1">
             <div class="form-group ml-sm-auto">
@@ -263,9 +310,9 @@
   function filterProduct(brand) {
     let productCards = document.querySelectorAll(".filter-item");
     productCards.forEach(function (card) {
-      let cardCategory = card
-        .querySelector(".card-product__category")
-        .textContent
+      let cardCategory = card.querySelector(
+        ".card-product__category"
+      ).textContent;
       if (brand === "All" || cardCategory === brand) {
         card.style.display = "block";
       } else {

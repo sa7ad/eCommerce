@@ -297,13 +297,13 @@ const userProfile = async (req, res) => {
         },
       },
       {
-        $project:{walletHistory:1}
+        $project: { walletHistory: 1 },
       },
       {
-        $unwind:"$walletHistory"
+        $unwind: "$walletHistory",
       },
       {
-        $sort:{"walletHistory.date":-1}
+        $sort: { "walletHistory.date": -1 },
       },
     ]);
     console.log(walletHistory);
@@ -516,19 +516,27 @@ const updatedPassword = async (req, res) => {
 const returnOrder = async (req, res) => {
   try {
     const { userId } = req.session;
-    const { orderId, expiredDate, grandTotal } = req.body;
+    const { orderId, expiredDate, grandTotal, returnReason } = req.body;
     let expiringDate = new Date(expiredDate);
     let todayDate = new Date();
     if (expiringDate > todayDate) {
       await Order.findByIdAndUpdate(
         { _id: orderId },
-        { $set: { orderStatus: "Returned" } }
+        { $set: { orderStatus: "Returned", returnReason: returnReason } }
       );
-      await User.updateOne({ _id: userId }, { $inc: { wallet: grandTotal },$push:{ walletHistory: {
-        date: new Date(),
-        amount: grandTotal,
-        description: `refund for return the order ${orderId}`,
-      },} });
+      await User.updateOne(
+        { _id: userId },
+        {
+          $inc: { wallet: grandTotal },
+          $push: {
+            walletHistory: {
+              date: new Date(),
+              amount: grandTotal,
+              description: `refund for return the order ${orderId}`,
+            },
+          },
+        }
+      );
       const updatedReturn = await Order.findById({ _id: orderId });
       res.status(201).json({ message: updatedReturn.orderStatus });
     } else {
@@ -541,7 +549,7 @@ const returnOrder = async (req, res) => {
 };
 const cancelOrder = async (req, res) => {
   try {
-    const {userId} = req.session
+    const { userId } = req.session;
     const { orderId, cancelReason } = req.body;
     let status1 = "Cancelled";
     const cancelOrder = await Order.updateOne(
@@ -556,12 +564,23 @@ const cancelOrder = async (req, res) => {
           { $inc: { quantity: order.quantity } }
         );
       }
-      if(orders.paymentMethod === "Razorpay" || orders.paymentMethod === "Wallet"){
-        await User.updateOne({ _id: userId }, { $inc: { wallet: orders.grandTotal },$push:{ walletHistory: {
-          date: new Date(),
-          amount: orders.grandTotal,
-          description: `refund for cancellation of order ${orderId}`,
-        },} });
+      if (
+        orders.paymentMethod === "Razorpay" ||
+        orders.paymentMethod === "Wallet"
+      ) {
+        await User.updateOne(
+          { _id: userId },
+          {
+            $inc: { wallet: orders.grandTotal },
+            $push: {
+              walletHistory: {
+                date: new Date(),
+                amount: orders.grandTotal,
+                description: `refund for cancellation of order ${orderId}`,
+              },
+            },
+          }
+        );
       }
       res.status(201).json({
         message: "Successfully updated and modified",

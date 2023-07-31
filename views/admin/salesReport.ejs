@@ -16,6 +16,8 @@
           type="date"
           id="startDatePicker"
           class="form-control"
+          min="<%= firstOrder %>"
+          max="<%= lastOrder %>"
           onchange="selectedDate()"
           required
         />
@@ -28,6 +30,8 @@
           type="date"
           id="endDatePicker"
           class="form-control"
+          min="<%= firstOrder %>"
+          max="<%= lastOrder %>"
           onchange="selectedDate()"
           required
         />
@@ -40,19 +44,27 @@
         <div id="printThisDiv">
           <table class="table table-striped">
             <thead class="thead-dark" id="reportHeader">
-              <tr>
+              <tr class="text-center">
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Address</th>
                 <th>Order ID</th>
                 <th>Date</th>
                 <th>Payment Method</th>
+                <th>Grand Total</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody id="reportBody">
               <% salesReport.forEach(element => {%>
               <tr>
+                <td><%= element.user.email%></td>
+                <td><%= element.user.phone_number%></td>
+                <td><%= element.address%></td>
                 <td><%= element._id%></td>
                 <td><%= element.date%></td>
                 <td><%= element.paymentMethod%></td>
+                <td><%= element.grandTotal%></td>
                 <td><%= element.orderStatus%></td>
               </tr>
               <%})%>
@@ -113,14 +125,19 @@
         endDate,
       });
       const salesReport = response.data.selectedDate;
+      console.log(salesReport);
       const reportBody = document.getElementById("reportBody");
       reportBody.innerHTML = salesReport
         .map(
           (element) => `
         <tr>
+          <td>${element.user[0].email}</td>
+          <td>${element.user[0].phone_number}</td>
+          <td>${element.address}</td>
           <td>${element._id}</td>
           <td>${element.date}</td>
           <td>${element.paymentMethod}</td>
+          <td>${element.grandTotal}</td>
           <td>${element.orderStatus}</td>
         </tr>
       `
@@ -128,10 +145,14 @@
         .join("");
       const tableHeader = `
         <tr>
-          <th>Order ID</th>
-          <th>Date</th>
-          <th>Payment Method</th>
-          <th>Status</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Address</th>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Payment Method</th>
+                <th>Grand Total</th>
+                <th>Status</th>
         </tr>
       `;
       const reportHeader = document.getElementById("reportHeader");

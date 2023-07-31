@@ -182,14 +182,13 @@ const addOrderAddress = async (req, res) => {
     );
     res.redirect("/placeOrder");
   } catch (error) {
-    console.log(error.message);
     res.redirect("/error500");
   }
 };
 const placeOrder = async (req, res) => {
   try {
     const { userId } = req.session;
-    const moment = require('moment')
+    const moment = require("moment");
     req.session.couponApplied = false;
     req.session.discountAmount = 0;
     const currentDate = new Date();
@@ -197,29 +196,19 @@ const placeOrder = async (req, res) => {
     const cart = await Cart.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
-    const coupon = await Coupon.find({expireDate:{$gte:new Date(currentDate)}});
+    const coupon = await Coupon.find({
+      expireDate: { $gte: new Date(currentDate) },
+    });
     const address = await User.findOne({ _id: userId });
-    if (address.wallet >= cart.grandTotal) {
-      res.render("placeOrder", {
-        address: address,
-        carts: cart,
-        coupon: coupon,
-        wallet: address.wallet,
-        currentDate: currentDate,
-        moment:moment
-      });
-    } else {
-      res.render("placeOrder", {
-        address: address,
-        carts: cart,
-        coupon: coupon,
-        wallet: "null",
-        currentDate: currentDate,
-        moment:moment
-      });
-    }
+    res.render("placeOrder", {
+      address: address,
+      carts: cart,
+      coupon: coupon,
+      wallet: address.wallet,
+      currentDate: currentDate,
+      moment: moment,
+    });
   } catch (error) {
-    console.log(error.message);
     res.redirect("/error500");
   }
 };
@@ -267,8 +256,34 @@ const applyCoupon = async (req, res) => {
       res.json({ message: false });
     }
   } catch (error) {
-    console.log(error.message);
     res.redirect("/error500");
+  }
+};
+const removeCoupon = async (req, res) => {
+  try {
+    const { userId } = req.session;
+    const { selectedCouponId } = req.body;
+    const couponApplied = await Coupon.findOne({ code: selectedCouponId });
+    const cartValue = await Cart.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+    });
+    if (couponApplied) {
+      if (req.session.couponApplied === true) {
+        let discountAmount = 0;
+        req.session.couponApplied = false;
+        req.session.couponCode = null;
+        req.session.discountAmount = discountAmount;
+      }
+      res.json({
+        message: true,
+        discountAmount: "",
+        cartTotal: cartValue.grandTotal,
+      });
+    } else {
+      res.json({ message: false });
+    }
+  } catch (error) {
+    
   }
 };
 const orderPlacedSuccess = async (req, res) => {
@@ -278,8 +293,7 @@ const orderPlacedSuccess = async (req, res) => {
       createdAt: -1,
     });
     res.render("orderPlaced", { order: details });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -300,4 +314,5 @@ module.exports = {
   error500,
   loadCart,
   applyCoupon,
+  removeCoupon,
 };

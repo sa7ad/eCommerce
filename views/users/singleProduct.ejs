@@ -565,11 +565,9 @@
         </div>
       </div>
     </section>
-
     <%- include('../layouts/footer.ejs') %>
     <script>
      addToCart = async (product_Id)=>{   
-      try {
         event.preventDefault()
         Toastify({
         text: "Added To Cart",
@@ -591,14 +589,10 @@
           document.getElementById("cartCount").innerHTML=quantityData.data.count
         }
         return quantityData
-      } catch (error) {
-        console.log(error.message);
-      }
       }
     </script>
     <script>
        addTowishList = async (product_Id)=>{   
-      try {
         event.preventDefault()
         Toastify({
         text: "Added To Wishlist",
@@ -615,10 +609,8 @@
         }
         }).showToast();
         const wishList = await axios.post('/addToWishList',{product_Id})
-      } catch (error) {
-        console.log(error.message);
       }
-      }
+   
     </script>
  
     

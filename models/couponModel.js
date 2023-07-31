@@ -19,7 +19,7 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    list:{
+    list: {
       type: Boolean,
       required: true,
       default: true,

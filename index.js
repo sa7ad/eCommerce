@@ -12,6 +12,7 @@ const app = express();
 dbConnect();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const ErrorHandler = require("./middleware/errorHandler");
 app.use(logger("dev"));
 
 app.use(express.json());
@@ -30,7 +31,6 @@ app.use(
   })
 );
 
-//Cart Count Middleware
 app.use(cartCount);
 
 const PORT = 3000;
@@ -56,17 +56,18 @@ const options = {
 };
 const swag = swaggerJsDoc(options);
 
-//User Routes
 app.use("/", userRoute);
-//Admin Routes
+
 app.use("/admin", adminRoute);
-//Open API Route
+
 app.use("/apiDocs", swaggerUi.serve, swaggerUi.setup(swag));
-//Error Route
+
 app.use((req, res) => {
   res.status(404).render("error404");
 });
 
+app.use(ErrorHandler);
+
 app.listen(process.env.PORT || PORT, () => {
-  console.log("Server is running on PORT http://localhost:3000");
+  console.log(`Server is running on PORT http://localhost:${PORT}`);
 });

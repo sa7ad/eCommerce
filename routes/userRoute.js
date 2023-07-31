@@ -12,6 +12,7 @@ const {
   cartCount,
   loadCart,
   applyCoupon,
+  removeCoupon
 } = require("../controllers/cartController");
 const {
   emailVerificationPage,
@@ -518,6 +519,18 @@ userRoute.get("/logout", isLogin, loadLogout);
  *         description:successful operation
  */
 userRoute.post("/coupon", isLogin, applyCoupon);
+/**
+ * @swagger
+ * /removeCoupon:
+ *  post:
+ *     tags:
+ *     - removeCoupon 
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/removeCoupon", isLogin, removeCoupon);
 /**
  * @swagger
  * /error500:
