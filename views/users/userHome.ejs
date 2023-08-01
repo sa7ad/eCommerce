@@ -2,7 +2,10 @@
 <main class="site-main">
   <div class="container">
     <div class="row no-gutters align-items-center pt-60px">
-      <% if (banner && banner[0].list === true) { %>
+      <%if(banner&&banner.length>0){%>
+
+     
+      <% if (banner[0].list === true) { %>
       <div class="col-5 d-none d-sm-block">
         <div class="hero-banner__img">
           <div
@@ -55,6 +58,7 @@
         </div>
       </div>
       <% } %>
+      <%}%>
 
       <div class="col-sm-7 col-lg-6 offset-lg-1 pl-4 pl-md-5 pl-lg-0">
         <div class="hero-banner__content">

@@ -33,7 +33,7 @@ app.use(
 
 app.use(cartCount);
 
-const PORT = 3000;
+const PORT = 1000;
 
 const options = {
   definition: {
