@@ -1,377 +1,249 @@
 <%- include('../layouts/header.ejs') %>
 
-<section class="checkout_area section-margin--small">
-  <div class="container">
-    <div class="billing_details">
-      <div class="row">
-        <div class="col-lg-8">
-          <h3>Select Address</h3>
-          <div
-            class="modal fade mt-5"
-            id="addressModal"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="addressModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="addressModalLabel">
-                    Add Address
-                  </h5>
-                  <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form
-                    method="post"
-                    action="/addOrderAddress"
-                    class="contact_form"
-                  >
-                    <div class="form-group">
-                      <label for="name">Name</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="name"
-                        name="name"
-                        placeholder="Enter the Name"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="housename">House Name</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="housename"
-                        name="housename"
-                        placeholder="Enter the House Name"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="city">City</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="city"
-                        name="city"
-                        placeholder="Enter the City"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="state">State</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="state"
-                        name="state"
-                        placeholder="Enter the State"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="phone">Phone</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="phone"
-                        name="phone"
-                        placeholder="Enter the Phone"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="pincode">Pincode</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="pincode"
-                        name="pincode"
-                        placeholder="Enter the Pincode"
-                        required
-                      />
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                      Add Address
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            data-toggle="modal"
-            data-target="#addressModal"
-          >
-            Add Address
-          </button>
-
-          <br />
-          <h6>or</h6>
-
-          <form class="row contact_form mt-3" id="checkoutForm">
-            <div class="col-md-12 form-group mb-0">
-              <div class="address-cards">
-                <% address.address.forEach((address) => { %>
-                <div class="address-card form-check">
-                  <input
-                    type="radio"
-                    class="form-check-input"
-                    name="address"
-                    id="address1"
-                    value="<%= address.name %>, <%= address.housename %> <%= address.city %> <%= address.state %> <%= address.phone %> <%= address.pincode %>"
-                    required
-                  />
-                  <label class="form-check-label" for="address1">
-                    <%= address.name %> <%= address.housename %> <%=
-                    address.city %> <%= address.state %> <%= address.phone %>
-                    <%= address.pincode %>
-                  </label>
-                </div>
-                <% }) %>
-              </div>
-              <textarea
-                class="form-control mt-3"
-                name="orderNote"
-                id="message"
-                rows="2"
-                placeholder="Order Notes"
-              ></textarea>
-            </div>
-            <div
-              class="modal fade"
-              id="couponModal"
-              tabindex="-1"
-              role="dialog"
-              aria-labelledby="couponModalLabel"
-              aria-hidden="true"
-            >
+  <section class="checkout_area section-margin--small">
+    <div class="container">
+      <div class="billing_details">
+        <div class="row">
+          <div class="col-lg-8">
+            <h3>Select Address</h3>
+            <div class="modal fade mt-5" id="addressModal" tabindex="-1" role="dialog"
+              aria-labelledby="addressModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="couponModalLabel">
-                      Available Coupons
+                    <h5 class="modal-title" id="addressModalLabel">
+                      Add Address
                     </h5>
-                    <button
-                      type="button"
-                      class="close"
-                      data-dismiss="modal"
-                      aria-label="Close"
-                    >
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
-                    <div class="text-center">
-                      <% coupon.forEach(coupon => { %>
-                      <div class="alert alert-success my-2" role="alert">
-                        <h6><%= coupon.description %></h6>
-                        <%= coupon.code %>
-                        <p>
-                          valid from <%=
-                          moment(coupon.createdAt).format('MM/DD/YYYY') %> to
-                          <%= moment(coupon.expireDate).format('MM/DD/YYYY') %>
-                        </p>
-                        <button
-                          type="submit"
-                          id="applyCode"
-                          value="<%= coupon._id %>"
-                          onclick="applyCoupon('<%= coupon.code %>')"
-                          class="btn btn-sm btn-primary"
-                        >
-                          Apply Code
-                        </button>
+                    <form method="post" action="/addOrderAddress" class="contact_form">
+                      <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter the Name"
+                          required />
                       </div>
-                      <% }) %>
-                    </div>
+                      <div class="form-group">
+                        <label for="housename">House Name</label>
+                        <input type="text" class="form-control" id="housename" name="housename"
+                          placeholder="Enter the House Name" required />
+                      </div>
+                      <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" name="city" placeholder="Enter the City"
+                          required />
+                      </div>
+                      <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" class="form-control" id="state" name="state" placeholder="Enter the State"
+                          required />
+                      </div>
+                      <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter the Phone"
+                          required />
+                      </div>
+                      <div class="form-group">
+                        <label for="pincode">Pincode</label>
+                        <input type="text" class="form-control" id="pincode" name="pincode"
+                          placeholder="Enter the Pincode" required />
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        Add Address
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="coupon-section my-4">
-              <h3 class="mb-3">Apply Coupon</h3>
-              <div class="input-group">
-                <button style="display: none;"
-                  type="button"
-                  class="btn btn-danger"
-                  id="remove_coupon_btn"
-                  onclick="couponRemove()"
-                >
-                  <i class="fas fa-times"></i> <!-- Font Awesome "times" icon -->
-                </button>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="coupon_code"
-                  id="coupon_code"
-                  placeholder="Enter coupon code"
-                />
-                <div class="input-group-append">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="apply_coupon_btn"
-                    onclick="couponApply()"
-                  >
-                    Apply Coupon
-                  </button>
+
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addressModal">
+              Add Address
+            </button>
+
+            <br />
+            
+            
+            <%if(address.address && address.address.length>0){%>
+              <br>
+              <h6>Select Address</h6>
+              <%}%>
+
+            <form class="row contact_form mt-3" id="checkoutForm">
+              <div class="col-md-12 form-group mb-0">
+                <div class="address-cards">
+                  <% address.address.forEach((address)=> { %>
+                    <div class="address-card form-check">
+                      <input type="radio" class="form-check-input" name="address" id="address1"
+                        value="<%= address.name %>, <%= address.housename %> <%= address.city %> <%= address.state %> <%= address.phone %> <%= address.pincode %>"
+                        required />
+                      <label class="form-check-label" for="address1">
+                        <%= address.name %>
+                          <%= address.housename %>
+                            <%= address.city %>
+                              <%= address.state %>
+                                <%= address.phone %>
+                                  <%= address.pincode %>
+                      </label>
+                    </div>
+                    <% }) %>
                 </div>
+                <textarea class="form-control mt-3" name="orderNote" id="message" rows="2"
+                  placeholder="Order Notes"></textarea>
               </div>
-              
-              <p id="coupon_message" class="mt-2"></p>
-              <button
-                type="button"
-                id="couponBtn"
-                class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#couponModal"
-              >
-                Show Available Coupons
-              </button>
+              <%if(coupon && coupon.length >0){%>
+              <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="couponModalLabel">
+                        Available Coupons
+                      </h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="text-center">
+                        <% coupon.forEach(coupon=> { %>
+                          <div class="alert alert-success my-2" role="alert">
+                            <h6>
+                              <%= coupon.description %>
+                            </h6>
+                            <%= coupon.code %>
+                              <p>
+                                valid from <%= moment(coupon.createdAt).format('MM/DD/YYYY') %> to
+                                  <%= moment(coupon.expireDate).format('MM/DD/YYYY') %>
+                              </p>
+                              <button type="submit" id="applyCode" value="<%= coupon._id %>"
+                                onclick="applyCoupon('<%= coupon.code %>')" class="btn btn-sm btn-primary">
+                                Apply Code
+                              </button>
+                          </div>
+                          <% }) %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            
+              </div>
+              <div class="coupon-section my-4">
+                <h3 class="mb-3">Apply Coupon</h3>
+                <div class="input-group">
+                  <button style="display: none;" type="button" class="btn btn-danger" id="remove_coupon_btn"
+                    onclick="couponRemove()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <input type="text" class="form-control" name="coupon_code" id="coupon_code"
+                    placeholder="Enter coupon code" />
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">
+                      Apply Coupon
+                    </button>
+                  </div>
+                </div>
+
+                <p id="coupon_message" class="mt-2"></p>
+                <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal"
+                  data-target="#couponModal">
+                  Show Available Coupons
+                </button>
+              </div>
+              <%}%>
+          </div>
+          <div class="col-lg-4">
+            <div class="order_box">
+              <h2>Your Order</h2>
+              <%if(carts){%>
+                <% carts.items.forEach(item=> {%>
+                  <input type="hidden" name="product_Id" id="product_Id" value="<%=item.product_Id._id%>" />
+                  <input type="hidden" name="product_quantity" id="product_quantity" value="<%=item.quantity%>" />
+                  <input type="hidden" name="amount" id="amount" value="<%=item.product_Id.price%>" />
+                  <ul class="list">
+                    <li>
+                      <a href="#">
+                        <h4>Product<span>Total</span></h4>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <%= item.product_Id.name%><span class="middle">x <%= item.quantity %></span><span class="last">₹
+                            <%= item.total %></span>
+                      </a>
+                    </li>
+                  </ul>
+                  <%}) %>
+                    <%}%>
+                      <%if(carts){%>
+                        <input type="hidden" name="product_grandTotal" id="product_grandTotal"
+                          value="<%= carts.grandTotal%>" />
+                        <ul class="list">
+                          <li>
+                            <a href="#">Discount<span id="dicountAmount"></span></a>
+                          </li>
+                        </ul>
+                        <ul class="list list_2">
+                          <li>
+                            <a href="#">Total
+                              <span id="grandTotal">₹<%= carts.grandTotal%></span></a>
+                          </li>
+                        </ul>
+                        <% } %>
+                          <div class="payment_options">
+                            <div class="payment_item">
+                              <div class="radion_btn">
+                                <input type="radio" id="f-option6" name="selector" value="Razorpay" />
+                                <label for="f-option6">RazorPay</label>
+                                <img src="img/product/card.jpg" alt="" />
+                                <div class="check"></div>
+                              </div>
+                              <p>
+                                Pay via RazorPay; you can pay with your credit card if you
+                                don’t have a RazorPay account.
+                              </p>
+                            </div>
+                            <div class="payment_item">
+                              <div class="radion_btn">
+                                <input type="radio" id="f-option7" name="selector" value="COD" required />
+                                <label for="f-option7">Cash on Delivery</label>
+                                <div class="check"></div>
+                              </div>
+                              <p>
+                                Pay with cash when the product is delivered to your
+                                doorstep.
+                              </p>
+                            </div>
+                            <%if(wallet>0){%>
+
+                              <div class="payment_item">
+                                <input type="checkbox" id="f-option8" name="walletChecked" value="<%=wallet%>" />
+                                <label for="f-option8">Wallet</label>
+  
+                                <p>Wallet Balance: <b id="walletBalance" class="text-dark">₹<%=wallet%></b> <br>Pay with
+                                  wallet.</p>
+                              </div>
+                            <%}%>
+
+                          </div>
+                          <div class="text-center">
+                            <button id="rzp-button1" class="btn btn-primary" type="submit">
+                              Proceed to payment
+                            </button>
+                          </div>
             </div>
           </div>
-            <div class="col-lg-4">
-              <div class="order_box">
-                <h2>Your Order</h2>
-                <%if(carts){%> <% carts.items.forEach(item => {%>
-                <input
-                  type="hidden"
-                  name="product_Id"
-                  id="product_Id"
-                  value="<%=item.product_Id._id%>"
-                />
-                <input
-                  type="hidden"
-                  name="product_quantity"
-                  id="product_quantity"
-                  value="<%=item.quantity%>"
-                />
-                <input
-                  type="hidden"
-                  name="amount"
-                  id="amount"
-                  value="<%=item.product_Id.price%>"
-                />
-                <ul class="list">
-                  <li>
-                    <a href="#"
-                      ><h4>Product<span>Total</span></h4></a
-                    >
-                  </li>
-                  <li>
-                    <a href="#"
-                      ><%= item.product_Id.name%><span class="middle"
-                        >x <%= item.quantity %></span
-                      ><span class="last">₹<%= item.total %></span></a
-                    >
-                  </li>
-                </ul>
-                <%}) %> <%}%> <%if(carts){%>
-                <input
-                  type="hidden"
-                  name="product_grandTotal"
-                  id="product_grandTotal"
-                  value="<%= carts.grandTotal%>"
-                />
-                <ul class="list">
-                  <li>
-                    <a href="#">Discount<span id="dicountAmount"></span></a>
-                  </li>
-                </ul>
-                <ul class="list list_2">
-                  <li>
-                    <a href="#"
-                      >Total
-                      <span id="grandTotal">₹<%= carts.grandTotal%></span></a
-                    >
-                  </li>
-                </ul>
-                <% } %>
-                <div class="payment_options">
-                  <div class="payment_item">
-                    <div class="radion_btn">
-                      <input
-                        type="radio"
-                        id="f-option6"
-                        name="selector"
-                        value="Razorpay"
-                      />
-                      <label for="f-option6">RazorPay</label>
-                      <img src="img/product/card.jpg" alt="" />
-                      <div class="check"></div>
-                    </div>
-                    <p>
-                      Pay via RazorPay; you can pay with your credit card if you
-                      don’t have a RazorPay account.
-                    </p>
-                  </div>
-                  <div class="payment_item">
-                    <div class="radion_btn">
-                      <input
-                        type="radio"
-                        id="f-option7"
-                        name="selector"
-                        value="COD"
-                        required
-                      />
-                      <label for="f-option7">Cash on Delivery</label>
-                      <div class="check"></div>
-                    </div>
-                    <p>
-                      Pay with cash when the product is delivered to your
-                      doorstep.
-                    </p>
-                  </div>
-                 
-                  <div class="payment_item">
-                    <input
-                    type="checkbox"
-                    id="f-option8"
-                    name="walletChecked"
-                    value="<%=wallet%>"
-                  />
-                  <label for="f-option8">Wallet</label>
-        
-                    <p>Wallet Balance: <b id="walletBalance" class="text-dark">₹<%=wallet%></b> <br>Pay with wallet.</p>
-                  </div>
-                
-                </div>
-                <div class="text-center">
-                  <button
-                    id="rzp-button1"
-                    class="btn btn-primary"
-                    type="submit"
-                  >
-                    Proceed to payment
-                  </button>
-                </div>
-              </div>
-            </div>
           </form>
         </div>
       </div>
     </div>
-</section>
-    <%- include('../layouts/footer.ejs') %>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+  </section>
+  <%- include('../layouts/footer.ejs') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
       integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
@@ -379,9 +251,6 @@
         let address = $("input[name=address]:checked").val();
         let selector = $("input[name=selector]:checked").val();
         let walletChecked = $("input[name=walletChecked]:checked").val();
-        console.log(
-          walletChecked
-        );
         let product_grandTotal =
           document.getElementById("product_grandTotal").value;
         let orderNote = document.getElementById("message").value;
@@ -410,13 +279,13 @@
       });
       function razorpayPayment(order) {
         var options = {
-          key: "<%= process.env.paymentId%>", // Enter the Key ID generated from the Dashboard
-          amount: order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          key: "<%= process.env.paymentId%>",
+          amount: order.amount,
           currency: "INR",
           name: "Aroma Store",
           description: "Test Transaction",
           image: "https://example.com/your_logo",
-          order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          order_id: order.id,
           handler: function (response) {
             verifyPayment(response, order);
           },
@@ -460,24 +329,24 @@
         let applyCouponInput = document.getElementById("coupon_code");
         applyCouponInput.value = couponId;
         selectedCouponId = couponId;
-        if(selectedCouponId){
-          let removeCoupon = document.getElementById('remove_coupon_btn').style.display='block'
+        if (selectedCouponId) {
+          let removeCoupon = document.getElementById('remove_coupon_btn').style.display = 'block'
         }
       }
-      async function couponRemove(){
-       let couponValue = document.getElementById('coupon_code').value =''
-       const remove = await axios.post('/removeCoupon',{selectedCouponId})
-       if (remove.data.message === true) {
+      async function couponRemove() {
+        let couponValue = document.getElementById('coupon_code').value = ''
+        const remove = await axios.post('/removeCoupon', { selectedCouponId })
+        if (remove.data.message === true) {
           document.getElementById(
             "dicountAmount"
           ).innerHTML = ` ${remove.data.discountAmount}`;
           document.getElementById(
             "grandTotal"
           ).innerHTML = `₹ ${remove.data.cartTotal}`;
-         let removeCoupon = document.getElementById('remove_coupon_btn').style.display='none'
-      
-      } 
-    }
+          let removeCoupon = document.getElementById('remove_coupon_btn').style.display = 'none'
+
+        }
+      }
       let couponApply = async () => {
         let selectedCoupon = document.getElementById("coupon_code").value;
         const couponApplied = await axios.post("/coupon", { selectedCoupon });
@@ -544,5 +413,5 @@
         }
       };
     </script>
-  </div>
-</section>
+    </div>
+    </section>

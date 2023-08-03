@@ -56,7 +56,8 @@
               </tr>
             </thead>
             <tbody id="reportBody">
-              <% salesReport.forEach(element => {%>
+              <%if(salesReport && salesReport.length>0){%> <%
+              salesReport.forEach(element => {%>
               <tr>
                 <td><%= element.user.email%></td>
                 <td><%= element.user.phone_number%></td>
@@ -67,7 +68,7 @@
                 <td><%= element.grandTotal%></td>
                 <td><%= element.orderStatus%></td>
               </tr>
-              <%})%>
+              <%})%> <%}%>
             </tbody>
           </table>
         </div>
@@ -125,7 +126,6 @@
         endDate,
       });
       const salesReport = response.data.selectedDate;
-      console.log(salesReport);
       const reportBody = document.getElementById("reportBody");
       reportBody.innerHTML = salesReport
         .map(

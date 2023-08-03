@@ -1,9 +1,11 @@
 const userOTPVerification = require("../models/userOTPVerification");
-const Banner = require("../models/bannerModel");
+const Subscription = require("../models/subscriptionModel");
+const Category = require("../models/categoryModel");
 const Wishlist = require("../models/wishListModel");
 const Product = require("../models/productModel");
+const Banner = require("../models/bannerModel");
+const Comments = require("../models/comments");
 const Order = require("../models/orderModel");
-const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
 const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
@@ -15,7 +17,7 @@ const loadLogin = async (req, res) => {
     let { message } = req.session;
     req.session.message = "";
     res.render("userLogin", { message });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -46,7 +48,7 @@ const loginSuccess = async (req, res) => {
       req.session.message = "Invalid Email or Password";
       res.redirect("/login");
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -55,7 +57,7 @@ const loadRegister = async (req, res) => {
     let { message } = req.session;
     req.session.message = "";
     res.render("userRegister", { message });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -97,7 +99,7 @@ const insertUser = async (req, res) => {
         res.redirect("/register");
       }
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -114,7 +116,6 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
       },
     });
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    console.log(otp, "this is otp in userController");
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
@@ -131,7 +132,7 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
     let verified = await newVerificationOTP.save();
     await transporter.sendMail(mailOptions);
     return verified._id;
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -141,7 +142,7 @@ const emailVerificationPage = async (req, res) => {
     req.session.otpVerification = null;
     req.session.message = "";
     res.render("userEmail", { message, otp: otpVerification });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -191,7 +192,7 @@ const emailVerification = async (req, res) => {
         }
       }
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -206,7 +207,7 @@ const loadHome = async (req, res) => {
     if (products) {
       res.render("userHome", { products, brands, banner, bannerNews });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -263,8 +264,7 @@ const shopPage = async (req, res) => {
       prevPage: page - 1,
       lastPage: Math.ceil(productCount / ITEMS_PER_PAGE),
     });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -274,7 +274,7 @@ const singleProduct = async (req, res) => {
     const { userId } = req.session;
     const products = await Product.findById({ _id: id }).populate("category");
     res.render("singleProduct", { products: products, userId });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -282,7 +282,7 @@ const loadLogout = async (req, res) => {
   try {
     req.session.userId = null;
     res.redirect("/");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -306,11 +306,10 @@ const userProfile = async (req, res) => {
         $sort: { "walletHistory.date": -1 },
       },
     ]);
-    console.log(walletHistory);
     req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
     res.render("userProfile", { userProfile, message, walletHistory });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -319,7 +318,7 @@ const editProfile = async (req, res) => {
     const { userId } = req.session;
     const userProfile = await User.findById({ _id: userId });
     res.render("editProfile", { userProfile });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -339,7 +338,7 @@ const updatedProfile = async (req, res) => {
       }
     );
     res.redirect("/userProfile");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -348,14 +347,14 @@ const manageAddress = async (req, res) => {
     const { userId } = req.session;
     const userAddresses = await User.findOne({ _id: userId });
     res.render("manageAddress", { userAddresses });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const addAddressPage = async (req, res) => {
   try {
     res.render("addAddress");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -379,7 +378,7 @@ const addAddress = async (req, res) => {
       }
     );
     res.redirect("/manageAddress");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -392,7 +391,7 @@ const editAddress = async (req, res) => {
       { address: { $elemMatch: { _id: id } } }
     );
     res.render("editAddress", { userAddress: userAddress });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -414,7 +413,7 @@ const updatedAddress = async (req, res) => {
       }
     );
     res.redirect("/manageAddress");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -427,7 +426,7 @@ const deleteAddress = async (req, res) => {
       { $pull: { address: { _id: addId } } }
     );
     res.status(201).json({ message: "success deleted" });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -450,8 +449,7 @@ const orders = async (req, res) => {
       .populate("user")
       .sort({ createdAt: -1 });
     res.render("orders", { orders, currentDate });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -462,8 +460,7 @@ const viewOrdered = async (req, res) => {
       .populate("user")
       .populate("items.product");
     res.render("viewOrdered", { order: order });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -473,8 +470,7 @@ const changePassword = async (req, res) => {
     req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
     res.render("changePassword", { message, userProfile });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -508,8 +504,7 @@ const updatedPassword = async (req, res) => {
       req.session.message = "Your current password does not match";
       res.redirect("/changePassword");
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -542,8 +537,7 @@ const returnOrder = async (req, res) => {
     } else {
       res.status(400).json({ message: "Bad request" });
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -589,8 +583,7 @@ const cancelOrder = async (req, res) => {
     } else {
       res.status(400).json({ message: "Seems like an error" });
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -601,8 +594,7 @@ const wishList = async (req, res) => {
       "items.product_Id"
     );
     res.render("wishList", { products: products, userId });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -647,8 +639,8 @@ const addToWishList = async (req, res) => {
       });
       await makeWishList.save();
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    res.redirect("/error500");
   }
 };
 const deleteFromWishList = async (req, res) => {
@@ -662,19 +654,56 @@ const deleteFromWishList = async (req, res) => {
         $pull: { items: { product_Id: productId } },
       }
     );
+    const wishList = await Wishlist.findOne({userId:userId})
     res.status(201).json({
-      message: "success and modified",
+      message: "success and modified",wishListLength:wishList.items.length
     });
+  } catch (err) {
+    res.redirect("/error500");
+  }
+};
+const subscription = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const findSubscription = await Subscription.findOne({ email: email });
+    if (findSubscription) {
+      res.json({ message: false });
+    } else {
+      const newSubscription = new Subscription({
+        email: email,
+      });
+      await newSubscription.save();
+      res.json({ message: true });
+    }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
+  }
+};
+const comments = async (req, res) => {
+  try {
+    const { productId, name, email, number, message } = req.body;
+    const newComment = new Comments({
+      product: productId,
+      date: new Date(),
+      fullName: name,
+      emailAddress: email,
+      phoneNumber: number,
+      message: message,
+    });
+    const update = await newComment.save();
+    if (update) {
+      res.json({ message: true });
+    } else {
+      res.json({ message: false });
+    }
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const error500 = async (req, res) => {
   try {
     res.render("error500");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -692,6 +721,7 @@ module.exports = {
   manageAddress,
   addToWishList,
   deleteAddress,
+  subscription,
   loginSuccess,
   loadRegister,
   editProfile,
@@ -707,6 +737,7 @@ module.exports = {
   error500,
   shopPage,
   loadHome,
+  comments,
   wishList,
   orders,
 };

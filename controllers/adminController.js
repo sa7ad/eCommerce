@@ -23,7 +23,7 @@ const loadLogin = async (req, res) => {
       req.session.message = "";
       res.render("adminLogin", { message });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -38,7 +38,7 @@ const loadDashboard = async (req, res) => {
       req.session.message = "Invalid Admin Details";
       res.redirect("/admin");
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -163,21 +163,21 @@ const dashboard = async (req, res) => {
     const countProduct = await Product.countDocuments();
     const categoryCount = await Category.countDocuments();
     res.render("adminDashboard", {
-      pendingOrder,
-      revenue,
-      latestUsers,
-      countProduct,
-      categoryCount,
-      latestOrders,
-      monthlyEarning,
       currentYearProfit,
-      salesData,
-      placedOrder,
+      monthlyEarning,
       cancelledOrder,
-      userData,
       deliveredOrder,
+      categoryCount,
+      pendingOrder,
+      countProduct,
+      latestOrders,
+      latestUsers,
+      placedOrder,
+      salesData,
+      userData,
+      revenue,
     });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -185,7 +185,7 @@ const loadLogout = async (req, res) => {
   try {
     req.session.adminSession = null;
     res.redirect("/admin");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -193,7 +193,7 @@ const usersList = async (req, res) => {
   try {
     const usersList = await User.find({ verified: true });
     res.render("usersList", { users: usersList });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -218,7 +218,7 @@ const usersBlocked = async (req, res) => {
         message: false,
       });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -228,7 +228,7 @@ const categories = async (req, res) => {
     req.session.message = "";
     const categoryDetails = await Category.find();
     res.render("categories", { message, category: categoryDetails });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -238,7 +238,7 @@ const addCategory = async (req, res) => {
     const existingCategory = await Category.find({
       name: { $regex: new RegExp(`^${category_name}$`, "i") },
     });
-    if (!existingCategory) {
+    if (!existingCategory.length) {
       const categ = new Category({
         name: category_name,
         description: category_description,
@@ -249,8 +249,8 @@ const addCategory = async (req, res) => {
       req.session.message = "This category is already defined";
       res.redirect("/admin/categories");
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
     res.redirect("/error500");
   }
 };
@@ -259,7 +259,7 @@ const editCategory = async (req, res) => {
     const { id } = req.query;
     const category = await Category.findById({ _id: id });
     res.render("editCategory", { category });
-  } catch {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -272,7 +272,7 @@ const updatedCategory = async (req, res) => {
     );
     await updatedCategory.save();
     res.redirect("/admin/categories");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -287,7 +287,7 @@ const listCategory = async (req, res) => {
       await Category.updateOne({ _id: categoryId }, { $set: { list: true } });
       res.status(201).json({ message: false });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -296,7 +296,7 @@ const productAddPage = async (req, res) => {
   try {
     const categories = await Category.find();
     res.render("productAddPage", { categories });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -304,7 +304,7 @@ const productList = async (req, res) => {
   try {
     const product = await Product.find().populate("category");
     res.render("productList", { product });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -344,8 +344,7 @@ const productAdd = async (req, res) => {
     });
     await product.save();
     res.redirect("/admin/productList");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -360,7 +359,7 @@ const listProduct = async (req, res) => {
       await Product.updateOne({ _id: productId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -370,31 +369,26 @@ const productEditPage = async (req, res) => {
     const product = await Product.findById({ _id: id });
     const category = await Category.find();
     res.render("productEditPage", {
-      product_id: id,
       categories: category,
+      product_id: id,
       product,
     });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const productUpdated = async (req, res) => {
   try {
     const {
-      product_id,
-      product_name,
-      product_quantity,
-      product_price,
-      product_category,
       product_description,
+      product_quantity,
+      product_category,
+      product_price,
       product_brand,
+      product_name,
+      product_id,
     } = req.body;
-    // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
-    //if all the images should not be deleted while updating
-    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
-    //   imageArr = existingProduct.image
-    // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
         const filePath = path.join(
@@ -439,7 +433,7 @@ const productUpdated = async (req, res) => {
       );
       res.redirect("/admin/productList");
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -447,7 +441,7 @@ const orders = async (req, res) => {
   try {
     const orders = await Order.find().populate("user").sort({ createdAt: -1 });
     res.render("ordersList", { orders: orders });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -458,8 +452,7 @@ const viewOrdered = async (req, res) => {
       .populate("user")
       .populate("items.product");
     res.render("viewOrdered", { order: order });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -489,8 +482,8 @@ const changeStatus = async (req, res) => {
       );
     }
     res.status(201).json({ success: true });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    res.redirect("/error500");
   }
 };
 const cancelOrder = async (req, res) => {
@@ -512,7 +505,7 @@ const cancelOrder = async (req, res) => {
     } else {
       res.status(400).json({ message: "Seems like there is an error" });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -521,16 +514,15 @@ const salesReport = async (req, res) => {
     const moment = require("moment");
     const firstOrder = await Order.find().sort({ createdAt: 1 });
     const lastOrder = await Order.find().sort({ createdAt: -1 });
-    const salesReport = await Order.find()
+    const salesReport = await Order.find({orderStatus:"Delivered"})
       .populate("user")
       .sort({ createdAt: -1 });
     res.render("salesReport", {
-      salesReport,
       firstOrder: moment(firstOrder[0].createdAt).format("YYYY-MM-DD"),
       lastOrder: moment(lastOrder[0].createdAt).format("YYYY-MM-DD"),
+      salesReport,
     });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -548,31 +540,35 @@ const datePicker = async (req, res) => {
             $gte: startDateObj,
             $lte: endDateObj,
           },
+          orderStatus:"Delivered"
         },
       },
-      {$lookup:{from:"users",localField:"user",foreignField:"_id",as:"user"}},
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
     ]);
-    console.log(selectedDate,"sele")
     res.status(200).json({ selectedDate: selectedDate });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
-    console.log(error.message);
   }
 };
 const banner = async (req, res) => {
   try {
     const banner = await Banner.find();
     res.render("banner", { banner });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const bannerAdd = async (req, res) => {
   try {
     res.render("bannerAdd");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -601,7 +597,7 @@ const bannerAdded = async (req, res) => {
     });
     await banner.save();
     res.redirect("/admin/banner");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -610,20 +606,14 @@ const bannerEdit = async (req, res) => {
     const { id } = req.query;
     const banner = await Banner.findById({ _id: id });
     res.render("bannerEdit", { banner, bannerId: banner._id });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const bannerUpdated = async (req, res) => {
   try {
     const { bannerId, bannerName, bannerField, bannerDescription } = req.body;
-    console.log(bannerId, bannerName, bannerField, bannerDescription);
-    // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
-    //if all the images should not be deleted while updating
-    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
-    //   imageArr = existingProduct.image
-    // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
         const filePath = path.join(
@@ -664,8 +654,7 @@ const bannerUpdated = async (req, res) => {
       );
       res.redirect("/admin/banner");
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -680,7 +669,7 @@ const listBanner = async (req, res) => {
       await Banner.updateOne({ _id: bannerId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -690,8 +679,7 @@ const coupon = async (req, res) => {
     req.session.message = "";
     const coupon = await Coupon.find();
     res.render("coupon", { coupon, message });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -720,9 +708,8 @@ const couponAdded = async (req, res) => {
       req.session.message = "This code has been already used";
     }
     res.redirect("/admin/coupon");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
-    console.log(error.message);
   }
 };
 const editCoupon = async (req, res) => {
@@ -730,7 +717,7 @@ const editCoupon = async (req, res) => {
     const { id } = req.query;
     const coupon = await Coupon.findById({ _id: id });
     res.render("editCoupon", { coupon });
-  } catch {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -752,7 +739,7 @@ const updatedCoupon = async (req, res) => {
     );
     await updatedCoupon.save();
     res.redirect("/admin/coupon");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -767,15 +754,15 @@ const listCoupon = async (req, res) => {
       await Coupon.updateOne({ _id: couponId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
 const error500 = async (req, res) => {
   try {
     res.render("error500");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 module.exports = {
@@ -795,21 +782,21 @@ module.exports = {
   productList,
   salesReport,
   addCategory,
-  listCoupon,
   cancelOrder,
-  editCoupon,
   listProduct,
   couponAdded,
+  listCoupon,
+  editCoupon,
   loadLogout,
-  datePicker,
   productAdd,
+  datePicker,
   categories,
+  listBanner,
   bannerEdit,
   bannerAdd,
   loadLogin,
   dashboard,
   usersList,
-  listBanner,
   error500,
   coupon,
   banner,

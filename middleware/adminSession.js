@@ -5,8 +5,8 @@ const isAdminLogin = async (req, res, next) => {
     } else {
       res.redirect("/admin");
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 

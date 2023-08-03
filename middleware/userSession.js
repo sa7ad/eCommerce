@@ -10,8 +10,8 @@ const isLogin = async (req, res, next) => {
     } else {
       res.redirect("/login");
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 const isLogout = async (req, res, next) => {
@@ -24,8 +24,8 @@ const isLogout = async (req, res, next) => {
     } else {
       next();
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 

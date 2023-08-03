@@ -12,7 +12,7 @@ const loadCart = async (req, res) => {
       "items.product_Id"
     );
     res.render("cart", { products, userId });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -75,7 +75,7 @@ const addToCart = async (req, res) => {
     }
     const cart = await Cart.findOne({ userId: userId });
     res.json({ count: cart.items.length });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -114,7 +114,7 @@ const deleteFromCart = async (req, res) => {
       total: carttotal.grandTotal,
       cart: length,
     });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -157,7 +157,7 @@ const cartCount = async (req, res) => {
       const carttotal = await Cart.findOne({ userId: userId });
       res.json({ message: "success", total: carttotal.grandTotal });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -181,7 +181,7 @@ const addOrderAddress = async (req, res) => {
       }
     );
     res.redirect("/placeOrder");
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -208,7 +208,7 @@ const placeOrder = async (req, res) => {
       currentDate: currentDate,
       moment: moment,
     });
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -255,7 +255,7 @@ const applyCoupon = async (req, res) => {
     } else {
       res.json({ message: false });
     }
-  } catch (error) {
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -282,8 +282,8 @@ const removeCoupon = async (req, res) => {
     } else {
       res.json({ message: false });
     }
-  } catch (error) {
-    
+  } catch (err) {
+    res.redirect("/error500");
   }
 };
 const orderPlacedSuccess = async (req, res) => {
@@ -300,8 +300,8 @@ const orderPlacedSuccess = async (req, res) => {
 const error500 = async (req, res) => {
   try {
     res.render("error500");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 module.exports = {

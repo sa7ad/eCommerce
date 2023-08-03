@@ -2,10 +2,7 @@
 <main class="site-main">
   <div class="container">
     <div class="row no-gutters align-items-center pt-60px">
-      <%if(banner&&banner.length>0){%>
-
-     
-      <% if (banner[0].list === true) { %>
+      <%if(banner&&banner.length>0){%> <% if (banner[0].list === true) { %>
       <div class="col-5 d-none d-sm-block">
         <div class="hero-banner__img">
           <div
@@ -57,25 +54,21 @@
           </div>
         </div>
       </div>
-      <% } %>
-      <%}%>
+      <% } %> <%}%>
 
       <div class="col-sm-7 col-lg-6 offset-lg-1 pl-4 pl-md-5 pl-lg-0">
         <div class="hero-banner__content">
-          <h1>The Perfect Boot DAPPE-R</h1>
+          <h1>The Perfect Boot DAPPE-RR</h1>
           <p>
-            Best Ecommerce for football boots with different categories that
+            Best e-commerce for football boots with different categories that
             makes you feel comfort with a wide range of collection. So lace up
-            with DAPPE-R and show your skills.
+            with DAPPE-RR and show your skills.
           </p>
           <a class="button button-hero" href="/shopPage">Browse Now</a>
         </div>
       </div>
     </div>
   </div>
-  <!--================ Hero banner start =================-->
-
-  <!--================ Hero Carousel start =================-->
   <section class="section-margin mt-0">
     <div class="owl-carousel owl-theme hero-carousel">
       <div class="hero-carousel__slide">
@@ -101,10 +94,6 @@
       </div>
     </div>
   </section>
-  <!--================ Hero Carousel end =================-->
-
-  <!-- ================ trending product section start ================= -->
-
   <section class="section-margin calc-60px">
     <div class="container">
       <div class="section-intro pb-60px">
@@ -135,32 +124,23 @@
         </div>
       </div>
       <div class="row">
-        <% for (let product of products) { %> <% if (product.category.list ===
-        true) { %>
+        <% for (let product of products) { %> <% if (product.category.list === true) { %>
         <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>">
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
-                <img
-                  class="card-img"
-                  src="/images/<%= product.image[0] %>"
-                  alt=""
-                />
+                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
               </a>
               <ul class="card-product__imgOverlay">
-                <li>
-                  <a href="/singleProduct?id=<%=product._id%>"
-                    ><i class="ti-search"></i
-                  ></a>
-                </li>
+                <li><a href="/singleProduct?id=<%=product._id%>"><button><i class="ti-search"></i></button></a></li>
+                <li><button onclick="addToCart('<%=product._id%>')"><i class="ti-shopping-cart"></i></button></li>
+                <li><button onclick="addTowishList('<%=product._id%>')"><i class="ti-heart"></i></button></li>
               </ul>
             </div>
             <div class="card-body">
               <p class="card-product__category"><%= product.brand %></p>
               <h4 class="card-product__title">
-                <a href="/singleProduct?id=<%= product._id %>"
-                  ><%= product.name %></a
-                >
+                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
               </h4>
               <p class="card-product__price">₹<%= product.price %></p>
             </div>
@@ -168,130 +148,40 @@
         </div>
         <% } %> <% } %>
       </div>
+      
     </div>
   </section>
-
-  <!-- ================ trending product section end ================= -->
-
-  <!-- ================ offer section start ================= -->
-  <section
-    class="offer"
-    id="parallax-1"
-    data-anchor-target="#parallax-1"
-    data-300-top="background-position: 20px 30px"
-    data-top-bottom="background-position: 0 20px"
-  >
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-5">
-          <div class="offer__content text-center">
-            <h3>Up To 50% Off</h3>
-            <h4>Winter Sale</h4>
-            <p>This is the best time to purchase.</p>
-            <a class="button button--active mt-3 mt-xl-4" href="#">Shop Now</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ================ offer section end ================= -->
-
-  <!-- ================ Best Selling item  carousel ================= -->
-  <!-- Category Filter -->
-
-  <!-- ================ Best Selling item  carousel end ================= -->
-  <section class="section-margin calc-60px">
-    <div class="container">
-      <div class="section-intro pb-60px">
-        <h2 class="text-center">
-          Best<span class="section-intro__style">Sellers</span>
-        </h2>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="d-flex justify-content-center align-items-center mb-4">
-            <button
-              onclick="filterProduct('All')"
-              type="button"
-              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
-            >
-              All
-            </button>
-            <%brands.forEach(brand=>{%>
-            <button
-              onclick="filterProduct('<%= brand %>')"
-              type="button"
-              class="btn btn-outline-primary btn-sm rounded-pill mr-2"
-            >
-              <%= brand %>
-            </button>
-            <%})%>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <% for (let product of products) { %> <% if (product.category.list ===
-        true) { %>
-        <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>">
-          <div class="card text-center card-product">
-            <div class="card-product__img">
-              <a href="/singleProduct?id=<%= product._id %>">
-                <img
-                  class="card-img"
-                  src="/images/<%= product.image[0] %>"
-                  alt=""
-                />
-              </a>
-              <ul class="card-product__imgOverlay">
-                <li>
-                  <a href="/singleProduct?id=<%=product._id%>"
-                    ><i class="ti-search"></i
-                  ></a>
-                </li>
-              </ul>
-            </div>
-            <div class="card-body">
-              <p class="card-product__category"><%= product.brand %></p>
-              <h4 class="card-product__title">
-                <a href="/singleProduct?id=<%= product._id %>"
-                  ><%= product.name %></a
-                >
-              </h4>
-              <p class="card-product__price">₹<%= product.price %></p>
-            </div>
-          </div>
-        </div>
-        <% } %> <% } %>
-      </div>
-    </div>
-  </section>
-  <!-- ================ Blog section start ================= -->
-
-  <!-- ================ Blog section end ================= -->
-
-  <!-- ================ Subscribe section start ================= -->
   <section class="subscribe-position">
     <div class="container">
       <div class="subscribe text-center">
         <h3 class="subscribe__title">Get Update From Anywhere</h3>
         <p>
-          Get latest news about our trending products,and to know more about
+          Get latest news about our trending products, and to know more about
           special deals and offers.
         </p>
         <div id="mc_embed_signup">
-          <form method="post" class="subscribe-form form-inline mt-5 pt-1">
+          <form
+            action="/subscription"
+            method="post"
+            class="subscribe-form form-inline mt-5 pt-1"
+          >
             <div class="form-group ml-sm-auto">
               <input
                 class="form-control mb-1"
                 type="email"
-                name="EMAIL"
+                name="email"
+                id="email"
                 placeholder="Enter your email"
                 onfocus="this.placeholder = ''"
                 onblur="this.placeholder = 'Your Email Address '"
               />
               <div class="info"></div>
             </div>
-            <button class="button button-subscribe mr-auto mb-1" type="submit">
+            <button
+              class="button button-subscribe mr-auto mb-1"
+              type="submit"
+              onclick="subscription()"
+            >
               Subscribe Now
             </button>
             <div style="position: absolute; left: -5000px">
@@ -307,10 +197,84 @@
       </div>
     </div>
   </section>
-  <!-- ================ Subscribe section end ================= -->
 </main>
 <%- include('../layouts/footer.ejs') %>
 <script>
+   addToCart = async (product_Id) => {
+        event.preventDefault()
+        Toastify({
+          text: "Added To Cart",
+          duration: 1000,
+          destination: '/cart',
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "right",
+          stopOnFocus: false,
+          style: {
+            background: "#384aeb",
+          }
+        }).showToast();
+        let product_quantity = 1
+        const quantityData = await axios.post('/cart', { product_quantity, product_Id })
+        if (quantityData.data.count) {
+          document.getElementById("cartCount").innerHTML = quantityData.data.count
+        }
+        return quantityData
+      }
+      addTowishList = async (product_Id) => {
+        event.preventDefault()
+        Toastify({
+          text: "Added To Wishlist",
+          duration: 1000,
+          destination: '/wishList',
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "right",
+          stopOnFocus: false,
+          style: {
+            background: "#FFFFFF",
+            color: "#384aeb"
+          }
+        }).showToast();
+        const wishList = await axios.post('/addToWishList', { product_Id })
+      }
+  const subscription = async () => {
+    let email = document.getElementById("email").value;
+    email.addEventListener();
+    event.preventDefault();
+    if (email) {
+      const updatedEmail = await axios.post("/subscription", { email: email });
+      if (updatedEmail.data.message === true) {
+        Toastify({
+          text: "Thank You! You have been successfully subscribed to our newsletter",
+          duration: 3000,
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: false,
+          style: {
+            background: "#384aeb",
+          },
+        }).showToast();
+      } else {
+        Toastify({
+          text: "Email has been already subscribed.",
+          duration: 1000,
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: false,
+          style: {
+            background: "#384aeb",
+          },
+        }).showToast();
+      }
+    }
+  };
   function filterProduct(brand) {
     let productCards = document.querySelectorAll(".filter-item");
     productCards.forEach(function (card) {

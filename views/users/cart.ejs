@@ -1,9 +1,21 @@
 <%- include('../layouts/header.ejs') %>
 <section class="cart_area">
   <div class="container">
+    <div class="text-center">
+      <div id="emptyCartContainer" style="display: none;">
+        <img
+          id="emptyCart"
+          src="/images/empty.jpg"
+          class="img-fluid"
+          style="height: 30rem;"
+          alt="empty"
+        />
+      </div>
+    </div>
     <% if (!products || !products?.items?.length > 0) { %>
     <div class="text-center">
       <img
+        id="emptyCart"
         src="/images/empty.jpg"
         class="img-fluid"
         style="height: 30rem"
@@ -58,6 +70,7 @@
                     id="inputCount<%=product.product_Id._id %>"
                     type="text"
                     min="1"
+                    max="<%= product.quantity %>"
                     value="<%= product.quantity %>"
                     readonly
                   />
@@ -161,13 +174,16 @@
       if (willDelete) {
         const deletedItem = await axios.put("/cart", { product_Id });
         document.getElementById("productTotal").innerHTML =
-          deletedItem?.data?.total
+          deletedItem?.data?.total;
         const { cart } = deletedItem.data;
         if (deletedItem) {
           document.getElementById(product_Id).style.display = "none";
           document.getElementById("productTotal").textContent =
             deletedItem.data.total;
           if (cart === 0) {
+            document.getElementById("cartCount").textContent = cart;
+            document.getElementById('table').style.display = 'none';
+             document.getElementById('emptyCartContainer').style.display = 'block';
             const remove = document.getElementById("hideCheckOut");
             remove.parentNode.removeChild(remove);
           }

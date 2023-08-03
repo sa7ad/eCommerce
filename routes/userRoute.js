@@ -1,18 +1,18 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
 const {
-  orderPlaced,
   validatePaymentVerification,
+  orderPlaced,
 } = require("../controllers/paymentController");
 const {
   orderPlacedSuccess,
   addOrderAddress,
   deleteFromCart,
+  removeCoupon,
+  applyCoupon,
   placeOrder,
   addToCart,
   cartCount,
   loadCart,
-  applyCoupon,
-  removeCoupon
 } = require("../controllers/cartController");
 const {
   emailVerificationPage,
@@ -27,6 +27,7 @@ const {
   deleteAddress,
   singleProduct,
   addToWishList,
+  subscription,
   loginSuccess,
   loadRegister,
   editProfile,
@@ -40,6 +41,7 @@ const {
   addAddress,
   loadLogin,
   error500,
+  comments,
   loadHome,
   wishList,
   shopPage,
@@ -146,6 +148,7 @@ userRoute.get("/emailVerification", isLogout, emailVerificationPage);
  *         description:successful operation
  */
 userRoute.post("/emailVerification", emailVerification);
+
 /**
  * @swagger
  * /cart:
@@ -524,13 +527,38 @@ userRoute.post("/coupon", isLogin, applyCoupon);
  * /removeCoupon:
  *  post:
  *     tags:
- *     - removeCoupon 
+ *     - removeCoupon
  *     description: displays the page of login
  *     responses:
  *       200:
  *         description:successful operation
  */
 userRoute.post("/removeCoupon", isLogin, removeCoupon);
+/**
+ * @swagger
+ * /subscription:
+ *  post:
+ *     tags:
+ *     - subscription
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/subscription", subscription);
+/**
+ * @swagger
+ * /comments:
+ *  post:
+ *     tags:
+ *     - comments
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/comments", comments);
+
 /**
  * @swagger
  * /error500:

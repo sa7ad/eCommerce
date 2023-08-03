@@ -4,6 +4,7 @@ const {
   updatedCategory,
   productUpdated,
   productAddPage,
+  bannerUpdated,
   loadDashboard,
   updatedCoupon,
   editCategory,
@@ -17,6 +18,7 @@ const {
   cancelOrder,
   productList,
   couponAdded,
+  bannerAdded,
   productAdd,
   categories,
   editCoupon,
@@ -32,8 +34,6 @@ const {
   coupon,
   banner,
   orders,
-  bannerAdded,
-  bannerUpdated,
   listCoupon,
 } = require("../controllers/adminController");
 const upload = require("../middleware/uploadImage");

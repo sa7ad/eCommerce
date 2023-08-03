@@ -1,85 +1,83 @@
 <%- include('../layouts/adminHeader.ejs') %>
-<section class="content-main">
-  <div class="content-header">
-    <div>
-      <h2 class="content-title card-title">Banners List</h2>
-    </div>
-    <div>
-      <a href="/admin/bannerAdd" class="btn btn-primary btn-sm rounded"
-        >Create new</a
-      >
-    </div>
-  </div>
-  <div class="row gx-3">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table id="myTable" class="table table-hover text-center">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Field</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            <%banner.forEach(banner=>{%>
-            <tr>
-              <td width="25%">
-                    <div class="left">
-                      <img
-                        src="/images/<%= banner.image[0]%>"
-                        class="img-sm img-thumbnail"
-                        alt="Item"
-                      />
-                    </div>
-                    <div class="info pl-3">
-                      <h6 class="mb-0 title"><%= banner.title%></h6>
-                    </div>
-                  </td>
-                  <td>
-                    <span><%= banner.description %></span>
-                  </td>
-                  <td>
-                    <span><%= banner.field %></span>
-                  </td>
-                  <td>
-                    <a
-                      href="/admin/bannerEdit?id=<%= banner._id %>"
-                      class="btn btn-sm btn-danger rounded font-sm mt-15"
-                      >Edit</a
-                    >
-                    <button
-                      id="block-<%= banner._id %>"
-                      onclick="bannerList('<%= banner._id %>')"
-                      class="btn btn-sm btn-danger rounded font-sm mt-15"
-                    >
-                      <% if (banner.list === true) { %> Unlist <% } else { %>
-                      List <% } %>
-                    </button>
-                  </td>
-            </tr>
-            <%})%>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Banners List</h2>
+      </div>
+      <div>
+        <a href="/admin/bannerAdd" class="btn btn-primary btn-sm rounded">Create new</a>
       </div>
     </div>
-  </div>
-</section>
-<%- include('../layouts/adminFooter.ejs') %>
-<script>
-const bannerList = async (bannerId) => {
-  try {
-    const button = document.getElementById(`block-${bannerId}`);
-    const responses = await axios.patch("/admin/listBanner", { bannerId });
-    if (responses.data.unlistSuccess) {
-      button.textContent = "List";
-    } else if (responses.data.listSuccess) {
-      button.textContent = "Unlist";
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-</script>
-
-
+    <div class="row gx-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="myTable" class="table table-hover text-center">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Field</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%banner.forEach(banner=>{%>
+                <tr>
+                  <td width="25%">
+                    <div class="left">
+                      <img src="/images/<%= banner.image[0]%>" class="img-sm img-thumbnail" alt="Item" />
+                    </div>
+                    <div class="info pl-3">
+                      <h6 class="mb-0 title">
+                        <%= banner.title%>
+                      </h6>
+                    </div>
+                  </td>
+                  <td>
+                    <span>
+                      <%= banner.description %>
+                    </span>
+                  </td>
+                  <td>
+                    <span>
+                      <%= banner.field %>
+                    </span>
+                  </td>
+                  <td>
+                    <a href="/admin/bannerEdit?id=<%= banner._id %>"
+                      class="btn btn-sm btn-danger rounded font-sm mt-15">Edit</a>
+                    <button id="block-<%= banner._id %>" onclick="bannerList('<%= banner._id %>')"
+                      class="btn btn-sm btn-danger rounded font-sm mt-15">
+                      <% if (banner.list===true) { %> Unlist <% } else { %> List
+                          <% } %>
+                    </button>
+                  </td>
+                </tr>
+                <%})%>
+        </div>
+      </div>
+    </div>
+  </section><%- include('../layouts/adminFooter.ejs') %>
+    <script>
+      const bannerList = async (bannerId) => {
+        try {
+          const button = document.getElementById(`block-${bannerId}`);
+          const responses = await axios.patch("/admin/listBanner", {
+            bannerId,
+          });
+          if (responses.data.unlistSuccess) {
+            button.textContent = "List";
+          } else if (responses.data.listSuccess) {
+            button.textContent = "Unlist";
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      };
+    </script>
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    </section>

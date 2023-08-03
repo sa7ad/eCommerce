@@ -1,11 +1,10 @@
-require("dotenv").config();
+const Product = require("../models/productModel");
+const Order = require("../models/orderModel");
+const Cart = require("../models/cartModel");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
-const Cart = require("../models/cartModel");
-const Order = require("../models/orderModel");
-const User = require("../models/userModel");
-const Product = require("../models/productModel");
-const Coupon = require("../models/couponModel");
+require("dotenv").config();
 
 var instance = new Razorpay({
   key_id: process.env.paymentId,
@@ -22,20 +21,6 @@ const orderPlaced = async (req, res) => {
     const { address, selector, orderNote, walletChecked } = req.body;
     let { product_grandTotal } = req.body;
     const status = selector === "COD" || "Wallet" ? "Placed" : "Pending";
-    const walletAmount = await User.findOne({ _id: userId });
-    if (walletChecked !== null) {
-      let product = parseInt(product_grandTotal);
-      let wallet = parseInt(walletChecked);
-      product_grandTotal = product - wallet >= 0 ? product - wallet : 0;
-      if (product_grandTotal !== 0) {
-        await User.updateOne({ _id: userId }, { $inc: { wallet: -wallet } });
-      } else {
-        await User.updateOne(
-          { _id: userId },
-          { $set: { wallet: wallet - product } }
-        );
-      }
-    }
     const cart = await Cart.findOne({ userId: userId });
     const updatedArr = cart.items;
     const items = updatedArr.map((product) => ({
@@ -43,6 +28,41 @@ const orderPlaced = async (req, res) => {
       quantity: product.quantity,
       price: product.product_Id.price,
     }));
+    if (walletChecked !== undefined) {
+      let product = parseInt(product_grandTotal);
+      let wallet = parseInt(walletChecked);
+      product_grandTotal = product - wallet >= 0 ? product - wallet : 0;
+      if (product_grandTotal !== 0) {
+        await User.updateOne(
+          { _id: userId },
+          {
+            $inc: { wallet: -wallet },
+            $push: {
+              walletHistory: {
+                date: new Date(),
+                amount: -wallet,
+                description: "Order placed using wallet amount",
+              },
+            },
+          }
+        );
+      } else {
+        await User.updateOne(
+          { _id: userId },
+          {
+            $set: { wallet: wallet - product },
+            $push: {
+              walletHistory: {
+                date: new Date(),
+                amount: -wallet,
+                description: "Order placed using wallet amount",
+              },
+            },
+          }
+        );
+      }
+    }
+
     const date = new Date().toLocaleString("en-IN", {
       weekday: "long",
       year: "numeric",
@@ -92,36 +112,6 @@ const orderPlaced = async (req, res) => {
       }
       await Cart.deleteOne({ userId: userId });
       res.json({ codSuccess: true });
-    } else if (
-      status === "Placed" &&
-      orderPlaced.paymentMethod === "Wallet" &&
-      orderPlaced.grandTotal > walletAmount.wallet
-    ) {
-      req.session.message =
-        "Cannot Purchase,Total Amount is greater than Wallet Balance";
-      res.redirect("/placeOrder");
-    } else if (status === "Placed" && orderPlaced.paymentMethod === "Wallet") {
-      for (let item of items) {
-        await Product.updateOne(
-          { _id: item.product },
-          { $inc: { quantity: -item.quantity } }
-        );
-      }
-      await User.updateOne(
-        { _id: userId },
-        {
-          $inc: { wallet: -orderPlaced.grandTotal },
-          $push: {
-            walletHistory: {
-              date: new Date(),
-              amount: -orderPlaced.grandTotal,
-              description: "Order placed using wallet amount",
-            },
-          },
-        }
-      );
-      await Cart.deleteOne({ userId: userId });
-      res.json({ walletSuccess: true });
     } else {
       var options = {
         amount: orderPlaced.grandTotal * 100,
@@ -133,8 +123,7 @@ const orderPlaced = async (req, res) => {
         res.json({ order });
       });
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
     res.redirect("/error500");
   }
 };
@@ -168,8 +157,8 @@ const validatePaymentVerification = async (req, res) => {
       await Cart.deleteOne({ userId: userId });
       res.json({ success: true });
     }
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    console.log(err.message);
   }
 };
 

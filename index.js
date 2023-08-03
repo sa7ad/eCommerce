@@ -33,7 +33,7 @@ app.use(
 
 app.use(cartCount);
 
-const PORT = 1000;
+const PORT = 3000;
 
 const options = {
   definition: {
@@ -41,9 +41,10 @@ const options = {
     info: {
       title: "E-Commerce API",
       version: "0.1.0",
-      description: "This is an api based on an ecommerce website",
+      description:
+        "API for the purpose of understanding each routes specification provided by DAPPE-RR.",
       contact: {
-        name: "Ecommerce",
+        name: "DAPPE-RR",
       },
     },
     servers: [
@@ -56,9 +57,9 @@ const options = {
 };
 const swag = swaggerJsDoc(options);
 
-app.use("/", userRoute);
-
 app.use("/admin", adminRoute);
+
+app.use("/", userRoute);
 
 app.use("/apiDocs", swaggerUi.serve, swaggerUi.setup(swag));
 
