@@ -89,8 +89,16 @@
                     ><button><i class="ti-search"></i></button
                   ></a>
                 </li>
-                <li><button onclick="addToCart('<%=item._id%>')"><i class="ti-shopping-cart"></i></button></li>
-                <li><button onclick="addTowishList('<%=item._id%>')"><i class="ti-heart"></i></button></li>
+                <li>
+                  <button onclick="addToCart('<%=item._id%>')">
+                    <i class="ti-shopping-cart"></i>
+                  </button>
+                </li>
+                <li>
+                  <button onclick="addTowishList('<%=item._id%>')">
+                    <i class="ti-heart"></i>
+                  </button>
+                </li>
               </ul>
             </div>
             <div class="card-body">
@@ -161,44 +169,47 @@
 
 <%- include('../layouts/footer.ejs') %>
 <script>
-   addToCart = async (product_Id) => {
-        event.preventDefault()
-        Toastify({
-          text: "Added To Cart",
-          duration: 1000,
-          destination: '/cart',
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "right",
-          stopOnFocus: false,
-          style: {
-            background: "#384aeb",
-          }
-        }).showToast();
-        let product_quantity = 1
-        const quantityData = await axios.post('/cart', { product_quantity, product_Id })
-        if (quantityData.data.count) {
-          document.getElementById("cartCount").innerHTML = quantityData.data.count
-        }
-        return quantityData
-      }
-      addTowishList = async (product_Id) => {
-        event.preventDefault()
-        Toastify({
-          text: "Added To Wishlist",
-          duration: 1000,
-          destination: '/wishList',
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "right",
-          stopOnFocus: false,
-          style: {
-            background: "#FFFFFF",
-            color: "#384aeb"
-          }
-        }).showToast();
-        const wishList = await axios.post('/addToWishList', { product_Id })
-      }
+  addToCart = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Cart",
+      duration: 1000,
+      destination: "/cart",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#384aeb",
+      },
+    }).showToast();
+    let product_quantity = 1;
+    const quantityData = await axios.post("/cart", {
+      product_quantity,
+      product_Id,
+    });
+    if (quantityData.data.count) {
+      document.getElementById("cartCount").innerHTML = quantityData.data.count;
+    }
+    return quantityData;
+  };
+  addTowishList = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Wishlist",
+      duration: 1000,
+      destination: "/wishList",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#FFFFFF",
+        color: "#384aeb",
+      },
+    }).showToast();
+    const wishList = await axios.post("/addToWishList", { product_Id });
+  };
 </script>

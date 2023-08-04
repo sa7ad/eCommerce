@@ -64,95 +64,95 @@
             </button>
 
             <br />
-            
-            
+
+
             <%if(address.address && address.address.length>0){%>
               <br>
               <h6>Select Address</h6>
               <%}%>
 
-            <form class="row contact_form mt-3" id="checkoutForm">
-              <div class="col-md-12 form-group mb-0">
-                <div class="address-cards">
-                  <% address.address.forEach((address)=> { %>
-                    <div class="address-card form-check">
-                      <input type="radio" class="form-check-input" name="address" id="address1"
-                        value="<%= address.name %>, <%= address.housename %> <%= address.city %> <%= address.state %> <%= address.phone %> <%= address.pincode %>"
-                        required />
-                      <label class="form-check-label" for="address1">
-                        <%= address.name %>
-                          <%= address.housename %>
-                            <%= address.city %>
-                              <%= address.state %>
-                                <%= address.phone %>
-                                  <%= address.pincode %>
-                      </label>
+                <form class="row contact_form mt-3" id="checkoutForm">
+                  <div class="col-md-12 form-group mb-0">
+                    <div class="address-cards">
+                      <% address.address.forEach((address)=> { %>
+                        <div class="address-card form-check">
+                          <input type="radio" class="form-check-input" name="address" id="address1"
+                            value="<%= address.name %>, <%= address.housename %> <%= address.city %> <%= address.state %> <%= address.phone %> <%= address.pincode %>"
+                            required />
+                          <label class="form-check-label" for="address1">
+                            <%= address.name %>
+                              <%= address.housename %>
+                                <%= address.city %>
+                                  <%= address.state %>
+                                    <%= address.phone %>
+                                      <%= address.pincode %>
+                          </label>
+                        </div>
+                        <% }) %>
                     </div>
-                    <% }) %>
-                </div>
-                <textarea class="form-control mt-3" name="orderNote" id="message" rows="2"
-                  placeholder="Order Notes"></textarea>
-              </div>
-              <%if(coupon && coupon.length >0){%>
-              <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="couponModalLabel">
-                        Available Coupons
-                      </h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <textarea class="form-control mt-3" name="orderNote" id="message" rows="2"
+                      placeholder="Order Notes"></textarea>
+                  </div>
+                  <%if(coupon && coupon.length>0){%>
+                    <div class="modal fade" id="couponModal" tabindex="-1" role="dialog"
+                      aria-labelledby="couponModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="couponModalLabel">
+                              Available Coupons
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="text-center">
+                              <% coupon.forEach(coupon=> { %>
+                                <div class="alert alert-success my-2" role="alert">
+                                  <h6>
+                                    <%= coupon.description %>
+                                  </h6>
+                                  <%= coupon.code %>
+                                    <p>
+                                      valid from <%= moment(coupon.createdAt).format('MM/DD/YYYY') %> to
+                                        <%= moment(coupon.expireDate).format('MM/DD/YYYY') %>
+                                    </p>
+                                    <button type="submit" id="applyCode" value="<%= coupon._id %>"
+                                      onclick="applyCoupon('<%= coupon.code %>')" class="btn btn-sm btn-primary">
+                                      Apply Code
+                                    </button>
+                                </div>
+                                <% }) %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="coupon-section my-4">
+                      <h3 class="mb-3">Apply Coupon</h3>
+                      <div class="input-group">
+                        <button style="display: none;" type="button" class="btn btn-danger" id="remove_coupon_btn"
+                          onclick="couponRemove()">
+                          <i class="fas fa-times"></i>
+                        </button>
+                        <input type="text" class="form-control" name="coupon_code" id="coupon_code"
+                          placeholder="Enter coupon code" />
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">
+                            Apply Coupon
+                          </button>
+                        </div>
+                      </div>
+
+                      <p id="coupon_message" class="mt-2"></p>
+                      <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal"
+                        data-target="#couponModal">
+                        Show Available Coupons
                       </button>
                     </div>
-                    <div class="modal-body">
-                      <div class="text-center">
-                        <% coupon.forEach(coupon=> { %>
-                          <div class="alert alert-success my-2" role="alert">
-                            <h6>
-                              <%= coupon.description %>
-                            </h6>
-                            <%= coupon.code %>
-                              <p>
-                                valid from <%= moment(coupon.createdAt).format('MM/DD/YYYY') %> to
-                                  <%= moment(coupon.expireDate).format('MM/DD/YYYY') %>
-                              </p>
-                              <button type="submit" id="applyCode" value="<%= coupon._id %>"
-                                onclick="applyCoupon('<%= coupon.code %>')" class="btn btn-sm btn-primary">
-                                Apply Code
-                              </button>
-                          </div>
-                          <% }) %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            
-              </div>
-              <div class="coupon-section my-4">
-                <h3 class="mb-3">Apply Coupon</h3>
-                <div class="input-group">
-                  <button style="display: none;" type="button" class="btn btn-danger" id="remove_coupon_btn"
-                    onclick="couponRemove()">
-                    <i class="fas fa-times"></i>
-                  </button>
-                  <input type="text" class="form-control" name="coupon_code" id="coupon_code"
-                    placeholder="Enter coupon code" />
-                  <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" id="apply_coupon_btn" onclick="couponApply()">
-                      Apply Coupon
-                    </button>
-                  </div>
-                </div>
-
-                <p id="coupon_message" class="mt-2"></p>
-                <button type="button" id="couponBtn" class="btn btn-primary" data-toggle="modal"
-                  data-target="#couponModal">
-                  Show Available Coupons
-                </button>
-              </div>
-              <%}%>
+                    <%}%>
           </div>
           <div class="col-lg-4">
             <div class="order_box">
@@ -171,7 +171,8 @@
                     <li>
                       <a href="#">
                         <%= item.product_Id.name%><span class="middle">x <%= item.quantity %></span><span class="last">₹
-                            <%= item.total %></span>
+                            <%= item.total %>
+                          </span>
                       </a>
                     </li>
                   </ul>
@@ -221,11 +222,11 @@
                               <div class="payment_item">
                                 <input type="checkbox" id="f-option8" name="walletChecked" value="<%=wallet%>" />
                                 <label for="f-option8">Wallet</label>
-  
+
                                 <p>Wallet Balance: <b id="walletBalance" class="text-dark">₹<%=wallet%></b> <br>Pay with
                                   wallet.</p>
                               </div>
-                            <%}%>
+                              <%}%>
 
                           </div>
                           <div class="text-center">

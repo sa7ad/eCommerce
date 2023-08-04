@@ -76,24 +76,20 @@
 <%- include('../layouts/footer.ejs') %>
 <script>
   const deleteAddress = async (addId) => {
-    try {
-      event.preventDefault();
-      swal({
-        title: "Remove Address",
-        text: "Are you sure you want to remove this address?",
-        icon: "warning",
-        buttons: ["Cancel", "OK"],
-        dangerMode: true,
-      }).then(async (willDelete) => {
-        if (willDelete) {
-          let addressId = await axios.put("/deleteAddress", { addId });
-          if (addressId) {
-            document.getElementById("deleteLi").style.display = "none";
-          }
+    event.preventDefault();
+    swal({
+      title: "Remove Address",
+      text: "Are you sure you want to remove this address?",
+      icon: "warning",
+      buttons: ["Cancel", "OK"],
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        let addressId = await axios.put("/deleteAddress", { addId });
+        if (addressId) {
+          document.getElementById("deleteLi").style.display = "none";
         }
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
+      }
+    });
   };
 </script>

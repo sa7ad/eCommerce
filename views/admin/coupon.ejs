@@ -134,19 +134,13 @@
       code.setCustomValidity("");
     }
   });
-</script>
-<script>
   const listCoupon = async (couponId) => {
-    try {
-      const button = document.getElementById(`couponId${couponId}`);
-      const responses = await axios.patch("/admin/listCoupon", { couponId });
-      if (responses.data.unlistSuccess) {
-        button.textContent = "List";
-      } else if (responses.data.listSuccess) {
-        button.textContent = "Unlist";
-      }
-    } catch (error) {
-      console.log(error.message);
+    const button = document.getElementById(`couponId${couponId}`);
+    const responses = await axios.patch("/admin/listCoupon", { couponId });
+    if (responses.data.unlistSuccess) {
+      button.textContent = "List";
+    } else if (responses.data.listSuccess) {
+      button.textContent = "Unlist";
     }
   };
   $(document).ready(function () {

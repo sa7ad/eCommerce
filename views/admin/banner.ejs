@@ -60,19 +60,16 @@
   </section><%- include('../layouts/adminFooter.ejs') %>
     <script>
       const bannerList = async (bannerId) => {
-        try {
-          const button = document.getElementById(`block-${bannerId}`);
-          const responses = await axios.patch("/admin/listBanner", {
-            bannerId,
-          });
-          if (responses.data.unlistSuccess) {
-            button.textContent = "List";
-          } else if (responses.data.listSuccess) {
-            button.textContent = "Unlist";
-          }
-        } catch (error) {
-          console.log(error.message);
+        const button = document.getElementById(`block-${bannerId}`);
+        const responses = await axios.patch("/admin/listBanner", {
+          bannerId,
+        });
+        if (responses.data.unlistSuccess) {
+          button.textContent = "List";
+        } else if (responses.data.listSuccess) {
+          button.textContent = "Unlist";
         }
+
       };
     </script>
     </tbody>

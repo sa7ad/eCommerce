@@ -12,7 +12,6 @@ const app = express();
 dbConnect();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const ErrorHandler = require("./middleware/errorHandler");
 app.use(logger("dev"));
 
 app.use(express.json());
@@ -66,8 +65,6 @@ app.use("/apiDocs", swaggerUi.serve, swaggerUi.setup(swag));
 app.use((req, res) => {
   res.status(404).render("error404");
 });
-
-app.use(ErrorHandler);
 
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is running on PORT http://localhost:${PORT}`);

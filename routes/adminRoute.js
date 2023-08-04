@@ -30,7 +30,6 @@ const {
   loadLogin,
   usersList,
   dashboard,
-  error500,
   coupon,
   banner,
   orders,
@@ -469,17 +468,6 @@ adminRoute.post("/editCoupon", isAdminLogin, updatedCoupon);
  *         description:successful operation
  */
 adminRoute.patch("/listCoupon", isAdminLogin, listCoupon);
-/**
- * @swagger
- * /admin/error500:
- *  get:
- *     tags:
- *     - Error
- *     description: user home of ecommerce webpage
- *     responses:
- *       200:
- *         description:successful operation
- */
-adminRoute.get("/error500", error500);
+
 
 module.exports = adminRoute;

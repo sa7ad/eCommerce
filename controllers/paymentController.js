@@ -11,7 +11,7 @@ var instance = new Razorpay({
   key_secret: process.env.paymentSecret,
 });
 
-const orderPlaced = async (req, res) => {
+const orderPlaced = async (req, res, next) => {
   try {
     const { userId, couponCode } = req.session;
     let { discountAmount } = req.session;
@@ -124,11 +124,11 @@ const orderPlaced = async (req, res) => {
       });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 
-const validatePaymentVerification = async (req, res) => {
+const validatePaymentVerification = async (req, res, next) => {
   try {
     const { body } = req;
     const { userId } = req.session;
@@ -158,7 +158,7 @@ const validatePaymentVerification = async (req, res) => {
       res.json({ success: true });
     }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 

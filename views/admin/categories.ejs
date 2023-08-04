@@ -94,17 +94,13 @@
         </script>
         <script>
             const categoryList = async (categoryId) => {
-                try {
-                    const categoryList = await axios.patch('/admin/listCategory', { categoryId })
-                    if (categoryList.data.message === true) {
-                        document.getElementById(`categId${categoryId}`).textContent = 'List'
-                    } else if (categoryList.data.message === false) {
-                        document.getElementById(`categId${categoryId}`).textContent = 'Unlist'
-                    }
-                } catch {
-                    console.log(console.message);
-                }
 
+                const categoryList = await axios.patch('/admin/listCategory', { categoryId })
+                if (categoryList.data.message === true) {
+                    document.getElementById(`categId${categoryId}`).textContent = 'List'
+                } else if (categoryList.data.message === false) {
+                    document.getElementById(`categId${categoryId}`).textContent = 'Unlist'
+                }
             }
             $(document).ready(function () {
                 $("#myTable").DataTable();

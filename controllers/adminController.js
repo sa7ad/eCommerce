@@ -13,7 +13,7 @@ const credentials = {
   adminpassword: process.env.ADMIN_PASSWORD,
 };
 
-const loadLogin = async (req, res) => {
+const loadLogin = async (req, res, next) => {
   try {
     let { message } = req.session;
     if (req.session.adminSession) {
@@ -24,10 +24,10 @@ const loadLogin = async (req, res) => {
       res.render("adminLogin", { message });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loadDashboard = async (req, res) => {
+const loadDashboard = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { adminemail, adminpassword } = credentials;
@@ -39,10 +39,10 @@ const loadDashboard = async (req, res) => {
       res.redirect("/admin");
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const dashboard = async (req, res) => {
+const dashboard = async (req, res, next) => {
   try {
     let usersData = [];
     let currentSalesYear = new Date(new Date().getFullYear(), 0, 1);
@@ -178,26 +178,26 @@ const dashboard = async (req, res) => {
       revenue,
     });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loadLogout = async (req, res) => {
+const loadLogout = async (req, res, next) => {
   try {
     req.session.adminSession = null;
     res.redirect("/admin");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const usersList = async (req, res) => {
+const usersList = async (req, res, next) => {
   try {
     const usersList = await User.find({ verified: true });
     res.render("usersList", { users: usersList });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const usersBlocked = async (req, res) => {
+const usersBlocked = async (req, res, next) => {
   try {
     const { userId } = req.body;
     const usersBlocked = await User.findById({ _id: userId });
@@ -219,20 +219,20 @@ const usersBlocked = async (req, res) => {
       });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const categories = async (req, res) => {
+const categories = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     const categoryDetails = await Category.find();
     res.render("categories", { message, category: categoryDetails });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const addCategory = async (req, res) => {
+const addCategory = async (req, res, next) => {
   try {
     const { category_name, category_description } = req.body;
     const existingCategory = await Category.find({
@@ -250,20 +250,19 @@ const addCategory = async (req, res) => {
       res.redirect("/admin/categories");
     }
   } catch (err) {
-    console.log(err.message);
-    res.redirect("/error500");
+    next(err);
   }
 };
-const editCategory = async (req, res) => {
+const editCategory = async (req, res, next) => {
   try {
     const { id } = req.query;
     const category = await Category.findById({ _id: id });
     res.render("editCategory", { category });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const updatedCategory = async (req, res) => {
+const updatedCategory = async (req, res, next) => {
   try {
     const { id, category_name, category_description } = req.body;
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -273,10 +272,10 @@ const updatedCategory = async (req, res) => {
     await updatedCategory.save();
     res.redirect("/admin/categories");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const listCategory = async (req, res) => {
+const listCategory = async (req, res, next) => {
   try {
     const { categoryId } = req.body;
     const category = await Category.findById({ _id: categoryId });
@@ -288,27 +287,27 @@ const listCategory = async (req, res) => {
       res.status(201).json({ message: false });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 
-const productAddPage = async (req, res) => {
+const productAddPage = async (req, res, next) => {
   try {
     const categories = await Category.find();
     res.render("productAddPage", { categories });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const productList = async (req, res) => {
+const productList = async (req, res, next) => {
   try {
     const product = await Product.find().populate("category");
     res.render("productList", { product });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const productAdd = async (req, res) => {
+const productAdd = async (req, res, next) => {
   try {
     const {
       product_name,
@@ -345,10 +344,10 @@ const productAdd = async (req, res) => {
     await product.save();
     res.redirect("/admin/productList");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const listProduct = async (req, res) => {
+const listProduct = async (req, res, next) => {
   try {
     const { productId } = req.body;
     const product = await Product.findById({ _id: productId });
@@ -360,10 +359,10 @@ const listProduct = async (req, res) => {
       res.status(201).json({ listSuccess: true });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const productEditPage = async (req, res) => {
+const productEditPage = async (req, res, next) => {
   try {
     const { id } = req.query;
     const product = await Product.findById({ _id: id });
@@ -374,10 +373,10 @@ const productEditPage = async (req, res) => {
       product,
     });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const productUpdated = async (req, res) => {
+const productUpdated = async (req, res, next) => {
   try {
     const {
       product_description,
@@ -434,18 +433,18 @@ const productUpdated = async (req, res) => {
       res.redirect("/admin/productList");
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const orders = async (req, res) => {
+const orders = async (req, res, next) => {
   try {
     const orders = await Order.find().populate("user").sort({ createdAt: -1 });
     res.render("ordersList", { orders: orders });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const viewOrdered = async (req, res) => {
+const viewOrdered = async (req, res, next) => {
   try {
     const { id } = req.query;
     const order = await Order.findById({ _id: id })
@@ -453,10 +452,10 @@ const viewOrdered = async (req, res) => {
       .populate("items.product");
     res.render("viewOrdered", { order: order });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const changeStatus = async (req, res) => {
+const changeStatus = async (req, res, next) => {
   try {
     const { status, orderId } = req.body;
     const currentDate = new Date();
@@ -483,10 +482,10 @@ const changeStatus = async (req, res) => {
     }
     res.status(201).json({ success: true });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const cancelOrder = async (req, res) => {
+const cancelOrder = async (req, res, next) => {
   try {
     const { orderId, status } = req.body;
     const order = await Order.updateOne(
@@ -506,15 +505,15 @@ const cancelOrder = async (req, res) => {
       res.status(400).json({ message: "Seems like there is an error" });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const salesReport = async (req, res) => {
+const salesReport = async (req, res, next) => {
   try {
     const moment = require("moment");
     const firstOrder = await Order.find().sort({ createdAt: 1 });
     const lastOrder = await Order.find().sort({ createdAt: -1 });
-    const salesReport = await Order.find({orderStatus:"Delivered"})
+    const salesReport = await Order.find({ orderStatus: "Delivered" })
       .populate("user")
       .sort({ createdAt: -1 });
     res.render("salesReport", {
@@ -523,10 +522,10 @@ const salesReport = async (req, res) => {
       salesReport,
     });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const datePicker = async (req, res) => {
+const datePicker = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.body;
     const startDateObj = new Date(startDate);
@@ -540,7 +539,7 @@ const datePicker = async (req, res) => {
             $gte: startDateObj,
             $lte: endDateObj,
           },
-          orderStatus:"Delivered"
+          orderStatus: "Delivered",
         },
       },
       {
@@ -554,25 +553,25 @@ const datePicker = async (req, res) => {
     ]);
     res.status(200).json({ selectedDate: selectedDate });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const banner = async (req, res) => {
+const banner = async (req, res, next) => {
   try {
     const banner = await Banner.find();
     res.render("banner", { banner });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 const bannerAdd = async (req, res) => {
   try {
     res.render("bannerAdd");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const bannerAdded = async (req, res) => {
+const bannerAdded = async (req, res, next) => {
   try {
     const { bannerName, bannerDescription, bannerField } = req.body;
     const imageArr = [];
@@ -598,19 +597,19 @@ const bannerAdded = async (req, res) => {
     await banner.save();
     res.redirect("/admin/banner");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const bannerEdit = async (req, res) => {
+const bannerEdit = async (req, res, next) => {
   try {
     const { id } = req.query;
     const banner = await Banner.findById({ _id: id });
     res.render("bannerEdit", { banner, bannerId: banner._id });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const bannerUpdated = async (req, res) => {
+const bannerUpdated = async (req, res, next) => {
   try {
     const { bannerId, bannerName, bannerField, bannerDescription } = req.body;
     const imageArr = [];
@@ -655,10 +654,10 @@ const bannerUpdated = async (req, res) => {
       res.redirect("/admin/banner");
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const listBanner = async (req, res) => {
+const listBanner = async (req, res, next) => {
   try {
     const { bannerId } = req.body;
     const banner = await Banner.findById({ _id: bannerId });
@@ -670,20 +669,20 @@ const listBanner = async (req, res) => {
       res.status(201).json({ listSuccess: true });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const coupon = async (req, res) => {
+const coupon = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     const coupon = await Coupon.find();
     res.render("coupon", { coupon, message });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const couponAdded = async (req, res) => {
+const couponAdded = async (req, res, next) => {
   try {
     const { code, percentage, description, applicableLimit, expireDate } =
       req.body;
@@ -709,19 +708,19 @@ const couponAdded = async (req, res) => {
     }
     res.redirect("/admin/coupon");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const editCoupon = async (req, res) => {
+const editCoupon = async (req, res, next) => {
   try {
     const { id } = req.query;
     const coupon = await Coupon.findById({ _id: id });
     res.render("editCoupon", { coupon });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const updatedCoupon = async (req, res) => {
+const updatedCoupon = async (req, res, next) => {
   try {
     const { id, code, description, percentage, applicableLimit, expireDate } =
       req.body;
@@ -740,10 +739,10 @@ const updatedCoupon = async (req, res) => {
     await updatedCoupon.save();
     res.redirect("/admin/coupon");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const listCoupon = async (req, res) => {
+const listCoupon = async (req, res, next) => {
   try {
     const { couponId } = req.body;
     const coupon = await Coupon.findById({ _id: couponId });
@@ -755,14 +754,7 @@ const listCoupon = async (req, res) => {
       res.status(201).json({ listSuccess: true });
     }
   } catch (err) {
-    res.redirect("/error500");
-  }
-};
-const error500 = async (req, res) => {
-  try {
-    res.render("error500");
-  } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 module.exports = {
@@ -797,7 +789,6 @@ module.exports = {
   loadLogin,
   dashboard,
   usersList,
-  error500,
   coupon,
   banner,
   orders,

@@ -44,24 +44,14 @@
             <p class="product-description">
               <%=products.description%>
             </p>
-            <%if(products.quantity >0){%>
+            <%if(products.quantity>0){%>
 
-              <div class="product-quantity mb-4">
-                <label for="qty">Quantity:</label>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <button class="btn btn-outline-primary" type="button" onclick="decreaseQuantity()">-</button>
-                  </div>
-                  <input class="form-control text-center" min="1" max="<%= products.quantity %>" type="number" name="product_quantity" id="sst" size="1" maxlength="4"
-                    value="1" title="Quantity:" readonly>
-                  <div class="input-group-append" id="append">
-                    <button class="btn btn-outline-primary" type="button" onclick="increaseQuantity()">+</button>
-                  </div>
-                </div>
-              </div>
+             
               <div class="product-actions">
-                <a class="btn btn-primary mr-2" href="/cart?id=<%= userId %>" onclick="addToCart('<%=products._id%>')">Add
+                <a class="btn btn-primary mr-2" href="/cart?id=<%= userId %>"
+                  onclick="addToCart('<%=products._id%>')">Add
                   to Cart</a>
+                  <input type="hidden" value='<%=products.quantity%>' id="prdQuantity">
                 <a class="btn btn-outline-primary"><i class="lnr lnr-heart"
                     onclick="addTowishList('<%=products._id%>')"></i></a>
               </div>
@@ -69,7 +59,7 @@
                 <div class="alert alert-warning" role="alert">
                   This product is currently out of stock.
                 </div>
-              <% } %>
+                <% } %>
           </div>
         </div>
       </div>
@@ -196,7 +186,8 @@
                   novalidate="novalidate">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="hidden" class="form-control" id="productId" name="productId" value="<%=products._id%>"/>
+                      <input type="hidden" class="form-control" id="productId" name="productId"
+                        value="<%=products._id%>" />
                     </div>
                     <div class="form-group">
                       <input type="text" class="form-control" id="name" name="name" placeholder="Your Full name" />
@@ -386,58 +377,17 @@
     </div>
   </section>
   <%- include('../layouts/footer.ejs') %>
-  <script>
-    function increaseQuantity() {
-      const input = document.getElementById('sst');
-      const max = parseInt(input.getAttribute('max'));
-      const currentValue = parseInt(input.value);
-  
-      if (currentValue < max) {
-        input.value = currentValue + 1;
-      }else{
-        Toastify({
-          text: "Quantity limit has been exceeded",
-          duration: 1000,
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "center",
-          stopOnFocus: false,
-          style: {
-            background: "#384aeb",
-          }
-        }).showToast();
-      }
-    }
-  
-    function decreaseQuantity() {
-      const input = document.getElementById('sst');
-      const min = parseInt(input.getAttribute('min'));
-      const currentValue = parseInt(input.value);
-  
-      if (currentValue > min) {
-        input.value = currentValue - 1;
-      }else{
-        Toastify({
-          text: "Cannot be less than the min quantity",
-          duration: 1000,
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "center",
-          stopOnFocus: false,
-          style: {
-            background: "#384aeb",
-          }
-        }).showToast();
-      }
-    }
+    <script>
       addToCart = async (product_Id) => {
+        let prdQuantity = document.getElementById('prdQuantity').value
         event.preventDefault()
-        Toastify({
+        let product_quantity = 1
+        const quantityData = await axios.post('/cart', { product_quantity, product_Id,prdQuantity })
+        if (quantityData.data.count) {
+          document.getElementById("cartCount").innerHTML = quantityData.data.count
+          Toastify({
           text: "Added To Cart",
           duration: 1000,
-          destination: '/cart',
           newWindow: false,
           close: false,
           gravity: "top",
@@ -447,10 +397,19 @@
             background: "#384aeb",
           }
         }).showToast();
-        let product_quantity = document.getElementById('sst').value
-        const quantityData = await axios.post('/cart', { product_quantity, product_Id })
-        if (quantityData.data.count) {
-          document.getElementById("cartCount").innerHTML = quantityData.data.count
+        }else if(quantityData.data.limit){
+          Toastify({
+          text: "Limit Exceeded",
+          duration: 1000,
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "right",
+          stopOnFocus: false,
+          style: {
+            background: "#384aeb",
+          }
+        }).showToast();
         }
         return quantityData
       }

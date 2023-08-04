@@ -23,6 +23,7 @@ const {
   updatedProfile,
   updatedAddress,
   changePassword,
+  emailResendOTP,
   manageAddress,
   deleteAddress,
   singleProduct,
@@ -40,14 +41,13 @@ const {
   loadLogout,
   addAddress,
   loadLogin,
-  error500,
   comments,
   loadHome,
   wishList,
   shopPage,
   orders,
 } = require("../controllers/userController");
-
+const errorHandler = require("../middleware/errorHandler");
 const express = require("express");
 const userRoute = express();
 userRoute.set("views", "views/users");
@@ -148,6 +148,18 @@ userRoute.get("/emailVerification", isLogout, emailVerificationPage);
  *         description:successful operation
  */
 userRoute.post("/emailVerification", emailVerification);
+/**
+ * @swagger
+ * /resendOTP:
+ *  post:
+ *     tags:
+ *     - Register
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/resendOTP", emailResendOTP);
 
 /**
  * @swagger
@@ -559,17 +571,6 @@ userRoute.post("/subscription", subscription);
  */
 userRoute.post("/comments", comments);
 
-/**
- * @swagger
- * /error500:
- *  get:
- *     tags:
- *     - Error
- *     description: displays the page of login
- *     responses:
- *       500:
- *        description:successful operation
- */
-userRoute.get("/error500", error500);
+userRoute.use(errorHandler);
 
 module.exports = userRoute;

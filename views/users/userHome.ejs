@@ -124,23 +124,42 @@
         </div>
       </div>
       <div class="row">
-        <% for (let product of products) { %> <% if (product.category.list === true) { %>
+        <% for (let product of products) { %> <% if (product.category.list ===
+        true) { %>
         <div class="col-md-6 col-lg-4 col-xl-3 filter-item <%= brands %>">
           <div class="card text-center card-product">
             <div class="card-product__img">
               <a href="/singleProduct?id=<%= product._id %>">
-                <img class="card-img" src="/images/<%= product.image[0] %>" alt="" />
+                <img
+                  class="card-img"
+                  src="/images/<%= product.image[0] %>"
+                  alt=""
+                />
               </a>
               <ul class="card-product__imgOverlay">
-                <li><a href="/singleProduct?id=<%=product._id%>"><button><i class="ti-search"></i></button></a></li>
-                <li><button onclick="addToCart('<%=product._id%>')"><i class="ti-shopping-cart"></i></button></li>
-                <li><button onclick="addTowishList('<%=product._id%>')"><i class="ti-heart"></i></button></li>
+                <li>
+                  <a href="/singleProduct?id=<%=product._id%>"
+                    ><button><i class="ti-search"></i></button
+                  ></a>
+                </li>
+                <li>
+                  <button onclick="addToCart('<%=product._id%>')">
+                    <i class="ti-shopping-cart"></i>
+                  </button>
+                </li>
+                <li>
+                  <button onclick="addTowishList('<%=product._id%>')">
+                    <i class="ti-heart"></i>
+                  </button>
+                </li>
               </ul>
             </div>
             <div class="card-body">
               <p class="card-product__category"><%= product.brand %></p>
               <h4 class="card-product__title">
-                <a href="/singleProduct?id=<%= product._id %>"><%= product.name %></a>
+                <a href="/singleProduct?id=<%= product._id %>"
+                  ><%= product.name %></a
+                >
               </h4>
               <p class="card-product__price">₹<%= product.price %></p>
             </div>
@@ -148,7 +167,6 @@
         </div>
         <% } %> <% } %>
       </div>
-      
     </div>
   </section>
   <section class="subscribe-position">
@@ -200,46 +218,49 @@
 </main>
 <%- include('../layouts/footer.ejs') %>
 <script>
-   addToCart = async (product_Id) => {
-        event.preventDefault()
-        Toastify({
-          text: "Added To Cart",
-          duration: 1000,
-          destination: '/cart',
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "right",
-          stopOnFocus: false,
-          style: {
-            background: "#384aeb",
-          }
-        }).showToast();
-        let product_quantity = 1
-        const quantityData = await axios.post('/cart', { product_quantity, product_Id })
-        if (quantityData.data.count) {
-          document.getElementById("cartCount").innerHTML = quantityData.data.count
-        }
-        return quantityData
-      }
-      addTowishList = async (product_Id) => {
-        event.preventDefault()
-        Toastify({
-          text: "Added To Wishlist",
-          duration: 1000,
-          destination: '/wishList',
-          newWindow: false,
-          close: false,
-          gravity: "top",
-          position: "right",
-          stopOnFocus: false,
-          style: {
-            background: "#FFFFFF",
-            color: "#384aeb"
-          }
-        }).showToast();
-        const wishList = await axios.post('/addToWishList', { product_Id })
-      }
+  addToCart = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Cart",
+      duration: 1000,
+      destination: "/cart",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#384aeb",
+      },
+    }).showToast();
+    let product_quantity = 1;
+    const quantityData = await axios.post("/cart", {
+      product_quantity,
+      product_Id,
+    });
+    if (quantityData.data.count) {
+      document.getElementById("cartCount").innerHTML = quantityData.data.count;
+    }
+    return quantityData;
+  };
+  addTowishList = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Wishlist",
+      duration: 1000,
+      destination: "/wishList",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#FFFFFF",
+        color: "#384aeb",
+      },
+    }).showToast();
+    const wishList = await axios.post("/addToWishList", { product_Id });
+  };
   const subscription = async () => {
     let email = document.getElementById("email").value;
     email.addEventListener();

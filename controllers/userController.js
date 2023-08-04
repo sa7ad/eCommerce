@@ -12,16 +12,16 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const loadLogin = async (req, res) => {
+const loadLogin = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     res.render("userLogin", { message });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loginSuccess = async (req, res) => {
+const loginSuccess = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const usersData = await User.findOne({ email: email });
@@ -49,19 +49,19 @@ const loginSuccess = async (req, res) => {
       res.redirect("/login");
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loadRegister = async (req, res) => {
+const loadRegister = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     res.render("userRegister", { message });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const insertUser = async (req, res) => {
+const insertUser = async (req, res, next) => {
   try {
     const existingUser = await User.findOne({
       $or: [{ email: req.body.email }, { phone_number: req.body.phone_number }],
@@ -83,10 +83,10 @@ const insertUser = async (req, res) => {
           password: hashPassword,
           confirm_password: hashConfirmPassword,
           verified: false,
-          blocked: false,
         });
         const userData = await user.save();
         if (userData) {
+          req.session.resendOTP = userData.email;
           let otpVerification = await sendOTPVerificationMail(userData);
           req.session.otpVerification = otpVerification;
           res.redirect("/emailVerification");
@@ -100,7 +100,7 @@ const insertUser = async (req, res) => {
       }
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 const sendOTPVerificationMail = async ({ _id, email }) => {
@@ -133,20 +133,24 @@ const sendOTPVerificationMail = async ({ _id, email }) => {
     await transporter.sendMail(mailOptions);
     return verified._id;
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const emailVerificationPage = async (req, res) => {
+const emailVerificationPage = async (req, res, next) => {
   try {
-    const { message, otpVerification } = req.session;
+    const { message, otpVerification, resendOTP } = req.session;
     req.session.otpVerification = null;
     req.session.message = "";
-    res.render("userEmail", { message, otp: otpVerification });
+    res.render("userEmail", {
+      message,
+      otp: otpVerification,
+      email: resendOTP,
+    });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const emailVerification = async (req, res) => {
+const emailVerification = async (req, res, next) => {
   try {
     let { otp, userVerificationId } = req.body;
     let userId = userVerificationId;
@@ -182,7 +186,7 @@ const emailVerification = async (req, res) => {
           } else {
             req.session.userId =
               UserOTPVerificationRecords[0].userId.toString();
-            await User.updateOne(
+            let man = await User.updateOne(
               { _id: UserOTPVerificationRecords[0].userId },
               { $set: { verified: true } }
             );
@@ -193,10 +197,40 @@ const emailVerification = async (req, res) => {
       }
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loadHome = async (req, res) => {
+const emailResendOTP = async (req, res, next) => {
+  try {
+    let { userVerificationId, email } = req.body;
+    const userOTPVerificationRecords = await userOTPVerification.find({
+      _id: userVerificationId,
+    });
+    if (
+      !userOTPVerificationRecords ||
+      userOTPVerificationRecords.length === 0
+    ) {
+      req.session.message = "User not found";
+      return res.redirect("/register");
+    }
+    let userdata = {
+      _id: userVerificationId,
+      email: email,
+    };
+    let otpVerification = await sendOTPVerificationMail(userdata);
+    req.session.message = "New OTP sent to your email";
+    req.session.otpVerification = otpVerification;
+    res.render("userEmail", {
+      message: "New OTP sent to your email",
+      otp: otpVerification,
+      email: userdata.email,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const loadHome = async (req, res, next) => {
   try {
     const { userId } = req.session;
     res.locals.session = userId;
@@ -208,11 +242,11 @@ const loadHome = async (req, res) => {
       res.render("userHome", { products, brands, banner, bannerNews });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 
-const shopPage = async (req, res) => {
+const shopPage = async (req, res, next) => {
   try {
     const ITEMS_PER_PAGE = 6;
     const { category, search, brand, sort } = req.query;
@@ -265,28 +299,28 @@ const shopPage = async (req, res) => {
       lastPage: Math.ceil(productCount / ITEMS_PER_PAGE),
     });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const singleProduct = async (req, res) => {
+const singleProduct = async (req, res, next) => {
   try {
     const { id } = req.query;
     const { userId } = req.session;
     const products = await Product.findById({ _id: id }).populate("category");
     res.render("singleProduct", { products: products, userId });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const loadLogout = async (req, res) => {
+const loadLogout = async (req, res, next) => {
   try {
     req.session.userId = null;
     res.redirect("/");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const userProfile = async (req, res) => {
+const userProfile = async (req, res, next) => {
   try {
     let { message } = req.session;
     const { userId } = req.session;
@@ -310,19 +344,19 @@ const userProfile = async (req, res) => {
     const userProfile = await User.findById({ _id: userId });
     res.render("userProfile", { userProfile, message, walletHistory });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const editProfile = async (req, res) => {
+const editProfile = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const userProfile = await User.findById({ _id: userId });
     res.render("editProfile", { userProfile });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const updatedProfile = async (req, res) => {
+const updatedProfile = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { first_name, last_name, email, phone_number } = req.body;
@@ -339,26 +373,26 @@ const updatedProfile = async (req, res) => {
     );
     res.redirect("/userProfile");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const manageAddress = async (req, res) => {
+const manageAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const userAddresses = await User.findOne({ _id: userId });
     res.render("manageAddress", { userAddresses });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const addAddressPage = async (req, res) => {
+const addAddressPage = async (req, res, next) => {
   try {
     res.render("addAddress");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const addAddress = async (req, res) => {
+const addAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { name, housename, city, state, phone, pincode } = req.body;
@@ -379,10 +413,10 @@ const addAddress = async (req, res) => {
     );
     res.redirect("/manageAddress");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const editAddress = async (req, res) => {
+const editAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { id } = req.query;
@@ -392,10 +426,10 @@ const editAddress = async (req, res) => {
     );
     res.render("editAddress", { userAddress: userAddress });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const updatedAddress = async (req, res) => {
+const updatedAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { id, name, housename, city, state, pincode, phone } = req.body;
@@ -414,10 +448,10 @@ const updatedAddress = async (req, res) => {
     );
     res.redirect("/manageAddress");
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const deleteAddress = async (req, res) => {
+const deleteAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { addId } = req.body;
@@ -427,10 +461,10 @@ const deleteAddress = async (req, res) => {
     );
     res.status(201).json({ message: "success deleted" });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const orders = async (req, res) => {
+const orders = async (req, res, next) => {
   try {
     const { userId } = req.session;
     let currentDateObj = new Date();
@@ -450,10 +484,10 @@ const orders = async (req, res) => {
       .sort({ createdAt: -1 });
     res.render("orders", { orders, currentDate });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const viewOrdered = async (req, res) => {
+const viewOrdered = async (req, res, next) => {
   try {
     const { id } = req.query;
     const order = await Order.findById({ _id: id })
@@ -461,20 +495,20 @@ const viewOrdered = async (req, res) => {
       .populate("items.product");
     res.render("viewOrdered", { order: order });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
   try {
     let { message, userId } = req.session;
     req.session.message = "";
     const userProfile = await User.findById({ _id: userId });
     res.render("changePassword", { message, userProfile });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const updatedPassword = async (req, res) => {
+const updatedPassword = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
@@ -505,10 +539,10 @@ const updatedPassword = async (req, res) => {
       res.redirect("/changePassword");
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const returnOrder = async (req, res) => {
+const returnOrder = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { orderId, expiredDate, grandTotal, returnReason } = req.body;
@@ -538,10 +572,10 @@ const returnOrder = async (req, res) => {
       res.status(400).json({ message: "Bad request" });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const cancelOrder = async (req, res) => {
+const cancelOrder = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { orderId, cancelReason } = req.body;
@@ -584,10 +618,10 @@ const cancelOrder = async (req, res) => {
       res.status(400).json({ message: "Seems like an error" });
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const wishList = async (req, res) => {
+const wishList = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const products = await Wishlist.findOne({ userId: userId }).populate(
@@ -595,10 +629,10 @@ const wishList = async (req, res) => {
     );
     res.render("wishList", { products: products, userId });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const addToWishList = async (req, res) => {
+const addToWishList = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { product_Id } = req.body;
@@ -640,10 +674,10 @@ const addToWishList = async (req, res) => {
       await makeWishList.save();
     }
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const deleteFromWishList = async (req, res) => {
+const deleteFromWishList = async (req, res, next) => {
   try {
     const { userId } = req.session;
     let { product_Id } = req.body;
@@ -654,15 +688,16 @@ const deleteFromWishList = async (req, res) => {
         $pull: { items: { product_Id: productId } },
       }
     );
-    const wishList = await Wishlist.findOne({userId:userId})
+    const wishList = await Wishlist.findOne({ userId: userId });
     res.status(201).json({
-      message: "success and modified",wishListLength:wishList.items.length
+      message: "success and modified",
+      wishListLength: wishList.items.length,
     });
   } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const subscription = async (req, res) => {
+const subscription = async (req, res, next) => {
   try {
     const { email } = req.body;
     const findSubscription = await Subscription.findOne({ email: email });
@@ -676,10 +711,10 @@ const subscription = async (req, res) => {
       res.json({ message: true });
     }
   } catch (error) {
-    res.redirect("/error500");
+    next(err);
   }
 };
-const comments = async (req, res) => {
+const comments = async (req, res, next) => {
   try {
     const { productId, name, email, number, message } = req.body;
     const newComment = new Comments({
@@ -697,14 +732,7 @@ const comments = async (req, res) => {
       res.json({ message: false });
     }
   } catch (err) {
-    res.redirect("/error500");
-  }
-};
-const error500 = async (req, res) => {
-  try {
-    res.render("error500");
-  } catch (err) {
-    res.redirect("/error500");
+    next(err);
   }
 };
 
@@ -716,6 +744,7 @@ module.exports = {
   addAddressPage,
   updatedProfile,
   updatedAddress,
+  emailResendOTP,
   changePassword,
   singleProduct,
   manageAddress,
@@ -734,7 +763,6 @@ module.exports = {
   addAddress,
   insertUser,
   loadLogin,
-  error500,
   shopPage,
   loadHome,
   comments,
