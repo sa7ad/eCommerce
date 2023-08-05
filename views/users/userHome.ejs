@@ -142,6 +142,7 @@
                     ><button><i class="ti-search"></i></button
                   ></a>
                 </li>
+                <%if(locals.session){%>
                 <li>
                   <button onclick="addToCart('<%=product._id%>')">
                     <i class="ti-shopping-cart"></i>
@@ -152,6 +153,7 @@
                     <i class="ti-heart"></i>
                   </button>
                 </li>
+                <%}%>
               </ul>
             </div>
             <div class="card-body">
