@@ -1,0 +1,165 @@
+<%- include('../layouts/header.ejs') %>
+
+<section style="background-color: #eee">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <a href="/userProfile">
+              <img
+                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6.webp"
+                alt="avatar"
+                class="rounded-circle img-fluid"
+                style="width: 150px; border: 4px solid #fff"
+              />
+            </a>
+            <h5 class="my-3">
+              <%= userProfile.first_name %> <%= userProfile.last_name %>
+            </h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <a href="/orders" class="btn btn-outline-primary btn-block"
+                  >Orders</a
+                >
+              </li>
+              <li class="list-group-item">
+                <a
+                  href="/manageAddress"
+                  class="btn btn-outline-primary btn-block"
+                  >Manage Address</a
+                >
+              </li>
+              <li class="list-group-item">
+                <a
+                  href="/changePassword"
+                  class="btn btn-outline-primary btn-block"
+                  >Change Password</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Edit Profile</h5>
+            <hr />
+            <form
+              action="/editProfile"
+              name="userForm"
+              method="POST"
+              onsubmit=""
+            >
+              <div class="form-group row">
+                <label for="firstName" class="col-sm-3 col-form-label"
+                  >First Name</label
+                >
+                <div class="col-sm-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="first_name"
+                    name="first_name"
+                    value="<%= userProfile.first_name %>"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="lastName" class="col-sm-3 col-form-label"
+                  >Last Name</label
+                >
+                <div class="col-sm-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="last_name"
+                    name="last_name"
+                    value="<%= userProfile.last_name %>"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="email" class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    value="<%= userProfile.email %>"
+                    required
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="phone" class="col-sm-3 col-form-label">Phone</label>
+                <div class="col-sm-9">
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone_number"
+                    name="phone_number"
+                    value="<%= userProfile.phone_number %>"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-9 offset-sm-3">
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    Update Profile
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>
+<script>
+  let first_name = document.getElementById("first_name");
+  let last_name = document.getElementById("last_name");
+  let phone_number = document.getElementById("phone_number");
+  first_name.addEventListener("input", () => {
+    if (first_name.value.trim() == "") {
+      first_name.setCustomValidity("First Name must be filled out");
+    } else {
+      first_name.setCustomValidity("");
+    }
+  });
+  last_name.addEventListener("input", () => {
+    if (last_name.value.trim() == "") {
+      last_name.setCustomValidity("Last Name must be filled out");
+    } else {
+      last_name.setCustomValidity("");
+    }
+  });
+  phone_number.addEventListener("input", () => {
+    if (phone_number.value.trim() == "") {
+      phone_number.setCustomValidity("Phone number must be filled out");
+    } else if (isNaN(phone_number.value)) {
+      phone_number.setCustomValidity(
+        "Phone number should contain only digits from 0-9"
+      );
+    } else if (phone_number.value.length < 10) {
+      phone_number.setCustomValidity(
+        "Phone number must be containing 10 digits"
+      );
+    } else {
+      phone_number.setCustomValidity("");
+    }
+  });
+</script>

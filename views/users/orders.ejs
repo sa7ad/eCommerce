@@ -1,0 +1,254 @@
+<%- include('../layouts/header.ejs') %>
+
+<section style="background-color: #eee">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Orders</h5>
+            <hr />
+            <div class="table-responsive">
+              <table id="myTable" class="table table-bordered table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Address</th>
+                    <th>Payment Method</th>
+                    <th>Ordered Items</th>
+                    <th>Order Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%if(orders){%> <% for (let order of orders) { %>
+                  <tr id="ordertable-<%= order._id %>">
+                    <td><%= order._id %></td>
+                    <td><%= order.address %></td>
+                    <td><%= order.paymentMethod %></td>
+                    <td>
+                      <a href="/viewOrdered?id=<%= order._id %>"
+                        >View Details</a
+                      >
+                    </td>
+
+                    <td id="status"><%= order.orderStatus %></td>
+
+                    <% if(order.orderStatus === "Delivered" && order.orderStatus
+                    !=="Returned" && new Date(currentDate) < new
+                    Date(order.expiredDate)){ %>
+                    <td class="return">
+                      <button
+                        onclick="returnOrder('<%= order._id%>','<%= order.expiredDate%>','<%= order.grandTotal%>')"
+                        class="btn btn-danger"
+                      >
+                        Return
+                      </button>
+                    </td>
+                    <% }else if(order.orderStatus !== 'Delivered' &&
+                    order.orderStatus !=="Cancelled" && order.orderStatus
+                    !=="Returned"){%>
+                    <td class="cancel">
+                      <button
+                        class="btn btn-danger"
+                        onclick="cancel('<%= order._id%>')"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                    <%}%>
+                    <span id="delete" style="display: none"
+                      >order has been removed</span
+                    >
+                  </tr>
+                  <% }}else{ %>
+                  <h6>There is no order in the list</h6>
+                  <%}%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="cancelReason" class="modal mt-5" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cancel Reason</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form onsubmit="event.preventDefault(); cancelOrder();">
+        <div class="modal-body">
+          <label for="cancelTextArea">Enter the cancel reason:</label>
+          <textarea
+            id="cancelTextArea"
+            class="form-control"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div id="returnReason" class="modal mt-5" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Return Reason</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form onsubmit="event.preventDefault(); returnOrderReason();">
+        <div class="modal-body">
+          <label for="returnTextArea">Enter the Return reason:</label>
+          <textarea
+            id="returnTextArea"
+            class="form-control"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer.ejs') %>
+<script>
+  let currentOrderId;
+  const cancel = (orderId) => {
+    const cancelModal = document.getElementById("cancelReason");
+    currentOrderId = orderId;
+    cancelModal.style.display = "block";
+  };
+  const cancelOrder = async () => {
+    const cancelModal = document.getElementById("cancelReason");
+    const orderId = currentOrderId;
+    let cancelValue = document.getElementById("cancelTextArea").value;
+    if (!cancelValue) {
+      Toastify({
+        text: "Cancel statement is required",
+        duration: 1000,
+        newWindow: false,
+        close: false,
+        gravity: "top",
+        position: "center",
+        stopOnFocus: false,
+        style: {
+          background: "#384aeb",
+        },
+      }).showToast();
+      return false;
+    } else {
+      swal({
+        title: "Cancel Order",
+        text: "Are you sure you want to cancel this order?",
+        icon: "warning",
+        buttons: ["Cancel", "OK"],
+        dangerMode: true,
+      }).then(async (confirmCancel) => {
+        if (confirmCancel) {
+          cancelModal.style.display = "none";
+          const cancelItem = await axios.patch("/orders", {
+            orderId,
+            cancelReason: cancelValue,
+          });
+          if (cancelItem.data.message) {
+            const statusCell = document
+              .getElementById(`ordertable-${orderId}`)
+              .querySelector("#status");
+            statusCell.textContent = cancelItem.data.status;
+            const remove = document
+              .getElementById(`ordertable-${orderId}`)
+              .querySelector(".cancel");
+            remove.parentNode.removeChild(remove);
+          }
+        }
+      });
+    }
+  };
+</script>
+<script>
+  let returnOrderId;
+  let returnExpiredDate;
+  let returnGrandTotal;
+  const returnOrder = (orderId, expiredDate, grandTotal) => {
+    const returnModal = document.getElementById("returnReason");
+    returnModal.style.display = "block";
+    returnOrderId = orderId;
+    returnExpiredDate = expiredDate;
+    returnGrandTotal = grandTotal;
+  };
+  const returnOrderReason = async () => {
+    const returnModal = document.getElementById("returnReason");
+    const orderId = returnOrderId;
+    const expiredDate = returnExpiredDate;
+    const grandTotal = returnGrandTotal;
+    returnValue = document.getElementById("returnTextArea").value;
+    if (!returnValue) {
+      Toastify({
+        text: "Return statement is required",
+        duration: 1000,
+        newWindow: false,
+        close: false,
+        gravity: "top",
+        position: "center",
+        stopOnFocus: false,
+        style: {
+          background: "#384aeb",
+        },
+      }).showToast();
+      return false;
+    } else {
+      swal({
+        title: "Return Order",
+        text: "Are you sure you want to return this order?",
+        icon: "warning",
+        buttons: ["Cancel", "OK"],
+        dangerMode: true,
+      }).then(async (returnOrder) => {
+        if (returnOrder) {
+          returnModal.style.display = "none";
+          const returnItem = await axios.patch("/returnOrder", {
+            orderId,
+            expiredDate,
+            grandTotal,
+            returnReason: returnValue,
+          });
+          if (returnItem.data.message) {
+            const statusCell = document
+              .getElementById(`ordertable-${orderId}`)
+              .querySelector("#status");
+            statusCell.textContent = "Returned";
+            const remove = document
+              .getElementById(`ordertable-${orderId}`)
+              .querySelector(".return");
+            remove.parentNode.removeChild(remove);
+          }
+        }
+      });
+    }
+  };
+</script>

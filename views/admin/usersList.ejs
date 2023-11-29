@@ -1,0 +1,77 @@
+<%- include('../layouts/adminHeader.ejs') %>
+<section class="content-main">
+  <div class="content-header">
+    <h2 class="content-title">Users list</h2>
+  </div>
+  <div class="card mb-4">
+    <header class="card-header"></header>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="myTable" class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Email Verified</th>
+              <th>Mobile</th>
+              <th>Block / Unblock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users && users.length > 0) { for (let i = 0; i <
+            users.length; i++) { %>
+            <tr>
+              <td width="25%">
+                <div class="info pl-3">
+                  <h6 class="mb-0 title">
+                    <%= users[i].first_name %> <%= users[i].last_name %>
+                  </h6>
+                </div>
+              </td>
+              <td><%= users[i].email %></td>
+              <td>
+                <span class="badge rounded-pill alert-success"
+                  ><%= users[i].verified %></span
+                >
+              </td>
+              <td><%= users[i].phone_number %></td>
+              <td id="block">
+                <button
+                  id="prodId<%=users[i]._id%>"
+                  class="btn btn-sm btn-danger rounded font-sm mt-15"
+                  onclick="userBlock('<%= users[i]._id %>')"
+                >
+                  <%if(users[i].blocked===false){%> Block <%}else{%> Unblock <%
+                  }%>
+                </button>
+              </td>
+            </tr>
+            <% } } else { %>
+            <tr>
+              <td colspan="5">Users Not Found</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/adminFooter.ejs') %>
+<script>
+  const userBlock = async (userId) => {
+    try {
+      const userBlock = await axios.patch("/admin/usersBlocked", { userId });
+      if (userBlock.data.message === true) {
+        document.getElementById(`prodId${userId}`).textContent = "Unblock";
+      } else if (userBlock.data.message === false) {
+        document.getElementById(`prodId${userId}`).textContent = "Block";
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  $(document).ready(function () {
+    $("#myTable").DataTable();
+  });
+</script>

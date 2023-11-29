@@ -1,0 +1,108 @@
+<%- include('../layouts/adminHeader.ejs') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Categories</h2>
+                <p>Add, edit or delete a category</p>
+            </div>
+        </div>
+        <%if(typeof message!==undefined){%>
+            <div>
+                <p class="text-center text-danger">
+                    <%= message %>
+                </p>
+            </div>
+            <%}%>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <form action="/admin/categories" method="post">
+                                    <div class="mb-4">
+                                        <label for="category_name" class="form-label">Name</label>
+                                        <input type="text" placeholder="Name" class="form-control" id="category_name"
+                                            name="category_name" required />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Description</label>
+                                        <textarea placeholder="Description" class="form-control"
+                                            name="category_description" required></textarea>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Create category</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="table-responsive">
+                                    <table id="myTable" class="table table-hover text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <%if(category && category.length>0){for(let i=0;i<category.length;i++){%>
+                                                    <tr>
+                                                        <td><b>
+                                                                <%= category[i].name%>
+                                                            </b></td>
+                                                        <td>
+                                                            <%= category[i].description %>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/admin/editCategory?id=<%= category[i]._id %>"
+                                                                class="btn btn-sm btn-success rounded font-sm text-white mt-15">Edit</a>
+                                                            <button id="categId<%= category[i]._id %>"
+                                                                onclick="categoryList('<%= category[i]._id %>')"
+                                                                class="btn btn-sm btn-danger rounded font-sm mt-15 ms-2">
+                                                                <%if(category[i].list===true){%>
+                                                                    Unlist
+                                                                    <%}else{%>
+                                                                        List
+                                                                        <%}%>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <%}}else{%>
+                                                        <h5>Categories not found</h5>
+                                                        <%}%>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </section>
+    <%- include('../layouts/adminFooter.ejs') %>
+
+
+        <script>
+            let category_name = document.getElementById("category_name");
+            category_name.addEventListener("input", () => {
+                if (category_name.value.trim() == "") {
+                    category_name.setCustomValidity("Field must be filled out");
+                } else {
+                    category_name.setCustomValidity("");
+                }
+            });
+        </script>
+        <script>
+            const categoryList = async (categoryId) => {
+
+                const categoryList = await axios.patch('/admin/listCategory', { categoryId })
+                if (categoryList.data.message === true) {
+                    document.getElementById(`categId${categoryId}`).textContent = 'List'
+                } else if (categoryList.data.message === false) {
+                    document.getElementById(`categId${categoryId}`).textContent = 'Unlist'
+                }
+            }
+            $(document).ready(function () {
+                $("#myTable").DataTable();
+            });
+        </script>

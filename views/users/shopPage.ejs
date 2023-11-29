@@ -1,0 +1,217 @@
+<%- include('../layouts/header.ejs') %>
+<section class="section-margin--small mb-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3">
+        <form action="" method="get">
+          <div class="input-group filter-bar-search">
+            <input
+              type="search"
+              placeholder="Search"
+              name="search"
+              value="<%= search %>"
+              class="form-control"
+            />
+            <input
+              type="hidden"
+              name="category"
+              id="category"
+              value="<%= category %>"
+            />
+            <div class="input-group-append">
+              <button type="submit"><i class="ti-search"></i></button>
+            </div>
+          </div>
+        </form>
+        <div class="sidebar-categories mt-4">
+          <h4 class="mb-3">Browse Categories</h4>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a href="/shopPage?category=" class="text-decoration-none">All</a>
+            </li>
+            <% categoryFind.forEach(item => { %>
+            <li class="list-group-item">
+              <a
+                href="/shopPage?category=<%= item._id %>&search=<%= search %>&brand=<%= brand %>"
+                class="text-decoration-none"
+                ><%= item.name %></a
+              >
+            </li>
+            <% }) %>
+          </ul>
+
+          <h4 class="mt-4 mb-3">Browse Brands</h4>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a href="/shopPage?brand=" class="text-decoration-none">All</a>
+            </li>
+            <% brandFind.forEach(item => { %>
+            <li class="list-group-item">
+              <a
+                href="/shopPage?brand=<%= item %>&search=<%= search %>&category=<%= category %>"
+                class="text-decoration-none"
+                ><%= item %></a
+              >
+            </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="btn-group sorting-links mb-3" role="group">
+              <a
+                href="/shopPage?search=<%= search %>&category=<%= category %>&brand=<%= brand %>&sort=price-asc"
+                class="btn btn-outline-primary"
+                >Price: Low to High</a
+              >
+              <a
+                href="/shopPage?search=<%= search %>&category=<%= category %>&brand=<%= brand %>&sort=price-desc"
+                class="btn btn-outline-primary"
+                >Price: High to Low</a
+              >
+            </div>
+          </div>
+        </div>
+        <% products.forEach(item => { %>
+        <div
+          id="product-list"
+          class="col-md-6 col-lg-4"
+          data-category="<%= item.category.name %>"
+        >
+          <div class="card text-center card-product">
+            <div class="card-product__img">
+              <img class="card-img" src="/images/<%= item.image[0] %>" alt="" />
+              <ul class="card-product__imgOverlay">
+                <li>
+                  <a href="/singleProduct?id=<%= item._id%>"
+                    ><button><i class="ti-search"></i></button
+                  ></a>
+                </li>
+                <%if(locals.session){%>
+                <li>
+                  <button onclick="addToCart('<%=item._id%>')">
+                    <i class="ti-shopping-cart"></i>
+                  </button>
+                </li>
+                <li>
+                  <button onclick="addTowishList('<%=item._id%>')">
+                    <i class="ti-heart"></i>
+                  </button>
+                </li>
+                <%}%>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p><%= item.category.name %></p>
+              <h4 class="card-product__title">
+                <a
+                  href="shopPage?category=<%= item._id%>&search=<%= search %>"
+                  class="text-decoration-none"
+                  ><%= item.name %></a
+                >
+              </h4>
+              <p class="card-product__price">₹<%= item.price %></p>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container d-flex justify-content-center mb-5">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <% if (currentPage !== 1) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="/shopPage?page=1<% if (brand) { %>&brand=<%= brand %><% } %><% if (search) { %>&search=<%= search %><% } %>"
+          >1</a
+        >
+      </li>
+      <% } %> <% if (currentPage > 2) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="/shopPage?page=<%= prevPage %><% if (brand) { %>&brand=<%= brand %><% } %><% if (search) { %>&search=<%= search %><% } %>"
+          ><%= prevPage %></a
+        >
+      </li>
+      <% } %>
+      <li class="page-item active">
+        <a
+          class="page-link"
+          href="/shopPage?page=<%= currentPage %><% if (brand) { %>&brand=<%= brand %><% } %><% if (search) { %>&search=<%= search %><% } %>"
+          ><%= currentPage %></a
+        >
+      </li>
+      <% if (hasNextPage) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="/shopPage?page=<%= nextPage %><% if (brand) { %>&brand=<%= brand %><% } %><% if (search) { %>&search=<%= search %><% } %>"
+          ><%= nextPage %></a
+        >
+      </li>
+      <% } %> <% if (nextPage !== lastPage && currentPage !== lastPage) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="/shopPage?page=<%= lastPage %><% if (brand) { %>&brand=<%= brand %><% } %><% if (search) { %>&search=<%= search %><% } %>"
+          ><%= lastPage %></a
+        >
+      </li>
+      <% } %>
+    </ul>
+  </nav>
+</div>
+
+<%- include('../layouts/footer.ejs') %>
+<script>
+  addToCart = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Cart",
+      duration: 1000,
+      destination: "/cart",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#384aeb",
+      },
+    }).showToast();
+    let product_quantity = 1;
+    const quantityData = await axios.post("/cart", {
+      product_quantity,
+      product_Id,
+    });
+    if (quantityData.data.count) {
+      document.getElementById("cartCount").innerHTML = quantityData.data.count;
+    }
+    return quantityData;
+  };
+  addTowishList = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Added To Wishlist",
+      duration: 1000,
+      destination: "/wishList",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#FFFFFF",
+        color: "#384aeb",
+      },
+    }).showToast();
+    const wishList = await axios.post("/addToWishList", { product_Id });
+  };
+</script>

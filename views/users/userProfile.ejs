@@ -1,0 +1,199 @@
+<%- include('../layouts/header.ejs') %>
+
+<section style="background-color: #f8f9fa">
+  <div class="container py-5">
+    <% if(typeof message!=='undefined'){ %>
+    <div class="text-success"><%=message %></div>
+    <% } %>
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <img
+              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6.webp"
+              alt="avatar"
+              class="rounded-circle img-fluid"
+              style="width: 150px; border: 4px solid #fff"
+            />
+            <h5 class="my-3">
+              <%= userProfile.first_name %> <%= userProfile.last_name %>
+            </h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <a href="/editProfile" class="btn btn-outline-primary btn-block"
+                  >Edit Profile</a
+                >
+              </li>
+              <li class="list-group-item">
+                <a href="/orders" class="btn btn-outline-primary btn-block"
+                  >Orders</a
+                >
+              </li>
+              <li class="list-group-item">
+                <a
+                  href="/manageAddress"
+                  class="btn btn-outline-primary btn-block"
+                  >Manage Address</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Wallet</h5>
+            <p class="mb-0">₹<%= userProfile.wallet %></p>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              data-toggle="modal"
+              data-target="#walletModal"
+            >
+              View Wallet
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">User Profile</h5>
+            <hr />
+
+            <div class="row mb-3">
+              <div class="col-sm-3">
+                <p class="font-weight-bold mb-0">Full Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">
+                  <%= userProfile.first_name %> <%= userProfile.last_name %>
+                </p>
+              </div>
+            </div>
+            <hr />
+            <div class="row mb-3">
+              <div class="col-sm-3">
+                <p class="font-weight-bold mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= userProfile.email %></p>
+              </div>
+            </div>
+            <hr />
+            <div class="row mb-3">
+              <div class="col-sm-3">
+                <p class="font-weight-bold mb-0">Phone</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= userProfile.phone_number %></p>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-sm-9">
+                <a href="/changePassword" class="btn btn-primary btn-sm"
+                  >Change Password</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div
+  class="modal fade mt-5"
+  id="walletModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="walletModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title text-white" id="walletModalLabel">
+          Wallet Details
+        </h5>
+        <button
+          type="button"
+          class="close text-white"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h6 class="card-title">Your Wallet Balance:</h6>
+                <h4 class="card-text text-primary font-weight-bold">
+                  ₹<%= userProfile.wallet %>
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h6 class="card-title">Last Transactions:</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% walletHistory.forEach(wallet => { %>
+                      <tr>
+                        <td>
+                          <%=
+                          wallet.walletHistory.date.toISOString().substr(0, 10)
+                          %>
+                        </td>
+                        <% if(wallet.walletHistory.amount>0){%>
+                        <td class="text-success">
+                          ₹<%= wallet.walletHistory.amount %>
+                        </td>
+                        <% } else{%>
+                        <td class="text-danger">
+                          ₹<%= wallet.walletHistory.amount %>
+                        </td>
+                        <% }%>
+
+                        <td><%= wallet.walletHistory.description %></td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="/orders" class="btn btn-primary"> Show Full Transactions </a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer.ejs') %>

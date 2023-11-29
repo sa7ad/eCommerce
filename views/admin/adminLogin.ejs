@@ -1,0 +1,72 @@
+<%- include('../layouts/header.ejs') %>
+<section class="login_box_area section-margin">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4"></div>
+      <div class="col-lg-4">
+        <div class="login_form_inner">
+          <h3>Welcome Admin</h3>
+          <% if(typeof message!=='undefined'){ %>
+          <h6 class="text-danger"><%=message %></h6>
+          <% } %>
+          <form
+            class="row login_form"
+            action="/admin"
+            name="contactForm"
+            method="post"
+            onsubmit="return validateform()"
+          >
+            <div class="col-md-12 form-group">
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div id="errorContainer1" class="text-danger"></div>
+            <div class="col-md-12 form-group">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <div id="errorContainer2" class="text-danger"></div>
+            <div class="col-md-12 form-group">
+              <button type="submit" value="submit" class="btn btn-primary">
+                Log In
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/footer.ejs') %>
+<script>
+  let email = document.getElementById("email");
+  let password = document.getElementById("password");
+  email.addEventListener("input", () => {
+    if (email.value.trim() == "") {
+      email.setCustomValidity("Email cannot contain white spaces");
+    } else {
+      email.setCustomValidity("");
+    }
+  });
+  password.addEventListener("input", () => {
+    if (password.value.trim() == "") {
+      password.setCustomValidity("Password cannot contain white spaces");
+    } else if (password.value.length < 6) {
+      password.setCustomValidity("Password  must contain 6 characters");
+    } else {
+      password.setCustomValidity("");
+    }
+  });
+</script>

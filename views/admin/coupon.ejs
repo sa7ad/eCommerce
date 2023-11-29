@@ -1,0 +1,149 @@
+<%- include('../layouts/adminHeader.ejs') %>
+<section class="content-main">
+  <div class="content-header">
+    <div>
+      <h2 class="content-title card-title">Coupon</h2>
+      <p>Add, edit or delete a coupon</p>
+    </div>
+  </div>
+  <%if(typeof message!==undefined){%>
+  <div><p class="text-center text-danger"><%= message %></p></div>
+  <%}%>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <form action="/admin/coupon" method="post">
+            <div class="mb-4">
+              <label for="coupon" class="form-label">Code</label>
+              <input
+                type="text"
+                placeholder="Code"
+                class="form-control"
+                id="code"
+                name="code"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Description</label>
+              <textarea
+                placeholder="Description"
+                class="form-control"
+                name="description"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-4">
+              <label for="percentage" class="form-label">Percentage</label>
+              <input
+                type="number"
+                placeholder="Percentage"
+                class="form-control"
+                min="1"
+                max="100"
+                id="percentage"
+                name="percentage"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label for="expireDate" class="form-label">Expiry Date</label>
+              <input
+                type="date"
+                placeholder="Expiry Date"
+                class="form-control"
+                min="1"
+                id="expireDate"
+                name="expireDate"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label for="applicableLimit" class="form-label"
+                >Applicable Limit</label
+              >
+              <input
+                type="number"
+                placeholder="Applicable Limit"
+                class="form-control"
+                min="0"
+                id="applicableLimit"
+                name="applicableLimit"
+                required
+              />
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">
+                Create coupon
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-9">
+          <div class="table-responsive">
+            <table id="myTable" class="table table-hover text-center">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Description</th>
+                  <th>Percecentage</th>
+                  <th>Applicable Limit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%if(coupon){%> <% coupon.forEach(coupon=> {%>
+                <tr>
+                  <td><b><%= coupon.code%></b></td>
+                  <td><%= coupon.description%></td>
+                  <td><%= coupon.percentage%></td>
+                  <td>₹<%= coupon.applicableLimit%></td>
+                  <td>
+                    <a
+                      href="/admin/editCoupon?id=<%= coupon._id%>"
+                      class="btn btn-sm btn-success rounded font-sm text-white mt-15"
+                      >Edit</a
+                    >
+                    <button
+                      id="couponId<%= coupon._id%>"
+                      onclick="listCoupon('<%= coupon._id%>')"
+                      class="btn btn-sm btn-danger rounded font-sm mt-15"
+                    >
+                      <% if (coupon.list === true) { %> Unlist <% } else { %>
+                      List <% } %>
+                    </button>
+                  </td>
+                </tr>
+                <% }) %> <%}%>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../layouts/adminFooter.ejs') %>
+<script>
+  let code = document.getElementById("code");
+  code.addEventListener("input", () => {
+    if (code.value.trim() == "") {
+      code.setCustomValidity("Field must be filled out");
+    } else {
+      code.setCustomValidity("");
+    }
+  });
+  const listCoupon = async (couponId) => {
+    const button = document.getElementById(`couponId${couponId}`);
+    const responses = await axios.patch("/admin/listCoupon", { couponId });
+    if (responses.data.unlistSuccess) {
+      button.textContent = "List";
+    } else if (responses.data.listSuccess) {
+      button.textContent = "Unlist";
+    }
+  };
+  $(document).ready(function () {
+    $("#myTable").DataTable();
+  });
+</script>
