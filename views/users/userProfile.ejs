@@ -10,7 +10,7 @@
         <div class="card mb-4">
           <div class="card-body text-center">
             <img
-              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6.webp"
               alt="avatar"
               class="rounded-circle img-fluid"
               style="width: 150px; border: 4px solid #fff"
@@ -131,7 +131,6 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <!-- Wallet Balance Section -->
           <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
               <div class="card-body">
@@ -142,12 +141,6 @@
               </div>
             </div>
           </div>
-          <!-- Add Wallet Money Button -->
-          <!-- <div class="col-md-6 mb-4 text-md-right">
-            <a href="/addWalletMoney" class="btn btn-primary">
-              Add Wallet Money
-            </a>
-          </div> -->
         </div>
 
         <div class="row">
@@ -174,11 +167,11 @@
                         </td>
                         <% if(wallet.walletHistory.amount>0){%>
                         <td class="text-success">
-                          <%= wallet.walletHistory.amount %>
+                          ₹<%= wallet.walletHistory.amount %>
                         </td>
                         <% } else{%>
                         <td class="text-danger">
-                          <%= wallet.walletHistory.amount %>
+                          ₹<%= wallet.walletHistory.amount %>
                         </td>
                         <% }%>
 

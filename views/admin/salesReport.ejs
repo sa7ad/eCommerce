@@ -56,7 +56,8 @@
               </tr>
             </thead>
             <tbody id="reportBody">
-              <% salesReport.forEach(element => {%>
+              <%if(salesReport && salesReport.length>0){%> <%
+              salesReport.forEach(element => {%>
               <tr>
                 <td><%= element.user.email%></td>
                 <td><%= element.user.phone_number%></td>
@@ -67,7 +68,7 @@
                 <td><%= element.grandTotal%></td>
                 <td><%= element.orderStatus%></td>
               </tr>
-              <%})%>
+              <%})%> <%}%>
             </tbody>
           </table>
         </div>
@@ -78,58 +79,56 @@
 <%- include('../layouts/adminFooter.ejs') %>
 <script>
   const selectedDate = async () => {
-    try {
-      let startDate = document.getElementById("startDatePicker").value;
-      let endDate = document.getElementById("endDatePicker").value;
-      if (!startDate || !endDate) {
-        Toastify({
-          text: "Please select both start and end dates",
-          duration: 3000,
-          position: "center",
-          style: {
-            background: "#FFFFFF",
-            color: "#384aeb",
-          },
-        }).showToast();
-        return false;
-      }
-      let startDateObj = new Date(startDate);
-      let endDateObj = new Date(endDate);
-      if (startDateObj > endDateObj) {
-        Toastify({
-          text: "Start date cannot be greater than end date",
-          duration: 3000,
-          position: "center",
-          style: {
-            background: "#FFFFFF",
-            color: "#384aeb",
-          },
-        }).showToast();
-        return false;
-      }
-      const today = new Date();
-      if (endDateObj > today) {
-        Toastify({
-          text: "End date cannot be in the future",
-          duration: 3000,
-          position: "center",
-          style: {
-            background: "#FFFFFF",
-            color: "#384aeb",
-          },
-        }).showToast();
-        return false;
-      }
-      const response = await axios.post("/admin/salesReport", {
-        startDate,
-        endDate,
-      });
-      const salesReport = response.data.selectedDate;
-      console.log(salesReport);
-      const reportBody = document.getElementById("reportBody");
-      reportBody.innerHTML = salesReport
-        .map(
-          (element) => `
+    let startDate = document.getElementById("startDatePicker").value;
+    let endDate = document.getElementById("endDatePicker").value;
+    if (!startDate || !endDate) {
+      Toastify({
+        text: "Please select both start and end dates",
+        duration: 3000,
+        position: "center",
+        style: {
+          background: "#FFFFFF",
+          color: "#384aeb",
+        },
+      }).showToast();
+      return false;
+    }
+    let startDateObj = new Date(startDate);
+    let endDateObj = new Date(endDate);
+    if (startDateObj > endDateObj) {
+      Toastify({
+        text: "Start date cannot be greater than end date",
+        duration: 3000,
+        position: "center",
+        style: {
+          background: "#FFFFFF",
+          color: "#384aeb",
+        },
+      }).showToast();
+      return false;
+    }
+    const today = new Date();
+    if (endDateObj > today) {
+      Toastify({
+        text: "End date cannot be in the future",
+        duration: 3000,
+        position: "center",
+        style: {
+          background: "#FFFFFF",
+          color: "#384aeb",
+        },
+      }).showToast();
+      return false;
+    }
+    const response = await axios.post("/admin/salesReport", {
+      startDate,
+      endDate,
+    });
+    const salesReport = response.data.selectedDate;
+    const reportBody = document.getElementById("reportBody");
+    reportBody.innerHTML = salesReport
+      .map(
+        (element) => `
         <tr>
           <td>${element.user[0].email}</td>
           <td>${element.user[0].phone_number}</td>
@@ -141,9 +140,9 @@
           <td>${element.orderStatus}</td>
         </tr>
       `
-        )
-        .join("");
-      const tableHeader = `
+      )
+      .join("");
+    const tableHeader = `
         <tr>
                 <th>Email</th>
                 <th>Mobile</th>
@@ -155,11 +154,8 @@
                 <th>Status</th>
         </tr>
       `;
-      const reportHeader = document.getElementById("reportHeader");
-      reportHeader.innerHTML = tableHeader;
-    } catch (error) {
-      console.log(error.message);
-    }
+    const reportHeader = document.getElementById("reportHeader");
+    reportHeader.innerHTML = tableHeader;
   };
 </script>
 <script>

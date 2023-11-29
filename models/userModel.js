@@ -70,6 +70,7 @@ const userSchema = new mongoose.Schema(
     ],
     blocked: {
       type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -4,6 +4,7 @@ const {
   updatedCategory,
   productUpdated,
   productAddPage,
+  bannerUpdated,
   loadDashboard,
   updatedCoupon,
   editCategory,
@@ -17,6 +18,7 @@ const {
   cancelOrder,
   productList,
   couponAdded,
+  bannerAdded,
   productAdd,
   categories,
   editCoupon,
@@ -28,12 +30,9 @@ const {
   loadLogin,
   usersList,
   dashboard,
-  error500,
   coupon,
   banner,
   orders,
-  bannerAdded,
-  bannerUpdated,
   listCoupon,
 } = require("../controllers/adminController");
 const upload = require("../middleware/uploadImage");
@@ -469,17 +468,6 @@ adminRoute.post("/editCoupon", isAdminLogin, updatedCoupon);
  *         description:successful operation
  */
 adminRoute.patch("/listCoupon", isAdminLogin, listCoupon);
-/**
- * @swagger
- * /admin/error500:
- *  get:
- *     tags:
- *     - Error
- *     description: user home of ecommerce webpage
- *     responses:
- *       200:
- *         description:successful operation
- */
-adminRoute.get("/error500", error500);
+
 
 module.exports = adminRoute;

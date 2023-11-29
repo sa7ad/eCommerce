@@ -13,7 +13,7 @@ const credentials = {
   adminpassword: process.env.ADMIN_PASSWORD,
 };
 
-const loadLogin = async (req, res) => {
+const loadLogin = async (req, res, next) => {
   try {
     let { message } = req.session;
     if (req.session.adminSession) {
@@ -23,11 +23,11 @@ const loadLogin = async (req, res) => {
       req.session.message = "";
       res.render("adminLogin", { message });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const loadDashboard = async (req, res) => {
+const loadDashboard = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { adminemail, adminpassword } = credentials;
@@ -38,11 +38,11 @@ const loadDashboard = async (req, res) => {
       req.session.message = "Invalid Admin Details";
       res.redirect("/admin");
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const dashboard = async (req, res) => {
+const dashboard = async (req, res, next) => {
   try {
     let usersData = [];
     let currentSalesYear = new Date(new Date().getFullYear(), 0, 1);
@@ -163,41 +163,41 @@ const dashboard = async (req, res) => {
     const countProduct = await Product.countDocuments();
     const categoryCount = await Category.countDocuments();
     res.render("adminDashboard", {
-      pendingOrder,
-      revenue,
-      latestUsers,
-      countProduct,
-      categoryCount,
-      latestOrders,
-      monthlyEarning,
       currentYearProfit,
-      salesData,
-      placedOrder,
+      monthlyEarning,
       cancelledOrder,
-      userData,
       deliveredOrder,
+      categoryCount,
+      pendingOrder,
+      countProduct,
+      latestOrders,
+      latestUsers,
+      placedOrder,
+      salesData,
+      userData,
+      revenue,
     });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const loadLogout = async (req, res) => {
+const loadLogout = async (req, res, next) => {
   try {
     req.session.adminSession = null;
     res.redirect("/admin");
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const usersList = async (req, res) => {
+const usersList = async (req, res, next) => {
   try {
     const usersList = await User.find({ verified: true });
     res.render("usersList", { users: usersList });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const usersBlocked = async (req, res) => {
+const usersBlocked = async (req, res, next) => {
   try {
     const { userId } = req.body;
     const usersBlocked = await User.findById({ _id: userId });
@@ -218,27 +218,27 @@ const usersBlocked = async (req, res) => {
         message: false,
       });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const categories = async (req, res) => {
+const categories = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     const categoryDetails = await Category.find();
     res.render("categories", { message, category: categoryDetails });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const addCategory = async (req, res) => {
+const addCategory = async (req, res, next) => {
   try {
     const { category_name, category_description } = req.body;
     const existingCategory = await Category.find({
       name: { $regex: new RegExp(`^${category_name}$`, "i") },
     });
-    if (!existingCategory) {
+    if (!existingCategory.length) {
       const categ = new Category({
         name: category_name,
         description: category_description,
@@ -249,21 +249,20 @@ const addCategory = async (req, res) => {
       req.session.message = "This category is already defined";
       res.redirect("/admin/categories");
     }
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const editCategory = async (req, res) => {
+const editCategory = async (req, res, next) => {
   try {
     const { id } = req.query;
     const category = await Category.findById({ _id: id });
     res.render("editCategory", { category });
-  } catch {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const updatedCategory = async (req, res) => {
+const updatedCategory = async (req, res, next) => {
   try {
     const { id, category_name, category_description } = req.body;
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -272,11 +271,11 @@ const updatedCategory = async (req, res) => {
     );
     await updatedCategory.save();
     res.redirect("/admin/categories");
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const listCategory = async (req, res) => {
+const listCategory = async (req, res, next) => {
   try {
     const { categoryId } = req.body;
     const category = await Category.findById({ _id: categoryId });
@@ -287,28 +286,28 @@ const listCategory = async (req, res) => {
       await Category.updateOne({ _id: categoryId }, { $set: { list: true } });
       res.status(201).json({ message: false });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
 
-const productAddPage = async (req, res) => {
+const productAddPage = async (req, res, next) => {
   try {
     const categories = await Category.find();
     res.render("productAddPage", { categories });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const productList = async (req, res) => {
+const productList = async (req, res, next) => {
   try {
     const product = await Product.find().populate("category");
     res.render("productList", { product });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const productAdd = async (req, res) => {
+const productAdd = async (req, res, next) => {
   try {
     const {
       product_name,
@@ -344,12 +343,11 @@ const productAdd = async (req, res) => {
     });
     await product.save();
     res.redirect("/admin/productList");
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const listProduct = async (req, res) => {
+const listProduct = async (req, res, next) => {
   try {
     const { productId } = req.body;
     const product = await Product.findById({ _id: productId });
@@ -360,41 +358,36 @@ const listProduct = async (req, res) => {
       await Product.updateOne({ _id: productId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const productEditPage = async (req, res) => {
+const productEditPage = async (req, res, next) => {
   try {
     const { id } = req.query;
     const product = await Product.findById({ _id: id });
     const category = await Category.find();
     res.render("productEditPage", {
-      product_id: id,
       categories: category,
+      product_id: id,
       product,
     });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const productUpdated = async (req, res) => {
+const productUpdated = async (req, res, next) => {
   try {
     const {
-      product_id,
-      product_name,
-      product_quantity,
-      product_price,
-      product_category,
       product_description,
+      product_quantity,
+      product_category,
+      product_price,
       product_brand,
+      product_name,
+      product_id,
     } = req.body;
-    // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
-    //if all the images should not be deleted while updating
-    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
-    //   imageArr = existingProduct.image
-    // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
         const filePath = path.join(
@@ -439,31 +432,30 @@ const productUpdated = async (req, res) => {
       );
       res.redirect("/admin/productList");
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const orders = async (req, res) => {
+const orders = async (req, res, next) => {
   try {
     const orders = await Order.find().populate("user").sort({ createdAt: -1 });
     res.render("ordersList", { orders: orders });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const viewOrdered = async (req, res) => {
+const viewOrdered = async (req, res, next) => {
   try {
     const { id } = req.query;
     const order = await Order.findById({ _id: id })
       .populate("user")
       .populate("items.product");
     res.render("viewOrdered", { order: order });
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const changeStatus = async (req, res) => {
+const changeStatus = async (req, res, next) => {
   try {
     const { status, orderId } = req.body;
     const currentDate = new Date();
@@ -489,11 +481,11 @@ const changeStatus = async (req, res) => {
       );
     }
     res.status(201).json({ success: true });
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    next(err);
   }
 };
-const cancelOrder = async (req, res) => {
+const cancelOrder = async (req, res, next) => {
   try {
     const { orderId, status } = req.body;
     const order = await Order.updateOne(
@@ -512,29 +504,28 @@ const cancelOrder = async (req, res) => {
     } else {
       res.status(400).json({ message: "Seems like there is an error" });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const salesReport = async (req, res) => {
+const salesReport = async (req, res, next) => {
   try {
     const moment = require("moment");
     const firstOrder = await Order.find().sort({ createdAt: 1 });
     const lastOrder = await Order.find().sort({ createdAt: -1 });
-    const salesReport = await Order.find()
+    const salesReport = await Order.find({ orderStatus: "Delivered" })
       .populate("user")
       .sort({ createdAt: -1 });
     res.render("salesReport", {
-      salesReport,
       firstOrder: moment(firstOrder[0].createdAt).format("YYYY-MM-DD"),
       lastOrder: moment(lastOrder[0].createdAt).format("YYYY-MM-DD"),
+      salesReport,
     });
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const datePicker = async (req, res) => {
+const datePicker = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.body;
     const startDateObj = new Date(startDate);
@@ -548,35 +539,39 @@ const datePicker = async (req, res) => {
             $gte: startDateObj,
             $lte: endDateObj,
           },
+          orderStatus: "Delivered",
         },
       },
-      {$lookup:{from:"users",localField:"user",foreignField:"_id",as:"user"}},
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
     ]);
-    console.log(selectedDate,"sele")
     res.status(200).json({ selectedDate: selectedDate });
-  } catch (error) {
-    res.redirect("/error500");
-    console.log(error.message);
+  } catch (err) {
+    next(err);
   }
 };
-const banner = async (req, res) => {
+const banner = async (req, res, next) => {
   try {
     const banner = await Banner.find();
     res.render("banner", { banner });
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
 const bannerAdd = async (req, res) => {
   try {
     res.render("bannerAdd");
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const bannerAdded = async (req, res) => {
+const bannerAdded = async (req, res, next) => {
   try {
     const { bannerName, bannerDescription, bannerField } = req.body;
     const imageArr = [];
@@ -601,29 +596,23 @@ const bannerAdded = async (req, res) => {
     });
     await banner.save();
     res.redirect("/admin/banner");
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const bannerEdit = async (req, res) => {
+const bannerEdit = async (req, res, next) => {
   try {
     const { id } = req.query;
     const banner = await Banner.findById({ _id: id });
     res.render("bannerEdit", { banner, bannerId: banner._id });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const bannerUpdated = async (req, res) => {
+const bannerUpdated = async (req, res, next) => {
   try {
     const { bannerId, bannerName, bannerField, bannerDescription } = req.body;
-    console.log(bannerId, bannerName, bannerField, bannerDescription);
-    // const existingProduct = await Product.findById(product_id)
     const imageArr = [];
-    //if all the images should not be deleted while updating
-    // if(existingProduct && existingProduct.image && existingProduct.image.length>0){
-    //   imageArr = existingProduct.image
-    // }
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
         const filePath = path.join(
@@ -664,12 +653,11 @@ const bannerUpdated = async (req, res) => {
       );
       res.redirect("/admin/banner");
     }
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const listBanner = async (req, res) => {
+const listBanner = async (req, res, next) => {
   try {
     const { bannerId } = req.body;
     const banner = await Banner.findById({ _id: bannerId });
@@ -680,22 +668,21 @@ const listBanner = async (req, res) => {
       await Banner.updateOne({ _id: bannerId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const coupon = async (req, res) => {
+const coupon = async (req, res, next) => {
   try {
     let { message } = req.session;
     req.session.message = "";
     const coupon = await Coupon.find();
     res.render("coupon", { coupon, message });
-  } catch (error) {
-    console.log(error.message);
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const couponAdded = async (req, res) => {
+const couponAdded = async (req, res, next) => {
   try {
     const { code, percentage, description, applicableLimit, expireDate } =
       req.body;
@@ -720,21 +707,20 @@ const couponAdded = async (req, res) => {
       req.session.message = "This code has been already used";
     }
     res.redirect("/admin/coupon");
-  } catch (error) {
-    res.redirect("/error500");
-    console.log(error.message);
+  } catch (err) {
+    next(err);
   }
 };
-const editCoupon = async (req, res) => {
+const editCoupon = async (req, res, next) => {
   try {
     const { id } = req.query;
     const coupon = await Coupon.findById({ _id: id });
     res.render("editCoupon", { coupon });
-  } catch {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const updatedCoupon = async (req, res) => {
+const updatedCoupon = async (req, res, next) => {
   try {
     const { id, code, description, percentage, applicableLimit, expireDate } =
       req.body;
@@ -752,11 +738,11 @@ const updatedCoupon = async (req, res) => {
     );
     await updatedCoupon.save();
     res.redirect("/admin/coupon");
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const listCoupon = async (req, res) => {
+const listCoupon = async (req, res, next) => {
   try {
     const { couponId } = req.body;
     const coupon = await Coupon.findById({ _id: couponId });
@@ -767,15 +753,8 @@ const listCoupon = async (req, res) => {
       await Coupon.updateOne({ _id: couponId }, { $set: { list: true } });
       res.status(201).json({ listSuccess: true });
     }
-  } catch (error) {
-    res.redirect("/error500");
-  }
-};
-const error500 = async (req, res) => {
-  try {
-    res.render("error500");
-  } catch (error) {
-    console.log(error.message);
+  } catch (err) {
+    next(err);
   }
 };
 module.exports = {
@@ -795,22 +774,21 @@ module.exports = {
   productList,
   salesReport,
   addCategory,
-  listCoupon,
   cancelOrder,
-  editCoupon,
   listProduct,
   couponAdded,
+  listCoupon,
+  editCoupon,
   loadLogout,
-  datePicker,
   productAdd,
+  datePicker,
   categories,
+  listBanner,
   bannerEdit,
   bannerAdd,
   loadLogin,
   dashboard,
   usersList,
-  listBanner,
-  error500,
   coupon,
   banner,
   orders,

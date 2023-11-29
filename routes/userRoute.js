@@ -1,18 +1,18 @@
 const { isLogout, isLogin } = require("../middleware/userSession");
 const {
-  orderPlaced,
   validatePaymentVerification,
+  orderPlaced,
 } = require("../controllers/paymentController");
 const {
   orderPlacedSuccess,
   addOrderAddress,
   deleteFromCart,
+  removeCoupon,
+  applyCoupon,
   placeOrder,
   addToCart,
   cartCount,
   loadCart,
-  applyCoupon,
-  removeCoupon
 } = require("../controllers/cartController");
 const {
   emailVerificationPage,
@@ -23,10 +23,12 @@ const {
   updatedProfile,
   updatedAddress,
   changePassword,
+  emailResendOTP,
   manageAddress,
   deleteAddress,
   singleProduct,
   addToWishList,
+  subscription,
   loginSuccess,
   loadRegister,
   editProfile,
@@ -39,13 +41,13 @@ const {
   loadLogout,
   addAddress,
   loadLogin,
-  error500,
+  comments,
   loadHome,
   wishList,
   shopPage,
   orders,
 } = require("../controllers/userController");
-
+const errorHandler = require("../middleware/errorHandler");
 const express = require("express");
 const userRoute = express();
 userRoute.set("views", "views/users");
@@ -146,6 +148,19 @@ userRoute.get("/emailVerification", isLogout, emailVerificationPage);
  *         description:successful operation
  */
 userRoute.post("/emailVerification", emailVerification);
+/**
+ * @swagger
+ * /resendOTP:
+ *  post:
+ *     tags:
+ *     - Register
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/resendOTP", emailResendOTP);
+
 /**
  * @swagger
  * /cart:
@@ -524,7 +539,7 @@ userRoute.post("/coupon", isLogin, applyCoupon);
  * /removeCoupon:
  *  post:
  *     tags:
- *     - removeCoupon 
+ *     - removeCoupon
  *     description: displays the page of login
  *     responses:
  *       200:
@@ -533,15 +548,29 @@ userRoute.post("/coupon", isLogin, applyCoupon);
 userRoute.post("/removeCoupon", isLogin, removeCoupon);
 /**
  * @swagger
- * /error500:
- *  get:
+ * /subscription:
+ *  post:
  *     tags:
- *     - Error
+ *     - subscription
  *     description: displays the page of login
  *     responses:
- *       500:
- *        description:successful operation
+ *       200:
+ *         description:successful operation
  */
-userRoute.get("/error500", error500);
+userRoute.post("/subscription", subscription);
+/**
+ * @swagger
+ * /comments:
+ *  post:
+ *     tags:
+ *     - comments
+ *     description: displays the page of login
+ *     responses:
+ *       200:
+ *         description:successful operation
+ */
+userRoute.post("/comments", comments);
+
+userRoute.use(errorHandler);
 
 module.exports = userRoute;

@@ -9,7 +9,7 @@
     <div class="wishlist_inner">
       <% if (products && products.items.length > 0) { %>
       <div class="table-responsive">
-        <table class="table">
+        <table id="table" class="table">
           <thead>
             <tr>
               <th scope="col"><span class="text-dark">Image</span></th>
@@ -32,7 +32,13 @@
               <td class="align-middle">₹<%= item.product_Id.price %></td>
               <td class="align-middle">
                 <button
-                  class="btn btn-danger"
+                  class="btn btn-sm btn-primary"
+                  onclick="moveToCart('<%= item.product_Id._id %>')"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
                   onclick="deleteFromWishList('<%= item.product_Id._id %>')"
                 >
                   Remove
@@ -45,14 +51,48 @@
       </div>
       <% } else { %>
       <div class="text-center">
-        <p id="new" class="empty_message display-6">Your wishlist is empty.</p>
+        <img
+          id="emptyWishlist"
+          src="/images/emptyWishlist.jpg"
+          class="img-fluid"
+          alt="empty"
+        />
       </div>
       <% } %>
+      <div id="emptyWishList" style="display: none" class="text-center">
+        <img src="/images/emptyWishlist.jpg" class="img-fluid" alt="empty" />
+      </div>
     </div>
   </div>
 </section>
+
 <%- include('../layouts/footer.ejs') %>
 <script>
+  moveToCart = async (product_Id) => {
+    event.preventDefault();
+    Toastify({
+      text: "Moved To Cart",
+      duration: 1000,
+      destination: "/cart",
+      newWindow: false,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: false,
+      style: {
+        background: "#384aeb",
+      },
+    }).showToast();
+    let product_quantity = 1;
+    const quantityData = await axios.post("/cart", {
+      product_quantity,
+      product_Id,
+    });
+    if (quantityData.data.count) {
+      document.getElementById("cartCount").innerHTML = quantityData.data.count;
+    }
+    return quantityData;
+  };
   const deleteFromWishList = async (product_Id) => {
     swal({
       title: "Remove Product",
@@ -67,6 +107,10 @@
         });
         if (deletedItem) {
           document.getElementById(product_Id).style.display = "none";
+          if (deletedItem.data.wishListLength === 0) {
+            document.getElementById("table").style.display = "none";
+            document.getElementById("emptyWishList").style.display = "block";
+          }
         }
       }
     });

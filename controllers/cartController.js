@@ -5,44 +5,61 @@ const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const mongoose = require("mongoose");
 
-const loadCart = async (req, res) => {
+const loadCart = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const products = await Cart.findOne({ userId: userId }).populate(
       "items.product_Id"
     );
     res.render("cart", { products, userId });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const addToCart = async (req, res) => {
+const addToCart = async (req, res, next) => {
   try {
     const { userId } = req.session;
-    const { product_Id, product_quantity } = req.body;
+    const { product_Id, product_quantity, prdQuantity } = req.body;
     const userCart = await Cart.findOne({ userId: userId });
     const findPrice = await Product.findOne({ _id: product_Id });
     const total = product_quantity * findPrice.price;
+
     if (userCart) {
       const findProduct = await Cart.findOne({
         userId: userId,
         "items.product_Id": new mongoose.Types.ObjectId(product_Id),
       });
       if (findProduct) {
-        await Cart.findOneAndUpdate(
+        const stockQuantity = await Cart.findOne(
           {
             userId: userId,
-            "items.product_Id": new mongoose.Types.ObjectId(product_Id),
+            "items.product_Id": product_Id,
           },
           {
-            $inc: {
-              "items.$.quantity": product_quantity,
-              "items.$.total": total,
-              grandTotal: total,
-            },
-          },
-          { new: true }
+            "items.$": 1,
+          }
         );
+        const cartQuantity = stockQuantity.items[0].quantity;
+        if (cartQuantity < prdQuantity) {
+          await Cart.findOneAndUpdate(
+            {
+              userId: userId,
+              "items.product_Id": new mongoose.Types.ObjectId(product_Id),
+            },
+            {
+              $inc: {
+                "items.$.quantity": product_quantity,
+                "items.$.total": total,
+                grandTotal: total,
+              },
+            },
+            { new: true }
+          );
+          const cart = await Cart.findOne({ userId: userId });
+          res.json({ count: cart.items.length });
+        } else {
+          res.json({ limit: "limit exceeded" });
+        }
       } else {
         await Cart.updateOne(
           { userId: userId },
@@ -57,6 +74,8 @@ const addToCart = async (req, res) => {
             $inc: { count: 1, grandTotal: total },
           }
         );
+        const cart = await Cart.findOne({ userId: userId });
+        res.json({ count: cart.items.length });
       }
     } else {
       const makeCart = new Cart({
@@ -71,15 +90,14 @@ const addToCart = async (req, res) => {
         ],
         grandTotal: total,
       });
-      await makeCart.save();
+      const makeCarts = await makeCart.save();
+      res.json({ count: makeCart.items.length });
     }
-    const cart = await Cart.findOne({ userId: userId });
-    res.json({ count: cart.items.length });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const deleteFromCart = async (req, res) => {
+const deleteFromCart = async (req, res, next) => {
   try {
     const { userId } = req.session;
     let { product_Id } = req.body;
@@ -99,26 +117,25 @@ const deleteFromCart = async (req, res) => {
       },
     ]);
     let TotalCost = cartDetails[0].items[0].total;
-
-    await Cart.updateOne(
+    const carttotal = await Cart.findOneAndUpdate(
       { userId: userId },
       {
         $pull: { items: { product_Id: productId } },
         $inc: { count: -1, grandTotal: -TotalCost },
-      }
+      },
+      { new: true }
     );
-    const carttotal = await Cart.findOne({ userId: userId });
     const length = carttotal.items.length;
     res.status(201).json({
       message: "success and modified",
       total: carttotal.grandTotal,
       cart: length,
     });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const cartCount = async (req, res) => {
+const cartCount = async (req, res, next) => {
   try {
     const { product_Id, userId, count } = req.body;
     const productPrice = await Product.findOne({ _id: product_Id });
@@ -157,11 +174,11 @@ const cartCount = async (req, res) => {
       const carttotal = await Cart.findOne({ userId: userId });
       res.json({ message: "success", total: carttotal.grandTotal });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const addOrderAddress = async (req, res) => {
+const addOrderAddress = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { name, housename, city, state, phone, pincode } = req.body;
@@ -181,11 +198,11 @@ const addOrderAddress = async (req, res) => {
       }
     );
     res.redirect("/placeOrder");
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const placeOrder = async (req, res) => {
+const placeOrder = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const moment = require("moment");
@@ -208,11 +225,11 @@ const placeOrder = async (req, res) => {
       currentDate: currentDate,
       moment: moment,
     });
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const applyCoupon = async (req, res) => {
+const applyCoupon = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { selectedCoupon } = req.body;
@@ -255,11 +272,11 @@ const applyCoupon = async (req, res) => {
     } else {
       res.json({ message: false });
     }
-  } catch (error) {
-    res.redirect("/error500");
+  } catch (err) {
+    next(err);
   }
 };
-const removeCoupon = async (req, res) => {
+const removeCoupon = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const { selectedCouponId } = req.body;
@@ -282,11 +299,11 @@ const removeCoupon = async (req, res) => {
     } else {
       res.json({ message: false });
     }
-  } catch (error) {
-    
+  } catch (err) {
+    next(err);
   }
 };
-const orderPlacedSuccess = async (req, res) => {
+const orderPlacedSuccess = async (req, res, next) => {
   try {
     const { userId } = req.session;
     const details = await Order.findOne({ user: userId }).sort({
@@ -294,14 +311,7 @@ const orderPlacedSuccess = async (req, res) => {
     });
     res.render("orderPlaced", { order: details });
   } catch (err) {
-    res.redirect("/error500");
-  }
-};
-const error500 = async (req, res) => {
-  try {
-    res.render("error500");
-  } catch (error) {
-    console.log(error.message);
+    next(err);
   }
 };
 module.exports = {
@@ -311,7 +321,6 @@ module.exports = {
   placeOrder,
   addToCart,
   cartCount,
-  error500,
   loadCart,
   applyCoupon,
   removeCoupon,

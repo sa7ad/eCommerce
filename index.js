@@ -12,7 +12,6 @@ const app = express();
 dbConnect();
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const ErrorHandler = require("./middleware/errorHandler");
 app.use(logger("dev"));
 
 app.use(express.json());
@@ -41,9 +40,10 @@ const options = {
     info: {
       title: "E-Commerce API",
       version: "0.1.0",
-      description: "This is an api based on an ecommerce website",
+      description:
+        "API for the purpose of understanding each routes specification provided by DAPPE-RR.",
       contact: {
-        name: "Ecommerce",
+        name: "DAPPE-RR",
       },
     },
     servers: [
@@ -56,17 +56,15 @@ const options = {
 };
 const swag = swaggerJsDoc(options);
 
-app.use("/", userRoute);
-
 app.use("/admin", adminRoute);
+
+app.use("/", userRoute);
 
 app.use("/apiDocs", swaggerUi.serve, swaggerUi.setup(swag));
 
 app.use((req, res) => {
   res.status(404).render("error404");
 });
-
-app.use(ErrorHandler);
 
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is running on PORT http://localhost:${PORT}`);

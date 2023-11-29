@@ -5,9 +5,6 @@
       <h2 class="content-title card-title">Coupon</h2>
       <p>Add, edit or delete a coupon</p>
     </div>
-    <!-- <div>
-                        <input type="text" placeholder="Search Categories" class="form-control bg-white" />
-                    </div> -->
   </div>
   <%if(typeof message!==undefined){%>
   <div><p class="text-center text-danger"><%= message %></p></div>
@@ -137,19 +134,13 @@
       code.setCustomValidity("");
     }
   });
-</script>
-<script>
   const listCoupon = async (couponId) => {
-    try {
-      const button = document.getElementById(`couponId${couponId}`);
-      const responses = await axios.patch("/admin/listCoupon", { couponId });
-      if (responses.data.unlistSuccess) {
-        button.textContent = "List";
-      } else if (responses.data.listSuccess) {
-        button.textContent = "Unlist";
-      }
-    } catch (error) {
-      console.log(error.message);
+    const button = document.getElementById(`couponId${couponId}`);
+    const responses = await axios.patch("/admin/listCoupon", { couponId });
+    if (responses.data.unlistSuccess) {
+      button.textContent = "List";
+    } else if (responses.data.listSuccess) {
+      button.textContent = "Unlist";
     }
   };
   $(document).ready(function () {

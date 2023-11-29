@@ -1,9 +1,21 @@
 <%- include('../layouts/header.ejs') %>
 <section class="cart_area">
   <div class="container">
+    <div class="text-center">
+      <div id="emptyCartContainer" style="display: none">
+        <img
+          id="emptyCart"
+          src="/images/empty.jpg"
+          class="img-fluid"
+          style="height: 30rem"
+          alt="empty"
+        />
+      </div>
+    </div>
     <% if (!products || !products?.items?.length > 0) { %>
     <div class="text-center">
       <img
+        id="emptyCart"
         src="/images/empty.jpg"
         class="img-fluid"
         style="height: 30rem"
@@ -34,6 +46,12 @@
                       alt=""
                     />
                   </div>
+                  <input
+                    type="hidden"
+                    name=""
+                    id="product-<%= product.product_Id._id %>"
+                    value="<%= product.product_Id.quantity %>"
+                  />
                   <div class="media-body">
                     <p><%= product.product_Id.description %></p>
                   </div>
@@ -58,6 +76,7 @@
                     id="inputCount<%=product.product_Id._id %>"
                     type="text"
                     min="1"
+                    max="<%= product.quantity %>"
                     value="<%= product.quantity %>"
                     readonly
                   />
@@ -152,8 +171,8 @@
 <script>
   const deleteFromCart = async (product_Id) => {
     swal({
-      title: "Cancel Order",
-      text: "Are you sure you want to cancel this order?",
+      title: "Cart",
+      text: "Are you sure you want to remove this from cart?",
       icon: "warning",
       buttons: ["Cancel", "OK"],
       dangerMode: true,
@@ -161,13 +180,18 @@
       if (willDelete) {
         const deletedItem = await axios.put("/cart", { product_Id });
         document.getElementById("productTotal").innerHTML =
-          deletedItem?.data?.total
+          deletedItem?.data?.total;
         const { cart } = deletedItem.data;
         if (deletedItem) {
           document.getElementById(product_Id).style.display = "none";
           document.getElementById("productTotal").textContent =
             deletedItem.data.total;
+          document.getElementById("cartCount").textContent = cart;
           if (cart === 0) {
+            document.getElementById("cartCount").textContent = cart;
+            document.getElementById("table").style.display = "none";
+            document.getElementById("emptyCartContainer").style.display =
+              "block";
             const remove = document.getElementById("hideCheckOut");
             remove.parentNode.removeChild(remove);
           }
@@ -177,8 +201,13 @@
   };
 
   const count = async (product_Id, userId, count) => {
-    let input = document.getElementById(`inputCount${product_Id}`).value;
+    let input = parseInt(
+      document.getElementById(`inputCount${product_Id}`).value
+    );
     let price = document.getElementById(`productPrice${product_Id}`).innerHTML;
+    const prdQuantity = parseInt(
+      document.getElementById(`product-${product_Id}`).value
+    );
     if (input > 1 && count === -1) {
       let updatedCount = await axios.post("/cartCount", {
         product_Id,
@@ -194,6 +223,21 @@
           updatedCount.data.total;
       }
     } else if (input >= 1 && count === 1) {
+      if (input >= prdQuantity) {
+        Toastify({
+          text: "Limit Exceeded",
+          duration: 1000,
+          newWindow: false,
+          close: false,
+          gravity: "top",
+          position: "right",
+          stopOnFocus: false,
+          style: {
+            background: "#384aeb",
+          },
+        }).showToast();
+        return true;
+      }
       let updatedCount = await axios.post("/cartCount", {
         product_Id,
         userId,
