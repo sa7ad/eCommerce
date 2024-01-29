@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/sa7ad/eCommerce#readme",
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "bcrypt": "^5.1.0",
     "cropperjs": "^1.5.13",
     "dotenv": "^16.3.1",
