@@ -4,7 +4,8 @@
   "description": "The premium store where everyone can touch with it",
   "main": "index.js",
   "scripts": {
-    "test": "okay"
+    "test": "okay",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
